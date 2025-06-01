@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,9 +19,13 @@ const Index = () => {
   const [screenEnclosureSubLimit, setScreenEnclosureSubLimit] = useState('');
   const [moldSubLimit, setMoldSubLimit] = useState('');
   const [waterMitigationSubLimit, setWaterMitigationSubLimit] = useState('');
+  const [matchingSubLimit, setMatchingSubLimit] = useState('');
+  const [ordinanceLawSubLimit, setOrdinanceLawSubLimit] = useState('');
   const [screenEnclosureSubLimitDescription, setScreenEnclosureSubLimitDescription] = useState('Screen Enclosure');
   const [moldSubLimitDescription, setMoldSubLimitDescription] = useState('Mold');
   const [waterMitigationSubLimitDescription, setWaterMitigationSubLimitDescription] = useState('Water Mitigation');
+  const [matchingSubLimitDescription, setMatchingSubLimitDescription] = useState('Matching');
+  const [ordinanceLawSubLimitDescription, setOrdinanceLawSubLimitDescription] = useState('Ordinance & Law');
 
   // Optional deduction amounts
   const [recoverableDepreciationAmount, setRecoverableDepreciationAmount] = useState('');
@@ -86,6 +89,8 @@ const Index = () => {
     screenEnclosureSubLimit: false,
     moldSubLimit: false,
     waterMitigationSubLimit: false,
+    matchingSubLimit: false,
+    ordinanceLawSubLimit: false,
     // Existing checkboxes (removed coverage fee checkboxes)
     recoverableDepreciation: false,
     nonRecoverableDepreciation: false,
@@ -404,6 +409,66 @@ const Index = () => {
                                   placeholder="Enter sub-limit amount"
                                   value={waterMitigationSubLimit}
                                   onChange={(e) => setWaterMitigationSubLimit(e.target.value)}
+                                  className="flex-1"
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Matching Sub-limit */}
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="matching-sub-limit"
+                                checked={checkedItems.matchingSubLimit}
+                                onCheckedChange={(checked) => handleCheckboxChange('matchingSubLimit', checked as boolean)}
+                              />
+                              <Input
+                                type="text"
+                                value={matchingSubLimitDescription}
+                                onChange={(e) => setMatchingSubLimitDescription(e.target.value)}
+                                className="text-sm flex-1"
+                                placeholder="Sub-limit name"
+                              />
+                            </div>
+                            {checkedItems.matchingSubLimit && (
+                              <div className="ml-6 flex items-center gap-2">
+                                <span className="text-sm">$</span>
+                                <Input
+                                  type="text"
+                                  placeholder="Enter sub-limit amount"
+                                  value={matchingSubLimit}
+                                  onChange={(e) => setMatchingSubLimit(e.target.value)}
+                                  className="flex-1"
+                                />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Ordinance & Law Sub-limit */}
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="ordinance-law-sub-limit"
+                                checked={checkedItems.ordinanceLawSubLimit}
+                                onCheckedChange={(checked) => handleCheckboxChange('ordinanceLawSubLimit', checked as boolean)}
+                              />
+                              <Input
+                                type="text"
+                                value={ordinanceLawSubLimitDescription}
+                                onChange={(e) => setOrdinanceLawSubLimitDescription(e.target.value)}
+                                className="text-sm flex-1"
+                                placeholder="Sub-limit name"
+                              />
+                            </div>
+                            {checkedItems.ordinanceLawSubLimit && (
+                              <div className="ml-6 flex items-center gap-2">
+                                <span className="text-sm">$</span>
+                                <Input
+                                  type="text"
+                                  placeholder="Enter sub-limit amount"
+                                  value={ordinanceLawSubLimit}
+                                  onChange={(e) => setOrdinanceLawSubLimit(e.target.value)}
                                   className="flex-1"
                                 />
                               </div>
