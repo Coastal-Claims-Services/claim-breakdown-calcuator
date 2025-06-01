@@ -1,1585 +1,660 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index = () => {
-  const [claimAmount, setClaimAmount] = useState('');
+  // All state variables for claim info, coverage, etc.
+  const [claimNumber, setClaimNumber] = useState('');
+  const [dateOfLoss, setDateOfLoss] = useState('');
+  const [insured, setInsured] = useState('');
+  const [propertyAddress, setPropertyAddress] = useState('');
+  const [adjuster, setAdjuster] = useState('');
+  const [carrierClaimNumber, setCarrierClaimNumber] = useState('');
+  const [policyNumber, setPolicyNumber] = useState('');
   const [deductible, setDeductible] = useState('');
-  const [coverageA, setCoverageA] = useState('');
-  const [coverageB, setCoverageB] = useState('');
-  const [coverageC, setCoverageC] = useState('');
-  const [coverageD, setCoverageD] = useState('');
+  const [limit, setLimit] = useState('');
 
-  // Policy limits for each coverage
-  const [policyLimitA, setPolicyLimitA] = useState('');
-  const [policyLimitB, setPolicyLimitB] = useState('');
-  const [policyLimitC, setPolicyLimitC] = useState('');
-  const [policyLimitD, setPolicyLimitD] = useState('');
+  // Coverage states
+  const [dwelling, setDwelling] = useState('');
+  const [detachedStructures, setDetachedStructures] = useState('');
+  const [personalProperty, setPersonalProperty] = useState('');
+  const [lossOfUse, setLossOfUse] = useState('');
+  const [personalLiability, setPersonalLiability] = useState('');
+  const [medicalPayments, setMedicalPayments] = useState('');
 
-  // Sub-limits for Coverage A
-  const [screenEnclosureSubLimit, setScreenEnclosureSubLimit] = useState('');
-  const [moldSubLimit, setMoldSubLimit] = useState('');
-  const [waterMitigationSubLimit, setWaterMitigationSubLimit] = useState('');
-  const [matchingSubLimit, setMatchingSubLimit] = useState('');
-  const [ordinanceLawSubLimit, setOrdinanceLawSubLimit] = useState('');
-  const [screenEnclosureSubLimitDescription, setScreenEnclosureSubLimitDescription] = useState('Screen Enclosure');
-  const [moldSubLimitDescription, setMoldSubLimitDescription] = useState('Mold');
-  const [waterMitigationSubLimitDescription, setWaterMitigationSubLimitDescription] = useState('Water Mitigation');
-  const [matchingSubLimitDescription, setMatchingSubLimitDescription] = useState('Matching');
-  const [ordinanceLawSubLimitDescription, setOrdinanceLawSubLimitDescription] = useState('Ordinance & Law');
+  // Sub-limits states
+  const [jewelry, setJewelry] = useState('');
+  const [firearms, setFirearms] = useState('');
+  const [silverware, setSilverware] = useState('');
+  const [golfers, setGolfers] = useState('');
+  const [furs, setFurs] = useState('');
+  const [electronics, setElectronics] = useState('');
+  const [bicycles, setBicycles] = useState('');
+  const [cameras, setCameras] = useState('');
+  const [musical, setMusical] = useState('');
+  const [stamps, setStamps] = useState('');
+  const [coins, setCoins] = useState('');
+  const [fine, setFine] = useState('');
 
-  // Policy limits for Coverage A sub-limits
-  const [screenEnclosureSubLimitPolicy, setScreenEnclosureSubLimitPolicy] = useState('');
-  const [moldSubLimitPolicy, setMoldSubLimitPolicy] = useState('');
-  const [waterMitigationSubLimitPolicy, setWaterMitigationSubLimitPolicy] = useState('');
-  const [matchingSubLimitPolicy, setMatchingSubLimitPolicy] = useState('');
-  const [ordinanceLawSubLimitPolicy, setOrdinanceLawSubLimitPolicy] = useState('');
+  // RCV and ACV states
+  const [roofRCV, setRoofRCV] = useState('');
+  const [roofACV, setRoofACV] = useState('');
+  const [exteriorRCV, setExteriorRCV] = useState('');
+  const [exteriorACV, setExteriorACV] = useState('');
+  const [interiorRCV, setInteriorRCV] = useState('');
+  const [interiorACV, setInteriorACV] = useState('');
+  const [contentsRCV, setContentsRCV] = useState('');
+  const [contentsACV, setContentsACV] = useState('');
+  const [lossOfUseRCV, setLossOfUseRCV] = useState('');
+  const [lossOfUseACV, setLossOfUseACV] = useState('');
 
-  // Optional deduction amounts
-  const [recoverableDepreciationAmount, setRecoverableDepreciationAmount] = useState('');
-  const [nonRecoverableDepreciationAmount, setNonRecoverableDepreciationAmount] = useState('');
-  const [paidWhenIncurredAmount, setPaidWhenIncurredAmount] = useState('');
-  const [ordinanceLawAmount, setOrdinanceLawAmount] = useState('');
+  // Repair by Insured states
+  const [repairItem1, setRepairItem1] = useState('');
+  const [repairCost1, setRepairCost1] = useState('');
+  const [repairItem2, setRepairItem2] = useState('');
+  const [repairCost2, setRepairCost2] = useState('');
+  const [repairItem3, setRepairItem3] = useState('');
+  const [repairCost3, setRepairCost3] = useState('');
 
-  // Prior payments amounts
-  const [priorPaymentsAmount, setPriorPaymentsAmount] = useState('');
-  const [priorCCSFeesAmount, setPriorCCSFeesAmount] = useState('');
+  // Repair by Contractor states
+  const [contractorItem1, setContractorItem1] = useState('');
+  const [contractorCost1, setContractorCost1] = useState('');
+  const [contractorItem2, setContractorItem2] = useState('');
+  const [contractorCost2, setContractorCost2] = useState('');
+  const [contractorItem3, setContractorItem3] = useState('Plywood');
+  const [contractorCost3, setContractorCost3] = useState('');
 
-  // Payments without CCS fees amounts
-  const [priorToCCSAmount, setPriorToCCSAmount] = useState('');
-  const [legalFeesAmount, setLegalFeesAmount] = useState('');
-  const [paidIncurredAmount, setPaidIncurredAmount] = useState('');
-  const [optionalPaymentAmount, setOptionalPaymentAmount] = useState('');
-  const [optionalPaymentDescription, setOptionalPaymentDescription] = useState('Optional Payment');
-
-  // Repairs by the Insured amounts
-  const [interiorRepairsAmount, setInteriorRepairsAmount] = useState('');
-  const [exteriorRepairsAmount, setExteriorRepairsAmount] = useState('');
-  const [fencesAmount, setFencesAmount] = useState('');
-  const [screenEnclosureAmount, setScreenEnclosureAmount] = useState('');
-  const [optionalRepairAmount, setOptionalRepairAmount] = useState('');
-  const [optionalRepairDescription, setOptionalRepairDescription] = useState('Optional Repair');
-
-  // Repairs by Contractor amounts and quantities
-  const [roofSquares, setRoofSquares] = useState('');
-  const [roofTotalCost, setRoofTotalCost] = useState('');
-  const [additionalRoofSquares, setAdditionalRoofSquares] = useState('');
-  const [additionalRoofTotalCost, setAdditionalRoofTotalCost] = useState('');
-  const [guttersLinearFeet, setGuttersLinearFeet] = useState('');
-  const [guttersTotalCost, setGuttersTotalCost] = useState('');
-  const [solarPanels, setSolarPanels] = useState('');
-  const [solarTotalCost, setSolarTotalCost] = useState('');
-  const [soffitLinearFeet, setSoffitLinearFeet] = useState('');
-  const [soffitTotalCost, setSoffitTotalCost] = useState('');
-  const [fasciaLinearFeet, setFasciaLinearFeet] = useState('');
-  const [fasciaTotalCost, setFasciaTotalCost] = useState('');
-
-  // PA fee percentages (editable, default to 10%)
-  const [coverageAFeePercent, setCoverageAFeePercent] = useState('10');
-  const [coverageBFeePercent, setCoverageBFeePercent] = useState('10');
-  const [coverageCFeePercent, setCoverageCFeePercent] = useState('10');
-  const [coverageDFeePercent, setCoverageDFeePercent] = useState('10');
-  const [priorCCSFeePercent, setPriorCCSFeePercent] = useState('10');
-
-  const [openSections, setOpenSections] = useState({
-    coverages: false,
-    coverageASubLimits: false,
-    optionalDeductions: true,
-    priorPayments: true,
-    paymentsWithoutFees: true,
-    repairsByInsured: true,
-    repairsByContractor: true,
-    ccsFees: false
-  });
-
-  const [checkedItems, setCheckedItems] = useState({
-    // Coverage A sub-limits
-    screenEnclosureSubLimit: false,
-    moldSubLimit: false,
-    waterMitigationSubLimit: false,
-    matchingSubLimit: false,
-    ordinanceLawSubLimit: false,
-    // Existing checkboxes (removed coverage fee checkboxes)
-    recoverableDepreciation: false,
-    nonRecoverableDepreciation: false,
-    paidWhenIncurred: false,
-    ordinanceLaw: false,
-    priorPayments: false,
-    priorCCSFees: false,
-    priorToCCS: false,
-    legalFees: false,
-    paidIncurred: false,
-    optionalPayment: false,
-    interiorRepairs: false,
-    exteriorRepairs: false,
-    fences: false,
-    screenEnclosure: false,
-    optionalRepair: false,
-    roof: false,
-    additionalRoof: false,
-    gutters: false,
-    solar: false,
-    soffit: false,
-    fascia: false
-  });
-
-  const toggleSection = (section: string) => {
-    setOpenSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
+  // All calculation functions
+  const calculateTotalRCV = () => {
+    const roof = parseFloat(roofRCV) || 0;
+    const exterior = parseFloat(exteriorRCV) || 0;
+    const interior = parseFloat(interiorRCV) || 0;
+    const contents = parseFloat(contentsRCV) || 0;
+    const lossUse = parseFloat(lossOfUseRCV) || 0;
+    return roof + exterior + interior + contents + lossUse;
   };
 
-  const handleCheckboxChange = (item: string, checked: boolean) => {
-    setCheckedItems(prev => ({
-      ...prev,
-      [item]: checked
-    }));
+  const calculateTotalACV = () => {
+    const roof = parseFloat(roofACV) || 0;
+    const exterior = parseFloat(exteriorACV) || 0;
+    const interior = parseFloat(interiorACV) || 0;
+    const contents = parseFloat(contentsACV) || 0;
+    const lossUse = parseFloat(lossOfUseACV) || 0;
+    return roof + exterior + interior + contents + lossUse;
   };
 
-  // Function to calculate overage amount
-  const calculateOverage = (coverage: string, policyLimit: string) => {
-    const coverageAmount = parseFloat(coverage) || 0;
-    const limitAmount = parseFloat(policyLimit) || 0;
-    return limitAmount > 0 && coverageAmount > limitAmount ? coverageAmount - limitAmount : 0;
+  const calculateBalance = () => {
+    return calculateTotalRCV() - calculateTotalACV();
   };
 
-  const calculateTotalCoverage = () => {
-    const a = parseFloat(coverageA) || 0;
-    const b = parseFloat(coverageB) || 0;
-    const c = parseFloat(coverageC) || 0;
-    const d = parseFloat(coverageD) || 0;
-    return a + b + c + d;
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
   };
-
-  const calculateTotalDeductions = () => {
-    let deductions = 0;
-    
-    if (checkedItems.recoverableDepreciation) {
-      deductions += parseFloat(recoverableDepreciationAmount) || 0;
-    }
-    if (checkedItems.nonRecoverableDepreciation) {
-      deductions += parseFloat(nonRecoverableDepreciationAmount) || 0;
-    }
-    if (checkedItems.paidWhenIncurred) {
-      deductions += parseFloat(paidWhenIncurredAmount) || 0;
-    }
-    if (checkedItems.ordinanceLaw) {
-      deductions += parseFloat(ordinanceLawAmount) || 0;
-    }
-    
-    return deductions;
-  };
-
-  const calculatePriorPayments = () => {
-    let payments = 0;
-    
-    if (checkedItems.priorPayments) {
-      payments += parseFloat(priorPaymentsAmount) || 0;
-    }
-    if (checkedItems.priorCCSFees) {
-      payments += parseFloat(priorCCSFeesAmount) || 0;
-    }
-    
-    return payments;
-  };
-
-  const calculatePaymentsWithoutFees = () => {
-    let payments = 0;
-    
-    if (checkedItems.priorToCCS) {
-      payments += parseFloat(priorToCCSAmount) || 0;
-    }
-    if (checkedItems.legalFees) {
-      payments += parseFloat(legalFeesAmount) || 0;
-    }
-    if (checkedItems.paidIncurred) {
-      payments += parseFloat(paidIncurredAmount) || 0;
-    }
-    if (checkedItems.optionalPayment) {
-      payments += parseFloat(optionalPaymentAmount) || 0;
-    }
-    
-    return payments;
-  };
-  
-  // Calculate PA fees based on the balance after deductible, not the full coverage amounts
-  const calculatePAFees = (balance: number) => {
-    const a = parseFloat(coverageA) || 0;
-    const b = parseFloat(coverageB) || 0;
-    const c = parseFloat(coverageC) || 0;
-    const d = parseFloat(coverageD) || 0;
-    const totalCoverage = a + b + c + d;
-    
-    if (totalCoverage === 0) return 0;
-    
-    // Calculate proportional amounts based on balance
-    const aBalance = (a / totalCoverage) * balance;
-    const bBalance = (b / totalCoverage) * balance;
-    const cBalance = (c / totalCoverage) * balance;
-    const dBalance = (d / totalCoverage) * balance;
-    
-    const aFee = aBalance * ((parseFloat(coverageAFeePercent) || 0) / 100);
-    const bFee = bBalance * ((parseFloat(coverageBFeePercent) || 0) / 100);
-    const cFee = cBalance * ((parseFloat(coverageCFeePercent) || 0) / 100);
-    const dFee = dBalance * ((parseFloat(coverageDFeePercent) || 0) / 100);
-    
-    return aFee + bFee + cFee + dFee;
-  };
-
-  // Calculate cost per unit functions
-  const calculateCostPerSquare = (totalCost: string, squares: string) => {
-    const cost = parseFloat(totalCost) || 0;
-    const sq = parseFloat(squares) || 0;
-    return sq > 0 ? (cost / sq).toFixed(2) : '0.00';
-  };
-
-  const calculateCostPerLinearFoot = (totalCost: string, linearFeet: string) => {
-    const cost = parseFloat(totalCost) || 0;
-    const feet = parseFloat(linearFeet) || 0;
-    return feet > 0 ? (cost / feet).toFixed(2) : '0.00';
-  };
-
-  const calculateCostPerPanel = (totalCost: string, panels: string) => {
-    const cost = parseFloat(totalCost) || 0;
-    const panelCount = parseFloat(panels) || 0;
-    return panelCount > 0 ? (cost / panelCount).toFixed(2) : '0.00';
-  };
-
-  const totalCoverage = calculateTotalCoverage();
-  const totalDeductions = calculateTotalDeductions();
-  const totalPriorPayments = calculatePriorPayments();
-  const totalPaymentsWithoutFees = calculatePaymentsWithoutFees();
-  
-  // Calculate balance: Total Coverage - Deductions - Prior Payments - Payments without fees - Deductible
-  const balanceAfterDeductible = totalCoverage - totalDeductions - totalPriorPayments - totalPaymentsWithoutFees - (parseFloat(deductible) || 0);
-  
-  // Calculate PA fees using the balance
-  const paFees = calculatePAFees(balanceAfterDeductible);
-  
-  // Final balance after PA fees
-  const finalBalance = balanceAfterDeductible - paFees;
-
-  // Balance plus deductible for repairs
-  const balancePlusDeductible = finalBalance + (parseFloat(deductible) || 0);
-
-  // Auto-calculate Prior CCS Fees when Prior Payments amount or percentage changes
-  useEffect(() => {
-    if (checkedItems.priorCCSFees && priorPaymentsAmount) {
-      const priorPayment = parseFloat(priorPaymentsAmount) || 0;
-      const feePercent = parseFloat(priorCCSFeePercent) || 0;
-      const calculatedFee = (priorPayment * feePercent / 100).toFixed(2);
-      setPriorCCSFeesAmount(calculatedFee);
-    }
-  }, [priorPaymentsAmount, priorCCSFeePercent, checkedItems.priorCCSFees]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-center mb-8">Insurance Claim Report</h1>
+        
+        {/* Claim Information section */}
         <Card className="mb-6">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-              <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
-                <span className="text-white text-xs">📋</span>
-              </div>
-              CCS Claim Breakdown Tool
-            </CardTitle>
+          <CardHeader>
+            <CardTitle>Claim Information</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Total Coverage Amount - Sum of A+B+C+D only */}
-            <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
-              <Label htmlFor="total-coverage" className="text-sm font-medium">
-                Total Coverage
-              </Label>
-              <div className="flex items-center gap-2">
-                <span className="text-lg">$</span>
-                <span className="text-lg font-semibold min-w-24 text-right">
-                  {totalCoverage.toFixed(2)}
-                </span>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="claimNumber">Claim Number</Label>
+                <Input
+                  id="claimNumber"
+                  value={claimNumber}
+                  onChange={(e) => setClaimNumber(e.target.value)}
+                />
               </div>
-            </div>
-
-            {/* Coverages A through D - restructured with two columns and policy limits */}
-            <Collapsible 
-              open={openSections.coverages} 
-              onOpenChange={() => toggleSection('coverages')}
-            >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.coverages && "rotate-180")} />
-                <span className="font-medium">Coverages A through D</span>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Left Column - Coverage A with Sub-limits */}
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="coverage-a" className="text-sm font-medium w-20">
-                          Coverage A
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            id="coverage-a"
-                            type="text"
-                            placeholder="0.00"
-                            value={coverageA}
-                            onChange={(e) => setCoverageA(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-gray-600">
-                          Policy Limit
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="0.00"
-                            value={policyLimitA}
-                            onChange={(e) => setPolicyLimitA(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      {calculateOverage(coverageA, policyLimitA) > 0 && (
-                        <div className="ml-20 text-red-600 text-sm font-medium">
-                          Over Limit: ${calculateOverage(coverageA, policyLimitA).toFixed(2)}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Collapsible Sub-limits for Coverage A */}
-                    <div className="ml-4">
-                      <Collapsible 
-                        open={openSections.coverageASubLimits} 
-                        onOpenChange={() => toggleSection('coverageASubLimits')}
-                      >
-                        <CollapsibleTrigger className="flex items-center gap-2 w-full p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border-l-2 border-gray-200">
-                          <ChevronDown className={cn("h-3 w-3 transition-transform", openSections.coverageASubLimits && "rotate-180")} />
-                          <span className="text-sm font-medium text-gray-600">Coverage A Sub-limits</span>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="pl-4 space-y-3 mt-3 border-l-2 border-gray-200">
-                          {/* Screen Enclosure Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="screen-enclosure-sub-limit"
-                                checked={checkedItems.screenEnclosureSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('screenEnclosureSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={screenEnclosureSubLimitDescription}
-                                onChange={(e) => setScreenEnclosureSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.screenEnclosureSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={screenEnclosureSubLimit}
-                                    onChange={(e) => setScreenEnclosureSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={screenEnclosureSubLimitPolicy}
-                                    onChange={(e) => setScreenEnclosureSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy).toFixed(2)}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Mold Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="mold-sub-limit"
-                                checked={checkedItems.moldSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('moldSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={moldSubLimitDescription}
-                                onChange={(e) => setMoldSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.moldSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={moldSubLimit}
-                                    onChange={(e) => setMoldSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={moldSubLimitPolicy}
-                                    onChange={(e) => setMoldSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(moldSubLimit, moldSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(moldSubLimit, moldSubLimitPolicy).toFixed(2)}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Water Mitigation Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="water-mitigation-sub-limit"
-                                checked={checkedItems.waterMitigationSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('waterMitigationSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={waterMitigationSubLimitDescription}
-                                onChange={(e) => setWaterMitigationSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.waterMitigationSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={waterMitigationSubLimit}
-                                    onChange={(e) => setWaterMitigationSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={waterMitigationSubLimitPolicy}
-                                    onChange={(e) => setWaterMitigationSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy).toFixed(2)}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Matching Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="matching-sub-limit"
-                                checked={checkedItems.matchingSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('matchingSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={matchingSubLimitDescription}
-                                onChange={(e) => setMatchingSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.matchingSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={matchingSubLimit}
-                                    onChange={(e) => setMatchingSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={matchingSubLimitPolicy}
-                                    onChange={(e) => setMatchingSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(matchingSubLimit, matchingSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(matchingSubLimit, matchingSubLimitPolicy).toFixed(2)}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Ordinance & Law Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="ordinance-law-sub-limit"
-                                checked={checkedItems.ordinanceLawSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('ordinanceLawSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={ordinanceLawSubLimitDescription}
-                                onChange={(e) => setOrdinanceLawSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.ordinanceLawSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={ordinanceLawSubLimit}
-                                    onChange={(e) => setOrdinanceLawSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={ordinanceLawSubLimitPolicy}
-                                    onChange={(e) => setOrdinanceLawSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy).toFixed(2)}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    </div>
-                  </div>
-
-                  {/* Right Column - Coverages B, C, and D */}
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="coverage-b" className="text-sm font-medium w-20">
-                          Coverage B
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            id="coverage-b"
-                            type="text"
-                            placeholder="0.00"
-                            value={coverageB}
-                            onChange={(e) => setCoverageB(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-gray-600">
-                          Policy Limit
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="0.00"
-                            value={policyLimitB}
-                            onChange={(e) => setPolicyLimitB(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      {calculateOverage(coverageB, policyLimitB) > 0 && (
-                        <div className="ml-20 text-red-600 text-sm font-medium">
-                          Over Limit: ${calculateOverage(coverageB, policyLimitB).toFixed(2)}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="coverage-c" className="text-sm font-medium w-20">
-                          Coverage C
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            id="coverage-c"
-                            type="text"
-                            placeholder="0.00"
-                            value={coverageC}
-                            onChange={(e) => setCoverageC(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-gray-600">
-                          Policy Limit
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="0.00"
-                            value={policyLimitC}
-                            onChange={(e) => setPolicyLimitC(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      {calculateOverage(coverageC, policyLimitC) > 0 && (
-                        <div className="ml-20 text-red-600 text-sm font-medium">
-                          Over Limit: ${calculateOverage(coverageC, policyLimitC).toFixed(2)}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="coverage-d" className="text-sm font-medium w-20">
-                          Coverage D
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            id="coverage-d"
-                            type="text"
-                            placeholder="0.00"
-                            value={coverageD}
-                            onChange={(e) => setCoverageD(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-gray-600">
-                          Policy Limit
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="0.00"
-                            value={policyLimitD}
-                            onChange={(e) => setPolicyLimitD(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      {calculateOverage(coverageD, policyLimitD) > 0 && (
-                        <div className="ml-20 text-red-600 text-sm font-medium">
-                          Over Limit: ${calculateOverage(coverageD, policyLimitD).toFixed(2)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Optional Deductions */}
-            <Collapsible 
-              open={openSections.optionalDeductions} 
-              onOpenChange={() => toggleSection('optionalDeductions')}
-            >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.optionalDeductions && "rotate-180")} />
-                <span className="font-medium">Optional Deductions</span>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="recoverable-depreciation"
-                      checked={checkedItems.recoverableDepreciation}
-                      onCheckedChange={(checked) => handleCheckboxChange('recoverableDepreciation', checked as boolean)}
-                    />
-                    <Label htmlFor="recoverable-depreciation" className="text-sm">
-                      Recoverable Depreciation
-                    </Label>
-                  </div>
-                  {checkedItems.recoverableDepreciation && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={recoverableDepreciationAmount}
-                        onChange={(e) => setRecoverableDepreciationAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="non-recoverable-depreciation"
-                      checked={checkedItems.nonRecoverableDepreciation}
-                      onCheckedChange={(checked) => handleCheckboxChange('nonRecoverableDepreciation', checked as boolean)}
-                    />
-                    <Label htmlFor="non-recoverable-depreciation" className="text-sm">
-                      Non-Recoverable Depreciation
-                    </Label>
-                  </div>
-                  {checkedItems.nonRecoverableDepreciation && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={nonRecoverableDepreciationAmount}
-                        onChange={(e) => setNonRecoverableDepreciationAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="paid-when-incurred"
-                      checked={checkedItems.paidWhenIncurred}
-                      onCheckedChange={(checked) => handleCheckboxChange('paidWhenIncurred', checked as boolean)}
-                    />
-                    <Label htmlFor="paid-when-incurred" className="text-sm">
-                      Paid When Incurred
-                    </Label>
-                  </div>
-                  {checkedItems.paidWhenIncurred && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={paidWhenIncurredAmount}
-                        onChange={(e) => setPaidWhenIncurredAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="ordinance-law"
-                      checked={checkedItems.ordinanceLaw}
-                      onCheckedChange={(checked) => handleCheckboxChange('ordinanceLaw', checked as boolean)}
-                    />
-                    <Label htmlFor="ordinance-law" className="text-sm">
-                      Ordinance & Law
-                    </Label>
-                  </div>
-                  {checkedItems.ordinanceLaw && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={ordinanceLawAmount}
-                        onChange={(e) => setOrdinanceLawAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Prior Payments with CCS Fees */}
-            <Collapsible 
-              open={openSections.priorPayments} 
-              onOpenChange={() => toggleSection('priorPayments')}
-            >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.priorPayments && "rotate-180")} />
-                <span className="font-medium">Prior Payments</span>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="prior-payments"
-                      checked={checkedItems.priorPayments}
-                      onCheckedChange={(checked) => handleCheckboxChange('priorPayments', checked as boolean)}
-                    />
-                    <Label htmlFor="prior-payments" className="text-sm">
-                      Prior Payments
-                    </Label>
-                  </div>
-                  {checkedItems.priorPayments && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={priorPaymentsAmount}
-                        onChange={(e) => setPriorPaymentsAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="prior-ccs-fees"
-                      checked={checkedItems.priorCCSFees}
-                      onCheckedChange={(checked) => handleCheckboxChange('priorCCSFees', checked as boolean)}
-                    />
-                    <Label htmlFor="prior-ccs-fees" className="text-sm">
-                      Prior CCS Fees
-                    </Label>
-                    <Input
-                      type="text"
-                      value={priorCCSFeePercent}
-                      onChange={(e) => setPriorCCSFeePercent(e.target.value)}
-                      className="w-16 text-center"
-                    />
-                    <span className="text-sm">%</span>
-                  </div>
-                  {checkedItems.priorCCSFees && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="0.00"
-                        value={priorCCSFeesAmount}
-                        onChange={(e) => setPriorCCSFeesAmount(e.target.value)}
-                        className="flex-1"
-                        readOnly
-                      />
-                    </div>
-                  )}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Payments to CCS without Fees */}
-            <Collapsible 
-              open={openSections.paymentsWithoutFees} 
-              onOpenChange={() => toggleSection('paymentsWithoutFees')}
-            >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.paymentsWithoutFees && "rotate-180")} />
-                <span className="font-medium">Payments to CCS without Fees</span>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="prior-to-ccs"
-                      checked={checkedItems.priorToCCS}
-                      onCheckedChange={(checked) => handleCheckboxChange('priorToCCS', checked as boolean)}
-                    />
-                    <Label htmlFor="prior-to-ccs" className="text-sm">
-                      Prior to CCS (No Fees)
-                    </Label>
-                  </div>
-                  {checkedItems.priorToCCS && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={priorToCCSAmount}
-                        onChange={(e) => setPriorToCCSAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="legal-fees"
-                      checked={checkedItems.legalFees}
-                      onCheckedChange={(checked) => handleCheckboxChange('legalFees', checked as boolean)}
-                    />
-                    <Label htmlFor="legal-fees" className="text-sm">
-                      Legal Fees
-                    </Label>
-                  </div>
-                  {checkedItems.legalFees && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={legalFeesAmount}
-                        onChange={(e) => setLegalFeesAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="paid-incurred"
-                      checked={checkedItems.paidIncurred}
-                      onCheckedChange={(checked) => handleCheckboxChange('paidIncurred', checked as boolean)}
-                    />
-                    <Label htmlFor="paid-incurred" className="text-sm">
-                      Paid/Incurred
-                    </Label>
-                  </div>
-                  {checkedItems.paidIncurred && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={paidIncurredAmount}
-                        onChange={(e) => setPaidIncurredAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="optional-payment"
-                      checked={checkedItems.optionalPayment}
-                      onCheckedChange={(checked) => handleCheckboxChange('optionalPayment', checked as boolean)}
-                    />
-                    <Input
-                      type="text"
-                      value={optionalPaymentDescription}
-                      onChange={(e) => setOptionalPaymentDescription(e.target.value)}
-                      className="text-sm flex-1"
-                      placeholder="Optional Payment"
-                    />
-                  </div>
-                  {checkedItems.optionalPayment && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={optionalPaymentAmount}
-                        onChange={(e) => setOptionalPaymentAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Deductible */}
-            <div className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg">
-              <Label htmlFor="deductible" className="text-sm font-medium w-20">
-                Deductible
-              </Label>
-              <div className="flex items-center gap-2 flex-1">
-                <span className="text-lg">$</span>
+              <div>
+                <Label htmlFor="dateOfLoss">Date of Loss</Label>
+                <Input
+                  id="dateOfLoss"
+                  type="date"
+                  value={dateOfLoss}
+                  onChange={(e) => setDateOfLoss(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="insured">Insured</Label>
+                <Input
+                  id="insured"
+                  value={insured}
+                  onChange={(e) => setInsured(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="propertyAddress">Property Address</Label>
+                <Input
+                  id="propertyAddress"
+                  value={propertyAddress}
+                  onChange={(e) => setPropertyAddress(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="adjuster">Adjuster</Label>
+                <Input
+                  id="adjuster"
+                  value={adjuster}
+                  onChange={(e) => setAdjuster(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="carrierClaimNumber">Carrier Claim Number</Label>
+                <Input
+                  id="carrierClaimNumber"
+                  value={carrierClaimNumber}
+                  onChange={(e) => setCarrierClaimNumber(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="policyNumber">Policy Number</Label>
+                <Input
+                  id="policyNumber"
+                  value={policyNumber}
+                  onChange={(e) => setPolicyNumber(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="deductible">Deductible</Label>
                 <Input
                   id="deductible"
-                  type="text"
-                  placeholder="Enter deductible amount"
+                  type="number"
                   value={deductible}
                   onChange={(e) => setDeductible(e.target.value)}
-                  className="flex-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="limit">Policy Limit</Label>
+                <Input
+                  id="limit"
+                  type="number"
+                  value={limit}
+                  onChange={(e) => setLimit(e.target.value)}
                 />
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Balance after Deductible */}
-            <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
-              <span className="font-medium">Balance</span>
-              <span className="text-lg font-semibold">$ {balanceAfterDeductible.toFixed(2)}</span>
+        {/* Coverage Limits section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Coverage Limits</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="dwelling">Dwelling</Label>
+                <Input
+                  id="dwelling"
+                  type="number"
+                  value={dwelling}
+                  onChange={(e) => setDwelling(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="detachedStructures">Detached Structures</Label>
+                <Input
+                  id="detachedStructures"
+                  type="number"
+                  value={detachedStructures}
+                  onChange={(e) => setDetachedStructures(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="personalProperty">Personal Property</Label>
+                <Input
+                  id="personalProperty"
+                  type="number"
+                  value={personalProperty}
+                  onChange={(e) => setPersonalProperty(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="lossOfUse">Loss of Use</Label>
+                <Input
+                  id="lossOfUse"
+                  type="number"
+                  value={lossOfUse}
+                  onChange={(e) => setLossOfUse(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="personalLiability">Personal Liability</Label>
+                <Input
+                  id="personalLiability"
+                  type="number"
+                  value={personalLiability}
+                  onChange={(e) => setPersonalLiability(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="medicalPayments">Medical Payments</Label>
+                <Input
+                  id="medicalPayments"
+                  type="number"
+                  value={medicalPayments}
+                  onChange={(e) => setMedicalPayments(e.target.value)}
+                />
+              </div>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* CCS Fees - now expandable with individual coverage fee inputs in 2x2 grid */}
-            <Collapsible 
-              open={openSections.ccsFees} 
-              onOpenChange={() => toggleSection('ccsFees')}
-            >
-              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                <div className="flex items-center gap-2">
-                  <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.ccsFees && "rotate-180")} />
-                  <span className="font-medium">CCS Fees</span>
-                </div>
-                <span className="text-lg font-semibold">$ {paFees.toFixed(2)}</span>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-a-fees" className="text-sm font-medium w-20">
-                      Coverage A Fees
-                    </Label>
-                    <Input
-                      type="text"
-                      value={coverageAFeePercent}
-                      onChange={(e) => setCoverageAFeePercent(e.target.value)}
-                      className="w-16 text-center"
-                    />
-                    <span className="text-sm">%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-c-fees" className="text-sm font-medium w-20">
-                      Coverage C Fees
-                    </Label>
-                    <Input
-                      type="text"
-                      value={coverageCFeePercent}
-                      onChange={(e) => setCoverageCFeePercent(e.target.value)}
-                      className="w-16 text-center"
-                    />
-                    <span className="text-sm">%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-b-fees" className="text-sm font-medium w-20">
-                      Coverage B Fees
-                    </Label>
-                    <Input
-                      type="text"
-                      value={coverageBFeePercent}
-                      onChange={(e) => setCoverageBFeePercent(e.target.value)}
-                      className="w-16 text-center"
-                    />
-                    <span className="text-sm">%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-d-fees" className="text-sm font-medium w-20">
-                      Coverage D Fees
-                    </Label>
-                    <Input
-                      type="text"
-                      value={coverageDFeePercent}
-                      onChange={(e) => setCoverageDFeePercent(e.target.value)}
-                      className="w-16 text-center"
-                    />
-                    <span className="text-sm">%</span>
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Balance after PA Fees */}
-            <div className="flex items-center justify-between bg-green-100 p-3 rounded-lg">
-              <span className="font-medium">Balance after PA Fees</span>
-              <span className="text-lg font-semibold text-green-700">$ {finalBalance.toFixed(2)}</span>
+        {/* Sub-limits section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Sub-limits</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="jewelry">Jewelry</Label>
+                <Input
+                  id="jewelry"
+                  type="number"
+                  value={jewelry}
+                  onChange={(e) => setJewelry(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="firearms">Firearms</Label>
+                <Input
+                  id="firearms"
+                  type="number"
+                  value={firearms}
+                  onChange={(e) => setFirearms(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="silverware">Silverware</Label>
+                <Input
+                  id="silverware"
+                  type="number"
+                  value={silverware}
+                  onChange={(e) => setSilverware(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="golfers">Golfer's Equipment</Label>
+                <Input
+                  id="golfers"
+                  type="number"
+                  value={golfers}
+                  onChange={(e) => setGolfers(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="furs">Furs</Label>
+                <Input
+                  id="furs"
+                  type="number"
+                  value={furs}
+                  onChange={(e) => setFurs(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="electronics">Electronics</Label>
+                <Input
+                  id="electronics"
+                  type="number"
+                  value={electronics}
+                  onChange={(e) => setElectronics(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="bicycles">Bicycles</Label>
+                <Input
+                  id="bicycles"
+                  type="number"
+                  value={bicycles}
+                  onChange={(e) => setBicycles(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="cameras">Cameras</Label>
+                <Input
+                  id="cameras"
+                  type="number"
+                  value={cameras}
+                  onChange={(e) => setCameras(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="musical">Musical Instruments</Label>
+                <Input
+                  id="musical"
+                  type="number"
+                  value={musical}
+                  onChange={(e) => setMusical(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="stamps">Stamps</Label>
+                <Input
+                  id="stamps"
+                  type="number"
+                  value={stamps}
+                  onChange={(e) => setStamps(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="coins">Coins</Label>
+                <Input
+                  id="coins"
+                  type="number"
+                  value={coins}
+                  onChange={(e) => setCoins(e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="fine">Fine Arts</Label>
+                <Input
+                  id="fine"
+                  type="number"
+                  value={fine}
+                  onChange={(e) => setFine(e.target.value)}
+                />
+              </div>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Balance + Deductible */}
-            <div className="flex items-center justify-between bg-green-100 p-3 rounded-lg">
-              <span className="font-medium">Balance + Deductible</span>
-              <span className="text-lg font-semibold text-green-700">$ {balancePlusDeductible.toFixed(2)}</span>
+        {/* Damage Estimate section with RCV/ACV table */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Damage Estimate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 p-2 text-left">Item</th>
+                    <th className="border border-gray-300 p-2 text-center">RCV</th>
+                    <th className="border border-gray-300 p-2 text-center">ACV</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-medium">Roof</td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={roofRCV}
+                        onChange={(e) => setRoofRCV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={roofACV}
+                        onChange={(e) => setRoofACV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-medium">Exterior</td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={exteriorRCV}
+                        onChange={(e) => setExteriorRCV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={exteriorACV}
+                        onChange={(e) => setExteriorACV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-medium">Interior</td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={interiorRCV}
+                        onChange={(e) => setInteriorRCV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={interiorACV}
+                        onChange={(e) => setInteriorACV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-medium">Contents</td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={contentsRCV}
+                        onChange={(e) => setContentsRCV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={contentsACV}
+                        onChange={(e) => setContentsACV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-2 font-medium">Loss of Use</td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={lossOfUseRCV}
+                        onChange={(e) => setLossOfUseRCV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      <Input
+                        type="number"
+                        value={lossOfUseACV}
+                        onChange={(e) => setLossOfUseACV(e.target.value)}
+                        className="w-full"
+                      />
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-50 font-bold">
+                    <td className="border border-gray-300 p-2">Total</td>
+                    <td className="border border-gray-300 p-2 text-center">
+                      {formatCurrency(calculateTotalRCV())}
+                    </td>
+                    <td className="border border-gray-300 p-2 text-center">
+                      {formatCurrency(calculateTotalACV())}
+                    </td>
+                  </tr>
+                  <tr className="bg-blue-50 font-bold">
+                    <td className="border border-gray-300 p-2">Balance</td>
+                    <td className="border border-gray-300 p-2 text-center" colSpan={2}>
+                      {formatCurrency(calculateBalance())}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+          </CardContent>
+        </Card>
 
-            {/* Repairs by the Insured */}
-            <Collapsible 
-              open={openSections.repairsByInsured} 
-              onOpenChange={() => toggleSection('repairsByInsured')}
-            >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.repairsByInsured && "rotate-180")} />
-                <span className="font-medium">Repairs by the Insured</span>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-3">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="interior-repairs"
-                      checked={checkedItems.interiorRepairs}
-                      onCheckedChange={(checked) => handleCheckboxChange('interiorRepairs', checked as boolean)}
-                    />
-                    <Label htmlFor="interior-repairs" className="text-sm">
-                      Interior Repairs
-                    </Label>
-                  </div>
-                  {checkedItems.interiorRepairs && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
+        {/* Repair Sections */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Repair Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="insured" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="insured">Repair by Insured</TabsTrigger>
+                <TabsTrigger value="contractor">Repair by Contractor</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="insured" className="mt-4">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="repairItem1">Repair Item 1</Label>
                       <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={interiorRepairsAmount}
-                        onChange={(e) => setInteriorRepairsAmount(e.target.value)}
-                        className="flex-1"
+                        id="repairItem1"
+                        value={repairItem1}
+                        onChange={(e) => setRepairItem1(e.target.value)}
+                        placeholder="Enter repair item"
                       />
                     </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="exterior-repairs"
-                      checked={checkedItems.exteriorRepairs}
-                      onCheckedChange={(checked) => handleCheckboxChange('exteriorRepairs', checked as boolean)}
-                    />
-                    <Label htmlFor="exterior-repairs" className="text-sm">
-                      Exterior Repairs
-                    </Label>
-                  </div>
-                  {checkedItems.exteriorRepairs && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
+                    <div>
+                      <Label htmlFor="repairCost1">Cost</Label>
                       <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={exteriorRepairsAmount}
-                        onChange={(e) => setExteriorRepairsAmount(e.target.value)}
-                        className="flex-1"
+                        id="repairCost1"
+                        type="number"
+                        value={repairCost1}
+                        onChange={(e) => setRepairCost1(e.target.value)}
+                        placeholder="Enter cost"
                       />
                     </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="fences"
-                      checked={checkedItems.fences}
-                      onCheckedChange={(checked) => handleCheckboxChange('fences', checked as boolean)}
-                    />
-                    <Label htmlFor="fences" className="text-sm">
-                      Fences
-                    </Label>
                   </div>
-                  {checkedItems.fences && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="repairItem2">Repair Item 2</Label>
                       <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={fencesAmount}
-                        onChange={(e) => setFencesAmount(e.target.value)}
-                        className="flex-1"
+                        id="repairItem2"
+                        value={repairItem2}
+                        onChange={(e) => setRepairItem2(e.target.value)}
+                        placeholder="Enter repair item"
                       />
                     </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="screen-enclosure"
-                      checked={checkedItems.screenEnclosure}
-                      onCheckedChange={(checked) => handleCheckboxChange('screenEnclosure', checked as boolean)}
-                    />
-                    <Label htmlFor="screen-enclosure" className="text-sm">
-                      Screen Enclosure
-                    </Label>
-                  </div>
-                  {checkedItems.screenEnclosure && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
+                    <div>
+                      <Label htmlFor="repairCost2">Cost</Label>
                       <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={screenEnclosureAmount}
-                        onChange={(e) => setScreenEnclosureAmount(e.target.value)}
-                        className="flex-1"
+                        id="repairCost2"
+                        type="number"
+                        value={repairCost2}
+                        onChange={(e) => setRepairCost2(e.target.value)}
+                        placeholder="Enter cost"
                       />
                     </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="optional-repair"
-                      checked={checkedItems.optionalRepair}
-                      onCheckedChange={(checked) => handleCheckboxChange('optionalRepair', checked as boolean)}
-                    />
-                    <Input
-                      type="text"
-                      value={optionalRepairDescription}
-                      onChange={(e) => setOptionalRepairDescription(e.target.value)}
-                      className="text-sm flex-1"
-                      placeholder="Optional Repair"
-                    />
                   </div>
-                  {checkedItems.optionalRepair && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="repairItem3">Repair Item 3</Label>
                       <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={optionalRepairAmount}
-                        onChange={(e) => setOptionalRepairAmount(e.target.value)}
-                        className="flex-1"
+                        id="repairItem3"
+                        value={repairItem3}
+                        onChange={(e) => setRepairItem3(e.target.value)}
+                        placeholder="Enter repair item"
                       />
                     </div>
-                  )}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Repairs by Contractor */}
-            <Collapsible 
-              open={openSections.repairsByContractor} 
-              onOpenChange={() => toggleSection('repairsByContractor')}
-            >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.repairsByContractor && "rotate-180")} />
-                <span className="font-medium">Repairs by Contractor</span>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-4">
-                {/* Roof */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="roof"
-                      checked={checkedItems.roof}
-                      onCheckedChange={(checked) => handleCheckboxChange('roof', checked as boolean)}
-                    />
-                    <Label htmlFor="roof" className="text-sm">
-                      Roof
-                    </Label>
-                  </div>
-                  {checkedItems.roof && (
-                    <div className="ml-6 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Squares (including recommended waste):</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter squares"
-                          value={roofSquares}
-                          onChange={(e) => setRoofSquares(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Total Cost:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter total cost"
-                          value={roofTotalCost}
-                          onChange={(e) => setRoofTotalCost(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Cost/Square:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          value={calculateCostPerSquare(roofTotalCost, roofSquares)}
-                          readOnly
-                          className="flex-1 bg-gray-100"
-                        />
-                      </div>
+                    <div>
+                      <Label htmlFor="repairCost3">Cost</Label>
+                      <Input
+                        id="repairCost3"
+                        type="number"
+                        value={repairCost3}
+                        onChange={(e) => setRepairCost3(e.target.value)}
+                        placeholder="Enter cost"
+                      />
                     </div>
-                  )}
-                </div>
-
-                {/* Additional Roof */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="additional-roof"
-                      checked={checkedItems.additionalRoof}
-                      onCheckedChange={(checked) => handleCheckboxChange('additionalRoof', checked as boolean)}
-                    />
-                    <Label htmlFor="additional-roof" className="text-sm">
-                      Additional Roof
-                    </Label>
                   </div>
-                  {checkedItems.additionalRoof && (
-                    <div className="ml-6 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Squares:</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter squares"
-                          value={additionalRoofSquares}
-                          onChange={(e) => setAdditionalRoofSquares(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Total Cost:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter total cost"
-                          value={additionalRoofTotalCost}
-                          onChange={(e) => setAdditionalRoofTotalCost(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Cost/Square:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          value={calculateCostPerSquare(additionalRoofTotalCost, additionalRoofSquares)}
-                          readOnly
-                          className="flex-1 bg-gray-100"
-                        />
-                      </div>
-                    </div>
-                  )}
                 </div>
-
-                {/* Gutters */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="gutters"
-                      checked={checkedItems.gutters}
-                      onCheckedChange={(checked) => handleCheckboxChange('gutters', checked as boolean)}
-                    />
-                    <Label htmlFor="gutters" className="text-sm">
-                      Gutters
-                    </Label>
+              </TabsContent>
+              
+              <TabsContent value="contractor" className="mt-4">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="contractorItem1">Contractor Item 1</Label>
+                      <Input
+                        id="contractorItem1"
+                        value={contractorItem1}
+                        onChange={(e) => setContractorItem1(e.target.value)}
+                        placeholder="Enter contractor item"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="contractorCost1">Cost</Label>
+                      <Input
+                        id="contractorCost1"
+                        type="number"
+                        value={contractorCost1}
+                        onChange={(e) => setContractorCost1(e.target.value)}
+                        placeholder="Enter cost"
+                      />
+                    </div>
                   </div>
-                  {checkedItems.gutters && (
-                    <div className="ml-6 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Linear Feet:</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter linear feet"
-                          value={guttersLinearFeet}
-                          onChange={(e) => setGuttersLinearFeet(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Total Cost:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter total cost"
-                          value={guttersTotalCost}
-                          onChange={(e) => setGuttersTotalCost(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Cost/Foot:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          value={calculateCostPerLinearFoot(guttersTotalCost, guttersLinearFeet)}
-                          readOnly
-                          className="flex-1 bg-gray-100"
-                        />
-                      </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="contractorItem2">Contractor Item 2</Label>
+                      <Input
+                        id="contractorItem2"
+                        value={contractorItem2}
+                        onChange={(e) => setContractorItem2(e.target.value)}
+                        placeholder="Enter contractor item"
+                      />
                     </div>
-                  )}
-                </div>
-
-                {/* Solar */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="solar"
-                      checked={checkedItems.solar}
-                      onCheckedChange={(checked) => handleCheckboxChange('solar', checked as boolean)}
-                    />
-                    <Label htmlFor="solar" className="text-sm">
-                      Solar
-                    </Label>
+                    <div>
+                      <Label htmlFor="contractorCost2">Cost</Label>
+                      <Input
+                        id="contractorCost2"
+                        type="number"
+                        value={contractorCost2}
+                        onChange={(e) => setContractorCost2(e.target.value)}
+                        placeholder="Enter cost"
+                      />
+                    </div>
                   </div>
-                  {checkedItems.solar && (
-                    <div className="ml-6 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Panels:</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter number of panels"
-                          value={solarPanels}
-                          onChange={(e) => setSolarPanels(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Total Cost:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter total cost"
-                          value={solarTotalCost}
-                          onChange={(e) => setSolarTotalCost(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Cost/Panel:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          value={calculateCostPerPanel(solarTotalCost, solarPanels)}
-                          readOnly
-                          className="flex-1 bg-gray-100"
-                        />
-                      </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="contractorItem3">Contractor Item 3</Label>
+                      <Input
+                        id="contractorItem3"
+                        value={contractorItem3}
+                        onChange={(e) => setContractorItem3(e.target.value)}
+                        placeholder="Enter contractor item"
+                      />
                     </div>
-                  )}
-                </div>
-
-                {/* Soffit */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="soffit"
-                      checked={checkedItems.soffit}
-                      onCheckedChange={(checked) => handleCheckboxChange('soffit', checked as boolean)}
-                    />
-                    <Label htmlFor="soffit" className="text-sm">
-                      Soffit
-                    </Label>
+                    <div>
+                      <Label htmlFor="contractorCost3">Cost</Label>
+                      <Input
+                        id="contractorCost3"
+                        type="number"
+                        value={contractorCost3}
+                        onChange={(e) => setContractorCost3(e.target.value)}
+                        placeholder="Enter cost"
+                      />
+                    </div>
                   </div>
-                  {checkedItems.soffit && (
-                    <div className="ml-6 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Linear Feet:</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter linear feet"
-                          value={soffitLinearFeet}
-                          onChange={(e) => setSoffitLinearFeet(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Total Cost:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter total cost"
-                          value={soffitTotalCost}
-                          onChange={(e) => setSoffitTotalCost(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Cost/Foot:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          value={calculateCostPerLinearFoot(soffitTotalCost, soffitLinearFeet)}
-                          readOnly
-                          className="flex-1 bg-gray-100"
-                        />
-                      </div>
-                    </div>
-                  )}
                 </div>
-
-                {/* Fascia */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="fascia"
-                      checked={checkedItems.fascia}
-                      onCheckedChange={(checked) => handleCheckboxChange('fascia', checked as boolean)}
-                    />
-                    <Label htmlFor="fascia" className="text-sm">
-                      Fascia
-                    </Label>
-                  </div>
-                  {checkedItems.fascia && (
-                    <div className="ml-6 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Linear Feet:</Label>
-                        <Input
-                          type="text"
-                          placeholder="Enter linear feet"
-                          value={fasciaLinearFeet}
-                          onChange={(e) => setFasciaLinearFeet(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Total Cost:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter total cost"
-                          value={fasciaTotalCost}
-                          onChange={(e) => setFasciaTotalCost(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Cost/Foot:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          value={calculateCostPerLinearFoot(fasciaTotalCost, fasciaLinearFeet)}
-                          readOnly
-                          className="flex-1 bg-gray-100"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
