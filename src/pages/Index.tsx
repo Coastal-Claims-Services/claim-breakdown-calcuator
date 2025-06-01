@@ -15,6 +15,12 @@ const Index = () => {
   const [coverageC, setCoverageC] = useState('');
   const [coverageD, setCoverageD] = useState('');
 
+  // Policy limits for each coverage
+  const [policyLimitA, setPolicyLimitA] = useState('');
+  const [policyLimitB, setPolicyLimitB] = useState('');
+  const [policyLimitC, setPolicyLimitC] = useState('');
+  const [policyLimitD, setPolicyLimitD] = useState('');
+
   // Sub-limits for Coverage A
   const [screenEnclosureSubLimit, setScreenEnclosureSubLimit] = useState('');
   const [moldSubLimit, setMoldSubLimit] = useState('');
@@ -129,6 +135,13 @@ const Index = () => {
     }));
   };
 
+  // Function to calculate overage amount
+  const calculateOverage = (coverage: string, policyLimit: string) => {
+    const coverageAmount = parseFloat(coverage) || 0;
+    const limitAmount = parseFloat(policyLimit) || 0;
+    return limitAmount > 0 && coverageAmount > limitAmount ? coverageAmount - limitAmount : 0;
+  };
+
   const calculateTotalCoverage = () => {
     const a = parseFloat(coverageA) || 0;
     const b = parseFloat(coverageB) || 0;
@@ -187,7 +200,7 @@ const Index = () => {
     
     return payments;
   };
-
+  
   // Calculate PA fees based on the balance after deductible, not the full coverage amounts
   const calculatePAFees = (balance: number) => {
     const a = parseFloat(coverageA) || 0;
@@ -284,7 +297,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Coverages A through D - restructured with two columns */}
+            {/* Coverages A through D - restructured with two columns and policy limits */}
             <Collapsible 
               open={openSections.coverages} 
               onOpenChange={() => toggleSection('coverages')}
@@ -297,21 +310,43 @@ const Index = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Left Column - Coverage A with Sub-limits */}
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="coverage-a" className="text-sm font-medium w-20">
-                        Coverage A
-                      </Label>
-                      <div className="flex items-center gap-1 flex-1">
-                        <span className="text-sm">$</span>
-                        <Input
-                          id="coverage-a"
-                          type="text"
-                          placeholder="0.00"
-                          value={coverageA}
-                          onChange={(e) => setCoverageA(e.target.value)}
-                          className="flex-1"
-                        />
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="coverage-a" className="text-sm font-medium w-20">
+                          Coverage A
+                        </Label>
+                        <div className="flex items-center gap-1 flex-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            id="coverage-a"
+                            type="text"
+                            placeholder="0.00"
+                            value={coverageA}
+                            onChange={(e) => setCoverageA(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium w-20 text-gray-600">
+                          Policy Limit
+                        </Label>
+                        <div className="flex items-center gap-1 flex-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            type="text"
+                            placeholder="0.00"
+                            value={policyLimitA}
+                            onChange={(e) => setPolicyLimitA(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      {calculateOverage(coverageA, policyLimitA) > 0 && (
+                        <div className="ml-20 text-red-600 text-sm font-medium">
+                          Over Limit: ${calculateOverage(coverageA, policyLimitA).toFixed(2)}
+                        </div>
+                      )}
                     </div>
 
                     {/* Collapsible Sub-limits for Coverage A */}
@@ -481,53 +516,121 @@ const Index = () => {
 
                   {/* Right Column - Coverages B, C, and D */}
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="coverage-b" className="text-sm font-medium w-20">
-                        Coverage B
-                      </Label>
-                      <div className="flex items-center gap-1 flex-1">
-                        <span className="text-sm">$</span>
-                        <Input
-                          id="coverage-b"
-                          type="text"
-                          placeholder="0.00"
-                          value={coverageB}
-                          onChange={(e) => setCoverageB(e.target.value)}
-                          className="flex-1"
-                        />
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="coverage-b" className="text-sm font-medium w-20">
+                          Coverage B
+                        </Label>
+                        <div className="flex items-center gap-1 flex-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            id="coverage-b"
+                            type="text"
+                            placeholder="0.00"
+                            value={coverageB}
+                            onChange={(e) => setCoverageB(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium w-20 text-gray-600">
+                          Policy Limit
+                        </Label>
+                        <div className="flex items-center gap-1 flex-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            type="text"
+                            placeholder="0.00"
+                            value={policyLimitB}
+                            onChange={(e) => setPolicyLimitB(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      {calculateOverage(coverageB, policyLimitB) > 0 && (
+                        <div className="ml-20 text-red-600 text-sm font-medium">
+                          Over Limit: ${calculateOverage(coverageB, policyLimitB).toFixed(2)}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="coverage-c" className="text-sm font-medium w-20">
-                        Coverage C
-                      </Label>
-                      <div className="flex items-center gap-1 flex-1">
-                        <span className="text-sm">$</span>
-                        <Input
-                          id="coverage-c"
-                          type="text"
-                          placeholder="0.00"
-                          value={coverageC}
-                          onChange={(e) => setCoverageC(e.target.value)}
-                          className="flex-1"
-                        />
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="coverage-c" className="text-sm font-medium w-20">
+                          Coverage C
+                        </Label>
+                        <div className="flex items-center gap-1 flex-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            id="coverage-c"
+                            type="text"
+                            placeholder="0.00"
+                            value={coverageC}
+                            onChange={(e) => setCoverageC(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium w-20 text-gray-600">
+                          Policy Limit
+                        </Label>
+                        <div className="flex items-center gap-1 flex-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            type="text"
+                            placeholder="0.00"
+                            value={policyLimitC}
+                            onChange={(e) => setPolicyLimitC(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      {calculateOverage(coverageC, policyLimitC) > 0 && (
+                        <div className="ml-20 text-red-600 text-sm font-medium">
+                          Over Limit: ${calculateOverage(coverageC, policyLimitC).toFixed(2)}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor="coverage-d" className="text-sm font-medium w-20">
-                        Coverage D
-                      </Label>
-                      <div className="flex items-center gap-1 flex-1">
-                        <span className="text-sm">$</span>
-                        <Input
-                          id="coverage-d"
-                          type="text"
-                          placeholder="0.00"
-                          value={coverageD}
-                          onChange={(e) => setCoverageD(e.target.value)}
-                          className="flex-1"
-                        />
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor="coverage-d" className="text-sm font-medium w-20">
+                          Coverage D
+                        </Label>
+                        <div className="flex items-center gap-1 flex-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            id="coverage-d"
+                            type="text"
+                            placeholder="0.00"
+                            value={coverageD}
+                            onChange={(e) => setCoverageD(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm font-medium w-20 text-gray-600">
+                          Policy Limit
+                        </Label>
+                        <div className="flex items-center gap-1 flex-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            type="text"
+                            placeholder="0.00"
+                            value={policyLimitD}
+                            onChange={(e) => setPolicyLimitD(e.target.value)}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                      {calculateOverage(coverageD, policyLimitD) > 0 && (
+                        <div className="ml-20 text-red-600 text-sm font-medium">
+                          Over Limit: ${calculateOverage(coverageD, policyLimitD).toFixed(2)}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
