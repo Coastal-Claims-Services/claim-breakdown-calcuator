@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -152,6 +153,9 @@ const Index = () => {
   const totalDeductions = calculateTotalDeductions();
   const totalPaymentsWithoutFees = calculatePaymentsWithoutFees();
   
+  // Calculate Total Coverage after deductions for display at the top
+  const totalCoverageAfterDeductions = totalCoverage - totalDeductions;
+  
   // Calculate balance: Total Coverage - Deductions - Payments without fees - Deductible
   const balanceAfterDeductible = totalCoverage - totalDeductions - totalPaymentsWithoutFees - (parseFloat(deductible) || 0);
   
@@ -184,7 +188,7 @@ const Index = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Total Coverage Amount - Single Line */}
+            {/* Total Coverage Amount - Shows coverage minus deductions */}
             <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
               <Label htmlFor="total-coverage" className="text-sm font-medium">
                 Total Coverage
@@ -192,7 +196,7 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <span className="text-lg">$</span>
                 <span className="text-lg font-semibold min-w-24 text-right">
-                  {(totalCoverage - totalDeductions - totalPaymentsWithoutFees).toFixed(2)}
+                  {totalCoverageAfterDeductions.toFixed(2)}
                 </span>
               </div>
             </div>
