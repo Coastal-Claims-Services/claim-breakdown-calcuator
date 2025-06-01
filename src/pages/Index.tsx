@@ -10,7 +10,13 @@ import { cn } from '@/lib/utils';
 const Index = () => {
   const [claimAmount, setClaimAmount] = useState('');
   const [deductible, setDeductible] = useState('');
+  const [coverageA, setCoverageA] = useState('');
+  const [coverageB, setCoverageB] = useState('');
+  const [coverageC, setCoverageC] = useState('');
+  const [coverageD, setCoverageD] = useState('');
+
   const [openSections, setOpenSections] = useState({
+    coverages: false,
     optionalDeductions: true,
     priorPayments: true,
     paymentsWithoutFees: true,
@@ -56,6 +62,16 @@ const Index = () => {
     }));
   };
 
+  const calculateTotalCoverage = () => {
+    const a = parseFloat(coverageA) || 0;
+    const b = parseFloat(coverageB) || 0;
+    const c = parseFloat(coverageC) || 0;
+    const d = parseFloat(coverageD) || 0;
+    return a + b + c + d;
+  };
+
+  const totalCoverage = calculateTotalCoverage();
+
   const balance = 0.00;
   const ccsFeesPercent = 10;
   const ccsFees = 0.00;
@@ -75,23 +91,97 @@ const Index = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Total Coverage Amount */}
-            <div className="flex items-center gap-4">
-              <Label htmlFor="coverage" className="text-sm font-medium w-20">
+            {/* Total Coverage Amount - Single Line */}
+            <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
+              <Label htmlFor="total-coverage" className="text-sm font-medium">
                 Total Coverage
               </Label>
-              <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-2">
                 <span className="text-lg">$</span>
-                <Input
-                  id="coverage"
-                  type="text"
-                  placeholder="Enter total claim amount"
-                  value={claimAmount}
-                  onChange={(e) => setClaimAmount(e.target.value)}
-                  className="flex-1"
-                />
+                <span className="text-lg font-semibold min-w-24 text-right">
+                  {totalCoverage.toFixed(2)}
+                </span>
               </div>
             </div>
+
+            {/* Coverages A through D */}
+            <Collapsible 
+              open={openSections.coverages} 
+              onOpenChange={() => toggleSection('coverages')}
+            >
+              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.coverages && "rotate-180")} />
+                <span className="font-medium">Coverages A through D</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-a" className="text-sm font-medium w-16">
+                      Coverage A
+                    </Label>
+                    <div className="flex items-center gap-1 flex-1">
+                      <span className="text-sm">$</span>
+                      <Input
+                        id="coverage-a"
+                        type="text"
+                        placeholder="0.00"
+                        value={coverageA}
+                        onChange={(e) => setCoverageA(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-b" className="text-sm font-medium w-16">
+                      Coverage B
+                    </Label>
+                    <div className="flex items-center gap-1 flex-1">
+                      <span className="text-sm">$</span>
+                      <Input
+                        id="coverage-b"
+                        type="text"
+                        placeholder="0.00"
+                        value={coverageB}
+                        onChange={(e) => setCoverageB(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-c" className="text-sm font-medium w-16">
+                      Coverage C
+                    </Label>
+                    <div className="flex items-center gap-1 flex-1">
+                      <span className="text-sm">$</span>
+                      <Input
+                        id="coverage-c"
+                        type="text"
+                        placeholder="0.00"
+                        value={coverageC}
+                        onChange={(e) => setCoverageC(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-d" className="text-sm font-medium w-16">
+                      Coverage D
+                    </Label>
+                    <div className="flex items-center gap-1 flex-1">
+                      <span className="text-sm">$</span>
+                      <Input
+                        id="coverage-d"
+                        type="text"
+                        placeholder="0.00"
+                        value={coverageD}
+                        onChange={(e) => setCoverageD(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
 
             {/* Optional Deductions */}
             <Collapsible 
