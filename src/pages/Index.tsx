@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -46,7 +45,8 @@ const Index = () => {
     priorPayments: true,
     paymentsWithoutFees: true,
     repairsByInsured: true,
-    repairsByContractor: true
+    repairsByContractor: true,
+    ccsFees: false
   });
 
   const [checkedItems, setCheckedItems] = useState({
@@ -147,17 +147,26 @@ const Index = () => {
     return payments;
   };
 
-  // Calculate PA fees directly from each coverage section
-  const calculatePAFees = () => {
+  // Calculate PA fees based on the balance after deductible, not the full coverage amounts
+  const calculatePAFees = (balance: number) => {
     const a = parseFloat(coverageA) || 0;
     const b = parseFloat(coverageB) || 0;
     const c = parseFloat(coverageC) || 0;
     const d = parseFloat(coverageD) || 0;
+    const totalCoverage = a + b + c + d;
     
-    const aFee = a * ((parseFloat(coverageAFeePercent) || 0) / 100);
-    const bFee = b * ((parseFloat(coverageBFeePercent) || 0) / 100);
-    const cFee = c * ((parseFloat(coverageCFeePercent) || 0) / 100);
-    const dFee = d * ((parseFloat(coverageDFeePercent) || 0) / 100);
+    if (totalCoverage === 0) return 0;
+    
+    // Calculate proportional amounts based on balance
+    const aBalance = (a / totalCoverage) * balance;
+    const bBalance = (b / totalCoverage) * balance;
+    const cBalance = (c / totalCoverage) * balance;
+    const dBalance = (d / totalCoverage) * balance;
+    
+    const aFee = aBalance * ((parseFloat(coverageAFeePercent) || 0) / 100);
+    const bFee = bBalance * ((parseFloat(coverageBFeePercent) || 0) / 100);
+    const cFee = cBalance * ((parseFloat(coverageCFeePercent) || 0) / 100);
+    const dFee = dBalance * ((parseFloat(coverageDFeePercent) || 0) / 100);
     
     return aFee + bFee + cFee + dFee;
   };
@@ -170,8 +179,8 @@ const Index = () => {
   // Calculate balance: Total Coverage - Deductions - Prior Payments - Payments without fees - Deductible
   const balanceAfterDeductible = totalCoverage - totalDeductions - totalPriorPayments - totalPaymentsWithoutFees - (parseFloat(deductible) || 0);
   
-  // Calculate PA fees using the correct method
-  const paFees = calculatePAFees();
+  // Calculate PA fees using the balance
+  const paFees = calculatePAFees(balanceAfterDeductible);
   
   // Final balance after PA fees
   const finalBalance = balanceAfterDeductible - paFees;
@@ -212,7 +221,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Coverages A through D */}
+            {/* Coverages A through D - removed PA fee inputs */}
             <Collapsible 
               open={openSections.coverages} 
               onOpenChange={() => toggleSection('coverages')}
@@ -238,18 +247,6 @@ const Index = () => {
                         className="flex-1"
                       />
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Label htmlFor="coverage-a-fees" className="text-sm whitespace-nowrap">
-                        PA Fees
-                      </Label>
-                      <Input
-                        type="text"
-                        value={coverageAFeePercent}
-                        onChange={(e) => setCoverageAFeePercent(e.target.value)}
-                        className="w-16 text-center"
-                      />
-                      <span className="text-sm">%</span>
-                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="coverage-b" className="text-sm font-medium w-16">
@@ -265,18 +262,6 @@ const Index = () => {
                         onChange={(e) => setCoverageB(e.target.value)}
                         className="flex-1"
                       />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Label htmlFor="coverage-b-fees" className="text-sm whitespace-nowrap">
-                        PA Fees
-                      </Label>
-                      <Input
-                        type="text"
-                        value={coverageBFeePercent}
-                        onChange={(e) => setCoverageBFeePercent(e.target.value)}
-                        className="w-16 text-center"
-                      />
-                      <span className="text-sm">%</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -294,18 +279,6 @@ const Index = () => {
                         className="flex-1"
                       />
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Label htmlFor="coverage-c-fees" className="text-sm whitespace-nowrap">
-                        PA Fees
-                      </Label>
-                      <Input
-                        type="text"
-                        value={coverageCFeePercent}
-                        onChange={(e) => setCoverageCFeePercent(e.target.value)}
-                        className="w-16 text-center"
-                      />
-                      <span className="text-sm">%</span>
-                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Label htmlFor="coverage-d" className="text-sm font-medium w-16">
@@ -321,18 +294,6 @@ const Index = () => {
                         onChange={(e) => setCoverageD(e.target.value)}
                         className="flex-1"
                       />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Label htmlFor="coverage-d-fees" className="text-sm whitespace-nowrap">
-                        PA Fees
-                      </Label>
-                      <Input
-                        type="text"
-                        value={coverageDFeePercent}
-                        onChange={(e) => setCoverageDFeePercent(e.target.value)}
-                        className="w-16 text-center"
-                      />
-                      <span className="text-sm">%</span>
                     </div>
                   </div>
                 </div>
@@ -661,13 +622,71 @@ const Index = () => {
               <span className="text-lg font-semibold">$ {balanceAfterDeductible.toFixed(2)}</span>
             </div>
 
-            {/* CCS Fees - calculated directly from coverage amounts and percentages */}
-            <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">CCS Fees</span>
-              </div>
-              <span className="text-lg font-semibold">$ {paFees.toFixed(2)}</span>
-            </div>
+            {/* CCS Fees - now expandable with individual coverage fee inputs */}
+            <Collapsible 
+              open={openSections.ccsFees} 
+              onOpenChange={() => toggleSection('ccsFees')}
+            >
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div className="flex items-center gap-2">
+                  <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.ccsFees && "rotate-180")} />
+                  <span className="font-medium">CCS Fees</span>
+                </div>
+                <span className="text-lg font-semibold">$ {paFees.toFixed(2)}</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 space-y-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-a-fees" className="text-sm font-medium w-24">
+                      Coverage A Fees
+                    </Label>
+                    <Input
+                      type="text"
+                      value={coverageAFeePercent}
+                      onChange={(e) => setCoverageAFeePercent(e.target.value)}
+                      className="w-16 text-center"
+                    />
+                    <span className="text-sm">%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-b-fees" className="text-sm font-medium w-24">
+                      Coverage B Fees
+                    </Label>
+                    <Input
+                      type="text"
+                      value={coverageBFeePercent}
+                      onChange={(e) => setCoverageBFeePercent(e.target.value)}
+                      className="w-16 text-center"
+                    />
+                    <span className="text-sm">%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-c-fees" className="text-sm font-medium w-24">
+                      Coverage C Fees
+                    </Label>
+                    <Input
+                      type="text"
+                      value={coverageCFeePercent}
+                      onChange={(e) => setCoverageCFeePercent(e.target.value)}
+                      className="w-16 text-center"
+                    />
+                    <span className="text-sm">%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-d-fees" className="text-sm font-medium w-24">
+                      Coverage D Fees
+                    </Label>
+                    <Input
+                      type="text"
+                      value={coverageDFeePercent}
+                      onChange={(e) => setCoverageDFeePercent(e.target.value)}
+                      className="w-16 text-center"
+                    />
+                    <span className="text-sm">%</span>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
 
             {/* Final Balance */}
             <div className="flex items-center justify-between bg-green-100 p-3 rounded-lg">
