@@ -673,7 +673,6 @@ const Index = () => {
             <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
               <div className="flex items-center gap-2">
                 <span className="font-medium">CCS Fees</span>
-                <span className="text-sm text-gray-600">({weightedPAFeePercent.toFixed(1)}%)</span>
               </div>
               <span className="text-lg font-semibold">$ {paFees.toFixed(2)}</span>
             </div>
