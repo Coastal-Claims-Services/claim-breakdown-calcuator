@@ -25,6 +25,13 @@ const Index = () => {
   const [priorPaymentsAmount, setPriorPaymentsAmount] = useState('');
   const [priorCCSFeesAmount, setPriorCCSFeesAmount] = useState('');
 
+  // Payments without CCS fees amounts
+  const [priorToCCSAmount, setPriorToCCSAmount] = useState('');
+  const [legalFeesAmount, setLegalFeesAmount] = useState('');
+  const [paidIncurredAmount, setPaidIncurredAmount] = useState('');
+  const [optionalPaymentAmount, setOptionalPaymentAmount] = useState('');
+  const [optionalPaymentDescription, setOptionalPaymentDescription] = useState('Optional Payment');
+
   // PA fee percentages (editable, default to 10%)
   const [coverageAFeePercent, setCoverageAFeePercent] = useState('10');
   const [coverageBFeePercent, setCoverageBFeePercent] = useState('10');
@@ -113,6 +120,25 @@ const Index = () => {
     return deductions;
   };
 
+  const calculatePaymentsWithoutFees = () => {
+    let payments = 0;
+    
+    if (checkedItems.priorToCCS) {
+      payments += parseFloat(priorToCCSAmount) || 0;
+    }
+    if (checkedItems.legalFees) {
+      payments += parseFloat(legalFeesAmount) || 0;
+    }
+    if (checkedItems.paidIncurred) {
+      payments += parseFloat(paidIncurredAmount) || 0;
+    }
+    if (checkedItems.optionalPayment) {
+      payments += parseFloat(optionalPaymentAmount) || 0;
+    }
+    
+    return payments;
+  };
+
   const calculateCoverageWithFees = () => {
     const a = parseFloat(coverageA) || 0;
     const b = parseFloat(coverageB) || 0;
@@ -132,8 +158,9 @@ const Index = () => {
 
   const totalCoverage = calculateTotalCoverage();
   const totalDeductions = calculateTotalDeductions();
-  const adjustedTotal = totalCoverage - totalDeductions;
-  const coverageWithFees = calculateCoverageWithFees() - totalDeductions;
+  const totalPaymentsWithoutFees = calculatePaymentsWithoutFees();
+  const adjustedTotal = totalCoverage - totalDeductions - totalPaymentsWithoutFees;
+  const coverageWithFees = calculateCoverageWithFees() - totalDeductions - totalPaymentsWithoutFees;
 
   const balance = coverageWithFees;
   const ccsFees = balance * ((parseFloat(ccsFeesPercent) || 0) / 100);
@@ -503,46 +530,109 @@ const Index = () => {
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.paymentsWithoutFees && "rotate-180")} />
                 <span className="font-medium">Payments to CCS without Fees</span>
               </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="prior-to-ccs"
-                    checked={checkedItems.priorToCCS}
-                    onCheckedChange={(checked) => handleCheckboxChange('priorToCCS', checked as boolean)}
-                  />
-                  <Label htmlFor="prior-to-ccs" className="text-sm">
-                    Prior to CCS
-                  </Label>
+              <CollapsibleContent className="p-4 space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="prior-to-ccs"
+                      checked={checkedItems.priorToCCS}
+                      onCheckedChange={(checked) => handleCheckboxChange('priorToCCS', checked as boolean)}
+                    />
+                    <Label htmlFor="prior-to-ccs" className="text-sm">
+                      Prior to CCS (No Fees)
+                    </Label>
+                  </div>
+                  {checkedItems.priorToCCS && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={priorToCCSAmount}
+                        onChange={(e) => setPriorToCCSAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="legal-fees"
-                    checked={checkedItems.legalFees}
-                    onCheckedChange={(checked) => handleCheckboxChange('legalFees', checked as boolean)}
-                  />
-                  <Label htmlFor="legal-fees" className="text-sm">
-                    Legal Fees
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="legal-fees"
+                      checked={checkedItems.legalFees}
+                      onCheckedChange={(checked) => handleCheckboxChange('legalFees', checked as boolean)}
+                    />
+                    <Label htmlFor="legal-fees" className="text-sm">
+                      Legal Fees
+                    </Label>
+                  </div>
+                  {checkedItems.legalFees && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={legalFeesAmount}
+                        onChange={(e) => setLegalFeesAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="paid-incurred"
-                    checked={checkedItems.paidIncurred}
-                    onCheckedChange={(checked) => handleCheckboxChange('paidIncurred', checked as boolean)}
-                  />
-                  <Label htmlFor="paid-incurred" className="text-sm">
-                    Paid/Incurred
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="paid-incurred"
+                      checked={checkedItems.paidIncurred}
+                      onCheckedChange={(checked) => handleCheckboxChange('paidIncurred', checked as boolean)}
+                    />
+                    <Label htmlFor="paid-incurred" className="text-sm">
+                      Paid/Incurred
+                    </Label>
+                  </div>
+                  {checkedItems.paidIncurred && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={paidIncurredAmount}
+                        onChange={(e) => setPaidIncurredAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="optional-payment"
-                    checked={checkedItems.optionalPayment}
-                    onCheckedChange={(checked) => handleCheckboxChange('optionalPayment', checked as boolean)}
-                  />
-                  <Label htmlFor="optional-payment" className="text-sm">
-                    Optional Payment
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="optional-payment"
+                      checked={checkedItems.optionalPayment}
+                      onCheckedChange={(checked) => handleCheckboxChange('optionalPayment', checked as boolean)}
+                    />
+                    <Input
+                      type="text"
+                      value={optionalPaymentDescription}
+                      onChange={(e) => setOptionalPaymentDescription(e.target.value)}
+                      className="text-sm flex-1"
+                      placeholder="Optional Payment"
+                    />
+                  </div>
+                  {checkedItems.optionalPayment && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={optionalPaymentAmount}
+                        onChange={(e) => setOptionalPaymentAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
               </CollapsibleContent>
             </Collapsible>
