@@ -185,6 +185,9 @@ const Index = () => {
   // Final balance after PA fees
   const finalBalance = balanceAfterDeductible - paFees;
 
+  // Balance plus deductible for repairs
+  const balancePlusDeductible = finalBalance + (parseFloat(deductible) || 0);
+
   // Auto-calculate Prior CCS Fees when Prior Payments amount or percentage changes
   useEffect(() => {
     if (checkedItems.priorCCSFees && priorPaymentsAmount) {
@@ -688,10 +691,16 @@ const Index = () => {
               </CollapsibleContent>
             </Collapsible>
 
-            {/* Final Balance */}
+            {/* Balance after PA Fees */}
             <div className="flex items-center justify-between bg-green-100 p-3 rounded-lg">
-              <span className="font-medium">Final Balance</span>
+              <span className="font-medium">Balance after PA Fees</span>
               <span className="text-lg font-semibold text-green-700">$ {finalBalance.toFixed(2)}</span>
+            </div>
+
+            {/* Balance + Deductible */}
+            <div className="flex items-center justify-between bg-green-100 p-3 rounded-lg">
+              <span className="font-medium">Balance + Deductible</span>
+              <span className="text-lg font-semibold text-green-700">$ {balancePlusDeductible.toFixed(2)}</span>
             </div>
 
             {/* Repairs by the Insured */}
