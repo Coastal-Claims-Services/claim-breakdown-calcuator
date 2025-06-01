@@ -50,12 +50,7 @@ const Index = () => {
   });
 
   const [checkedItems, setCheckedItems] = useState({
-    // Coverage fee checkboxes
-    coverageAFees: false,
-    coverageBFees: false,
-    coverageCFees: false,
-    coverageDFees: false,
-    // Existing checkboxes
+    // Existing checkboxes (removed coverage fee checkboxes)
     recoverableDepreciation: false,
     nonRecoverableDepreciation: false,
     paidWhenIncurred: false,
@@ -147,11 +142,11 @@ const Index = () => {
     
     let totalWithFees = 0;
     
-    // Add coverage amounts and apply editable fee percentage if checkbox is checked
-    totalWithFees += checkedItems.coverageAFees ? a * (1 + (parseFloat(coverageAFeePercent) || 0) / 100) : a;
-    totalWithFees += checkedItems.coverageBFees ? b * (1 + (parseFloat(coverageBFeePercent) || 0) / 100) : b;
-    totalWithFees += checkedItems.coverageCFees ? c * (1 + (parseFloat(coverageCFeePercent) || 0) / 100) : c;
-    totalWithFees += checkedItems.coverageDFees ? d * (1 + (parseFloat(coverageDFeePercent) || 0) / 100) : d;
+    // Apply editable fee percentage to all coverages
+    totalWithFees += a * (1 + (parseFloat(coverageAFeePercent) || 0) / 100);
+    totalWithFees += b * (1 + (parseFloat(coverageBFeePercent) || 0) / 100);
+    totalWithFees += c * (1 + (parseFloat(coverageCFeePercent) || 0) / 100);
+    totalWithFees += d * (1 + (parseFloat(coverageDFeePercent) || 0) / 100);
     
     return totalWithFees;
   };
@@ -230,11 +225,6 @@ const Index = () => {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="coverage-a-fees"
-                        checked={checkedItems.coverageAFees}
-                        onCheckedChange={(checked) => handleCheckboxChange('coverageAFees', checked as boolean)}
-                      />
                       <Label htmlFor="coverage-a-fees" className="text-sm whitespace-nowrap">
                         PA Fees
                       </Label>
@@ -263,11 +253,6 @@ const Index = () => {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="coverage-b-fees"
-                        checked={checkedItems.coverageBFees}
-                        onCheckedChange={(checked) => handleCheckboxChange('coverageBFees', checked as boolean)}
-                      />
                       <Label htmlFor="coverage-b-fees" className="text-sm whitespace-nowrap">
                         PA Fees
                       </Label>
@@ -296,11 +281,6 @@ const Index = () => {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="coverage-c-fees"
-                        checked={checkedItems.coverageCFees}
-                        onCheckedChange={(checked) => handleCheckboxChange('coverageCFees', checked as boolean)}
-                      />
                       <Label htmlFor="coverage-c-fees" className="text-sm whitespace-nowrap">
                         PA Fees
                       </Label>
@@ -329,11 +309,6 @@ const Index = () => {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="coverage-d-fees"
-                        checked={checkedItems.coverageDFees}
-                        onCheckedChange={(checked) => handleCheckboxChange('coverageDFees', checked as boolean)}
-                      />
                       <Label htmlFor="coverage-d-fees" className="text-sm whitespace-nowrap">
                         PA Fees
                       </Label>
