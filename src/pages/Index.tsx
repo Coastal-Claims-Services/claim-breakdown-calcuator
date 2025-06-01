@@ -15,6 +15,12 @@ const Index = () => {
   const [coverageC, setCoverageC] = useState('');
   const [coverageD, setCoverageD] = useState('');
 
+  // Optional deduction amounts
+  const [recoverableDepreciationAmount, setRecoverableDepreciationAmount] = useState('');
+  const [nonRecoverableDepreciationAmount, setNonRecoverableDepreciationAmount] = useState('');
+  const [paidWhenIncurredAmount, setPaidWhenIncurredAmount] = useState('');
+  const [ordinanceLawAmount, setOrdinanceLawAmount] = useState('');
+
   const [openSections, setOpenSections] = useState({
     coverages: false,
     optionalDeductions: true,
@@ -70,13 +76,34 @@ const Index = () => {
     return a + b + c + d;
   };
 
-  const totalCoverage = calculateTotalCoverage();
+  const calculateTotalDeductions = () => {
+    let deductions = 0;
+    
+    if (checkedItems.recoverableDepreciation) {
+      deductions += parseFloat(recoverableDepreciationAmount) || 0;
+    }
+    if (checkedItems.nonRecoverableDepreciation) {
+      deductions += parseFloat(nonRecoverableDepreciationAmount) || 0;
+    }
+    if (checkedItems.paidWhenIncurred) {
+      deductions += parseFloat(paidWhenIncurredAmount) || 0;
+    }
+    if (checkedItems.ordinanceLaw) {
+      deductions += parseFloat(ordinanceLawAmount) || 0;
+    }
+    
+    return deductions;
+  };
 
-  const balance = 0.00;
+  const totalCoverage = calculateTotalCoverage();
+  const totalDeductions = calculateTotalDeductions();
+  const adjustedTotal = totalCoverage - totalDeductions;
+
+  const balance = adjustedTotal;
   const ccsFeesPercent = 10;
-  const ccsFees = 0.00;
-  const balanceAfterFees = 0.00;
-  const balanceWithDeductible = 0.00;
+  const ccsFees = balance * (ccsFeesPercent / 100);
+  const balanceAfterFees = balance - ccsFees;
+  const balanceWithDeductible = balanceAfterFees - (parseFloat(deductible) || 0);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -99,7 +126,7 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <span className="text-lg">$</span>
                 <span className="text-lg font-semibold min-w-24 text-right">
-                  {totalCoverage.toFixed(2)}
+                  {adjustedTotal.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -192,46 +219,105 @@ const Index = () => {
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.optionalDeductions && "rotate-180")} />
                 <span className="font-medium">Optional Deductions</span>
               </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="recoverable-depreciation"
-                    checked={checkedItems.recoverableDepreciation}
-                    onCheckedChange={(checked) => handleCheckboxChange('recoverableDepreciation', checked as boolean)}
-                  />
-                  <Label htmlFor="recoverable-depreciation" className="text-sm">
-                    Recoverable Depreciation
-                  </Label>
+              <CollapsibleContent className="p-4 space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="recoverable-depreciation"
+                      checked={checkedItems.recoverableDepreciation}
+                      onCheckedChange={(checked) => handleCheckboxChange('recoverableDepreciation', checked as boolean)}
+                    />
+                    <Label htmlFor="recoverable-depreciation" className="text-sm">
+                      Recoverable Depreciation
+                    </Label>
+                  </div>
+                  {checkedItems.recoverableDepreciation && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={recoverableDepreciationAmount}
+                        onChange={(e) => setRecoverableDepreciationAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="non-recoverable-depreciation"
-                    checked={checkedItems.nonRecoverableDepreciation}
-                    onCheckedChange={(checked) => handleCheckboxChange('nonRecoverableDepreciation', checked as boolean)}
-                  />
-                  <Label htmlFor="non-recoverable-depreciation" className="text-sm">
-                    Non-Recoverable Depreciation
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="non-recoverable-depreciation"
+                      checked={checkedItems.nonRecoverableDepreciation}
+                      onCheckedChange={(checked) => handleCheckboxChange('nonRecoverableDepreciation', checked as boolean)}
+                    />
+                    <Label htmlFor="non-recoverable-depreciation" className="text-sm">
+                      Non-Recoverable Depreciation
+                    </Label>
+                  </div>
+                  {checkedItems.nonRecoverableDepreciation && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={nonRecoverableDepreciationAmount}
+                        onChange={(e) => setNonRecoverableDepreciationAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="paid-when-incurred"
-                    checked={checkedItems.paidWhenIncurred}
-                    onCheckedChange={(checked) => handleCheckboxChange('paidWhenIncurred', checked as boolean)}
-                  />
-                  <Label htmlFor="paid-when-incurred" className="text-sm">
-                    Paid When Incurred
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="paid-when-incurred"
+                      checked={checkedItems.paidWhenIncurred}
+                      onCheckedChange={(checked) => handleCheckboxChange('paidWhenIncurred', checked as boolean)}
+                    />
+                    <Label htmlFor="paid-when-incurred" className="text-sm">
+                      Paid When Incurred
+                    </Label>
+                  </div>
+                  {checkedItems.paidWhenIncurred && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={paidWhenIncurredAmount}
+                        onChange={(e) => setPaidWhenIncurredAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="ordinance-law"
-                    checked={checkedItems.ordinanceLaw}
-                    onCheckedChange={(checked) => handleCheckboxChange('ordinanceLaw', checked as boolean)}
-                  />
-                  <Label htmlFor="ordinance-law" className="text-sm">
-                    Ordinance & Law
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="ordinance-law"
+                      checked={checkedItems.ordinanceLaw}
+                      onCheckedChange={(checked) => handleCheckboxChange('ordinanceLaw', checked as boolean)}
+                    />
+                    <Label htmlFor="ordinance-law" className="text-sm">
+                      Ordinance & Law
+                    </Label>
+                  </div>
+                  {checkedItems.ordinanceLaw && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={ordinanceLawAmount}
+                        onChange={(e) => setOrdinanceLawAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
               </CollapsibleContent>
             </Collapsible>
