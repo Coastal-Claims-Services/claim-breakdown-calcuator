@@ -38,7 +38,6 @@ const Index = () => {
   const [coverageCFeePercent, setCoverageCFeePercent] = useState('10');
   const [coverageDFeePercent, setCoverageDFeePercent] = useState('10');
   const [priorCCSFeePercent, setPriorCCSFeePercent] = useState('10');
-  const [ccsFeesPercent, setCcsFeesPercent] = useState('10');
 
   const [openSections, setOpenSections] = useState({
     coverages: false,
@@ -151,6 +150,25 @@ const Index = () => {
     return totalWithFees;
   };
 
+  // Calculate the average PA fee percentage from coverage sections
+  const calculateAveragePAFeePercent = () => {
+    const a = parseFloat(coverageA) || 0;
+    const b = parseFloat(coverageB) || 0;
+    const c = parseFloat(coverageC) || 0;
+    const d = parseFloat(coverageD) || 0;
+    
+    const totalCoverage = a + b + c + d;
+    if (totalCoverage === 0) return 0;
+    
+    const weightedFees = 
+      (a * (parseFloat(coverageAFeePercent) || 0)) +
+      (b * (parseFloat(coverageBFeePercent) || 0)) +
+      (c * (parseFloat(coverageCFeePercent) || 0)) +
+      (d * (parseFloat(coverageDFeePercent) || 0));
+    
+    return weightedFees / totalCoverage;
+  };
+
   const totalCoverage = calculateTotalCoverage();
   const totalDeductions = calculateTotalDeductions();
   const totalPaymentsWithoutFees = calculatePaymentsWithoutFees();
@@ -158,7 +176,8 @@ const Index = () => {
   const coverageWithFees = calculateCoverageWithFees() - totalDeductions - totalPaymentsWithoutFees;
 
   const balance = coverageWithFees;
-  const ccsFees = balance * ((parseFloat(ccsFeesPercent) || 0) / 100);
+  const ccsFeesPercent = calculateAveragePAFeePercent();
+  const ccsFees = balance * (ccsFeesPercent / 100);
   const balanceAfterFees = balance - ccsFees;
   const balanceWithDeductible = balanceAfterFees - (parseFloat(deductible) || 0);
 
@@ -647,18 +666,11 @@ const Index = () => {
               <span className="text-lg font-semibold">$ {balance.toFixed(2)}</span>
             </div>
 
-            {/* CCS Fees */}
+            {/* CCS Fees - now calculated from PA fees above */}
             <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
               <div className="flex items-center gap-2">
                 <span className="font-medium">CCS Fees</span>
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-                <Input
-                  type="text"
-                  value={ccsFeesPercent}
-                  onChange={(e) => setCcsFeesPercent(e.target.value)}
-                  className="w-16 text-center"
-                />
-                <span className="text-sm">%</span>
+                <span className="text-sm text-gray-600">({ccsFeesPercent.toFixed(1)}%)</span>
               </div>
               <span className="text-lg font-semibold">$ {ccsFees.toFixed(2)}</span>
             </div>
