@@ -21,6 +21,18 @@ const Index = () => {
   const [paidWhenIncurredAmount, setPaidWhenIncurredAmount] = useState('');
   const [ordinanceLawAmount, setOrdinanceLawAmount] = useState('');
 
+  // Prior payments amounts
+  const [priorPaymentsAmount, setPriorPaymentsAmount] = useState('');
+  const [priorCCSFeesAmount, setPriorCCSFeesAmount] = useState('');
+
+  // PA fee percentages (editable, default to 10%)
+  const [coverageAFeePercent, setCoverageAFeePercent] = useState('10');
+  const [coverageBFeePercent, setCoverageBFeePercent] = useState('10');
+  const [coverageCFeePercent, setCoverageCFeePercent] = useState('10');
+  const [coverageDFeePercent, setCoverageDFeePercent] = useState('10');
+  const [priorCCSFeePercent, setPriorCCSFeePercent] = useState('10');
+  const [ccsFeesPercent, setCcsFeesPercent] = useState('10');
+
   const [openSections, setOpenSections] = useState({
     coverages: false,
     optionalDeductions: true,
@@ -109,11 +121,11 @@ const Index = () => {
     
     let totalWithFees = 0;
     
-    // Add coverage amounts and apply 10% fee if checkbox is checked
-    totalWithFees += checkedItems.coverageAFees ? a * 1.1 : a;
-    totalWithFees += checkedItems.coverageBFees ? b * 1.1 : b;
-    totalWithFees += checkedItems.coverageCFees ? c * 1.1 : c;
-    totalWithFees += checkedItems.coverageDFees ? d * 1.1 : d;
+    // Add coverage amounts and apply editable fee percentage if checkbox is checked
+    totalWithFees += checkedItems.coverageAFees ? a * (1 + (parseFloat(coverageAFeePercent) || 0) / 100) : a;
+    totalWithFees += checkedItems.coverageBFees ? b * (1 + (parseFloat(coverageBFeePercent) || 0) / 100) : b;
+    totalWithFees += checkedItems.coverageCFees ? c * (1 + (parseFloat(coverageCFeePercent) || 0) / 100) : c;
+    totalWithFees += checkedItems.coverageDFees ? d * (1 + (parseFloat(coverageDFeePercent) || 0) / 100) : d;
     
     return totalWithFees;
   };
@@ -124,8 +136,7 @@ const Index = () => {
   const coverageWithFees = calculateCoverageWithFees() - totalDeductions;
 
   const balance = coverageWithFees;
-  const ccsFeesPercent = 10;
-  const ccsFees = balance * (ccsFeesPercent / 100);
+  const ccsFees = balance * ((parseFloat(ccsFeesPercent) || 0) / 100);
   const balanceAfterFees = balance - ccsFees;
   const balanceWithDeductible = balanceAfterFees - (parseFloat(deductible) || 0);
 
@@ -187,9 +198,16 @@ const Index = () => {
                         checked={checkedItems.coverageAFees}
                         onCheckedChange={(checked) => handleCheckboxChange('coverageAFees', checked as boolean)}
                       />
-                      <Label htmlFor="coverage-a-fees" className="text-sm">
-                        10% Fees
+                      <Label htmlFor="coverage-a-fees" className="text-sm whitespace-nowrap">
+                        PA Fees
                       </Label>
+                      <Input
+                        type="text"
+                        value={coverageAFeePercent}
+                        onChange={(e) => setCoverageAFeePercent(e.target.value)}
+                        className="w-16 text-center"
+                      />
+                      <span className="text-sm">%</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -213,9 +231,16 @@ const Index = () => {
                         checked={checkedItems.coverageBFees}
                         onCheckedChange={(checked) => handleCheckboxChange('coverageBFees', checked as boolean)}
                       />
-                      <Label htmlFor="coverage-b-fees" className="text-sm">
-                        10% Fees
+                      <Label htmlFor="coverage-b-fees" className="text-sm whitespace-nowrap">
+                        PA Fees
                       </Label>
+                      <Input
+                        type="text"
+                        value={coverageBFeePercent}
+                        onChange={(e) => setCoverageBFeePercent(e.target.value)}
+                        className="w-16 text-center"
+                      />
+                      <span className="text-sm">%</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -239,9 +264,16 @@ const Index = () => {
                         checked={checkedItems.coverageCFees}
                         onCheckedChange={(checked) => handleCheckboxChange('coverageCFees', checked as boolean)}
                       />
-                      <Label htmlFor="coverage-c-fees" className="text-sm">
-                        10% Fees
+                      <Label htmlFor="coverage-c-fees" className="text-sm whitespace-nowrap">
+                        PA Fees
                       </Label>
+                      <Input
+                        type="text"
+                        value={coverageCFeePercent}
+                        onChange={(e) => setCoverageCFeePercent(e.target.value)}
+                        className="w-16 text-center"
+                      />
+                      <span className="text-sm">%</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -265,9 +297,16 @@ const Index = () => {
                         checked={checkedItems.coverageDFees}
                         onCheckedChange={(checked) => handleCheckboxChange('coverageDFees', checked as boolean)}
                       />
-                      <Label htmlFor="coverage-d-fees" className="text-sm">
-                        10% Fees
+                      <Label htmlFor="coverage-d-fees" className="text-sm whitespace-nowrap">
+                        PA Fees
                       </Label>
+                      <Input
+                        type="text"
+                        value={coverageDFeePercent}
+                        onChange={(e) => setCoverageDFeePercent(e.target.value)}
+                        className="w-16 text-center"
+                      />
+                      <span className="text-sm">%</span>
                     </div>
                   </div>
                 </div>
@@ -393,28 +432,64 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.priorPayments && "rotate-180")} />
-                <span className="font-medium">Prior Payments with CCS Fees</span>
+                <span className="font-medium">Prior Payments</span>
               </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="prior-payments"
-                    checked={checkedItems.priorPayments}
-                    onCheckedChange={(checked) => handleCheckboxChange('priorPayments', checked as boolean)}
-                  />
-                  <Label htmlFor="prior-payments" className="text-sm">
-                    Prior Payments
-                  </Label>
+              <CollapsibleContent className="p-4 space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="prior-payments"
+                      checked={checkedItems.priorPayments}
+                      onCheckedChange={(checked) => handleCheckboxChange('priorPayments', checked as boolean)}
+                    />
+                    <Label htmlFor="prior-payments" className="text-sm">
+                      Prior Payments
+                    </Label>
+                  </div>
+                  {checkedItems.priorPayments && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={priorPaymentsAmount}
+                        onChange={(e) => setPriorPaymentsAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="prior-ccs-fees"
-                    checked={checkedItems.priorCCSFees}
-                    onCheckedChange={(checked) => handleCheckboxChange('priorCCSFees', checked as boolean)}
-                  />
-                  <Label htmlFor="prior-ccs-fees" className="text-sm">
-                    Prior CCS Fees
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="prior-ccs-fees"
+                      checked={checkedItems.priorCCSFees}
+                      onCheckedChange={(checked) => handleCheckboxChange('priorCCSFees', checked as boolean)}
+                    />
+                    <Label htmlFor="prior-ccs-fees" className="text-sm">
+                      Prior CCS Fees
+                    </Label>
+                    <Input
+                      type="text"
+                      value={priorCCSFeePercent}
+                      onChange={(e) => setPriorCCSFeePercent(e.target.value)}
+                      className="w-16 text-center"
+                    />
+                    <span className="text-sm">%</span>
+                  </div>
+                  {checkedItems.priorCCSFees && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="0.00"
+                        value={priorCCSFeesAmount}
+                        onChange={(e) => setPriorCCSFeesAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -501,7 +576,13 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <span className="font-medium">CCS Fees</span>
                 <ChevronDown className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-600">({ccsFeesPercent}%)</span>
+                <Input
+                  type="text"
+                  value={ccsFeesPercent}
+                  onChange={(e) => setCcsFeesPercent(e.target.value)}
+                  className="w-16 text-center"
+                />
+                <span className="text-sm">%</span>
               </div>
               <span className="text-lg font-semibold">$ {ccsFees.toFixed(2)}</span>
             </div>
