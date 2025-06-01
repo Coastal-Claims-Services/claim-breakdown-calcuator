@@ -133,25 +133,8 @@ const Index = () => {
     return payments;
   };
 
-  const calculateCoverageWithFees = () => {
-    const a = parseFloat(coverageA) || 0;
-    const b = parseFloat(coverageB) || 0;
-    const c = parseFloat(coverageC) || 0;
-    const d = parseFloat(coverageD) || 0;
-    
-    let totalWithFees = 0;
-    
-    // Apply editable fee percentage to all coverages
-    totalWithFees += a * (1 + (parseFloat(coverageAFeePercent) || 0) / 100);
-    totalWithFees += b * (1 + (parseFloat(coverageBFeePercent) || 0) / 100);
-    totalWithFees += c * (1 + (parseFloat(coverageCFeePercent) || 0) / 100);
-    totalWithFees += d * (1 + (parseFloat(coverageDFeePercent) || 0) / 100);
-    
-    return totalWithFees;
-  };
-
-  // Calculate the average PA fee percentage from coverage sections
-  const calculateAveragePAFeePercent = () => {
+  // Calculate the weighted average PA fee percentage from coverage sections
+  const calculateWeightedAveragePAFeePercent = () => {
     const a = parseFloat(coverageA) || 0;
     const b = parseFloat(coverageB) || 0;
     const c = parseFloat(coverageC) || 0;
@@ -169,17 +152,37 @@ const Index = () => {
     return weightedFees / totalCoverage;
   };
 
+  // Calculate total fees from coverages with PA fees applied
+  const calculateTotalCoverageForFees = () => {
+    const a = parseFloat(coverageA) || 0;
+    const b = parseFloat(coverageB) || 0;
+    const c = parseFloat(coverageC) || 0;
+    const d = parseFloat(coverageD) || 0;
+    
+    // Only calculate fees on coverages that have fees > 0
+    let totalForFees = 0;
+    if (parseFloat(coverageAFeePercent) > 0) totalForFees += a;
+    if (parseFloat(coverageBFeePercent) > 0) totalForFees += b;
+    if (parseFloat(coverageCFeePercent) > 0) totalForFees += c;
+    if (parseFloat(coverageDFeePercent) > 0) totalForFees += d;
+    
+    return totalForFees;
+  };
+
   const totalCoverage = calculateTotalCoverage();
   const totalDeductions = calculateTotalDeductions();
   const totalPaymentsWithoutFees = calculatePaymentsWithoutFees();
-  const adjustedTotal = totalCoverage - totalDeductions - totalPaymentsWithoutFees;
-  const coverageWithFees = calculateCoverageWithFees() - totalDeductions - totalPaymentsWithoutFees;
-
-  const balance = coverageWithFees;
-  const ccsFeesPercent = calculateAveragePAFeePercent();
-  const ccsFees = balance * (ccsFeesPercent / 100);
-  const balanceAfterFees = balance - ccsFees;
-  const balanceWithDeductible = balanceAfterFees - (parseFloat(deductible) || 0);
+  
+  // Calculate balance: Total Coverage - Deductions - Payments without fees - Deductible
+  const balanceAfterDeductible = totalCoverage - totalDeductions - totalPaymentsWithoutFees - (parseFloat(deductible) || 0);
+  
+  // Calculate PA fees based on the amount subject to fees and weighted average percentage
+  const totalCoverageForFees = calculateTotalCoverageForFees();
+  const weightedPAFeePercent = calculateWeightedAveragePAFeePercent();
+  const paFees = totalCoverageForFees * (weightedPAFeePercent / 100);
+  
+  // Final balance after PA fees
+  const finalBalance = balanceAfterDeductible - paFees;
 
   // Auto-calculate Prior CCS Fees when Prior Payments amount or percentage changes
   useEffect(() => {
@@ -212,7 +215,7 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <span className="text-lg">$</span>
                 <span className="text-lg font-semibold min-w-24 text-right">
-                  {adjustedTotal.toFixed(2)}
+                  {(totalCoverage - totalDeductions - totalPaymentsWithoutFees).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -660,31 +663,25 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Balance */}
+            {/* Balance after Deductible */}
             <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
               <span className="font-medium">Balance</span>
-              <span className="text-lg font-semibold">$ {balance.toFixed(2)}</span>
+              <span className="text-lg font-semibold">$ {balanceAfterDeductible.toFixed(2)}</span>
             </div>
 
-            {/* CCS Fees - now calculated from PA fees above */}
+            {/* CCS Fees - calculated from weighted PA fees above */}
             <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
               <div className="flex items-center gap-2">
                 <span className="font-medium">CCS Fees</span>
-                <span className="text-sm text-gray-600">({ccsFeesPercent.toFixed(1)}%)</span>
+                <span className="text-sm text-gray-600">({weightedPAFeePercent.toFixed(1)}%)</span>
               </div>
-              <span className="text-lg font-semibold">$ {ccsFees.toFixed(2)}</span>
+              <span className="text-lg font-semibold">$ {paFees.toFixed(2)}</span>
             </div>
 
-            {/* Balance after Fees */}
-            <div className="flex items-center justify-between bg-green-50 p-3 rounded-lg">
-              <span className="font-medium">Balance after Fees</span>
-              <span className="text-lg font-semibold text-green-600">$ {balanceAfterFees.toFixed(2)}</span>
-            </div>
-
-            {/* Balance + Deductible */}
+            {/* Final Balance */}
             <div className="flex items-center justify-between bg-green-100 p-3 rounded-lg">
-              <span className="font-medium">Balance + Deductible</span>
-              <span className="text-lg font-semibold text-green-700">$ {balanceWithDeductible.toFixed(2)}</span>
+              <span className="font-medium">Final Balance</span>
+              <span className="text-lg font-semibold text-green-700">$ {finalBalance.toFixed(2)}</span>
             </div>
 
             {/* Repairs by the Insured */}
