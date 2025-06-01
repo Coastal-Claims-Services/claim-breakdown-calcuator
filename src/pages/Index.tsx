@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -71,6 +72,7 @@ const Index = () => {
 
   const [openSections, setOpenSections] = useState({
     coverages: false,
+    coverageASubLimits: false,
     optionalDeductions: true,
     priorPayments: true,
     paymentsWithoutFees: true,
@@ -307,99 +309,108 @@ const Index = () => {
                       </div>
                     </div>
 
-                    {/* Sub-limits for Coverage A */}
-                    <div className="ml-4 space-y-3 border-l-2 border-gray-200 pl-4">
-                      <div className="text-sm font-medium text-gray-600">Coverage A Sub-limits</div>
-                      
-                      {/* Screen Enclosure Sub-limit */}
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            id="screen-enclosure-sub-limit"
-                            checked={checkedItems.screenEnclosureSubLimit}
-                            onCheckedChange={(checked) => handleCheckboxChange('screenEnclosureSubLimit', checked as boolean)}
-                          />
-                          <Input
-                            type="text"
-                            value={screenEnclosureSubLimitDescription}
-                            onChange={(e) => setScreenEnclosureSubLimitDescription(e.target.value)}
-                            className="text-sm flex-1"
-                            placeholder="Sub-limit name"
-                          />
-                        </div>
-                        {checkedItems.screenEnclosureSubLimit && (
-                          <div className="ml-6 flex items-center gap-2">
-                            <span className="text-sm">$</span>
-                            <Input
-                              type="text"
-                              placeholder="Enter sub-limit amount"
-                              value={screenEnclosureSubLimit}
-                              onChange={(e) => setScreenEnclosureSubLimit(e.target.value)}
-                              className="flex-1"
-                            />
+                    {/* Collapsible Sub-limits for Coverage A */}
+                    <div className="ml-4">
+                      <Collapsible 
+                        open={openSections.coverageASubLimits} 
+                        onOpenChange={() => toggleSection('coverageASubLimits')}
+                      >
+                        <CollapsibleTrigger className="flex items-center gap-2 w-full p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border-l-2 border-gray-200">
+                          <ChevronDown className={cn("h-3 w-3 transition-transform", openSections.coverageASubLimits && "rotate-180")} />
+                          <span className="text-sm font-medium text-gray-600">Coverage A Sub-limits</span>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="pl-4 space-y-3 mt-3 border-l-2 border-gray-200">
+                          {/* Screen Enclosure Sub-limit */}
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="screen-enclosure-sub-limit"
+                                checked={checkedItems.screenEnclosureSubLimit}
+                                onCheckedChange={(checked) => handleCheckboxChange('screenEnclosureSubLimit', checked as boolean)}
+                              />
+                              <Input
+                                type="text"
+                                value={screenEnclosureSubLimitDescription}
+                                onChange={(e) => setScreenEnclosureSubLimitDescription(e.target.value)}
+                                className="text-sm flex-1"
+                                placeholder="Sub-limit name"
+                              />
+                            </div>
+                            {checkedItems.screenEnclosureSubLimit && (
+                              <div className="ml-6 flex items-center gap-2">
+                                <span className="text-sm">$</span>
+                                <Input
+                                  type="text"
+                                  placeholder="Enter sub-limit amount"
+                                  value={screenEnclosureSubLimit}
+                                  onChange={(e) => setScreenEnclosureSubLimit(e.target.value)}
+                                  className="flex-1"
+                                />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
 
-                      {/* Mold Sub-limit */}
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            id="mold-sub-limit"
-                            checked={checkedItems.moldSubLimit}
-                            onCheckedChange={(checked) => handleCheckboxChange('moldSubLimit', checked as boolean)}
-                          />
-                          <Input
-                            type="text"
-                            value={moldSubLimitDescription}
-                            onChange={(e) => setMoldSubLimitDescription(e.target.value)}
-                            className="text-sm flex-1"
-                            placeholder="Sub-limit name"
-                          />
-                        </div>
-                        {checkedItems.moldSubLimit && (
-                          <div className="ml-6 flex items-center gap-2">
-                            <span className="text-sm">$</span>
-                            <Input
-                              type="text"
-                              placeholder="Enter sub-limit amount"
-                              value={moldSubLimit}
-                              onChange={(e) => setMoldSubLimit(e.target.value)}
-                              className="flex-1"
-                            />
+                          {/* Mold Sub-limit */}
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="mold-sub-limit"
+                                checked={checkedItems.moldSubLimit}
+                                onCheckedChange={(checked) => handleCheckboxChange('moldSubLimit', checked as boolean)}
+                              />
+                              <Input
+                                type="text"
+                                value={moldSubLimitDescription}
+                                onChange={(e) => setMoldSubLimitDescription(e.target.value)}
+                                className="text-sm flex-1"
+                                placeholder="Sub-limit name"
+                              />
+                            </div>
+                            {checkedItems.moldSubLimit && (
+                              <div className="ml-6 flex items-center gap-2">
+                                <span className="text-sm">$</span>
+                                <Input
+                                  type="text"
+                                  placeholder="Enter sub-limit amount"
+                                  value={moldSubLimit}
+                                  onChange={(e) => setMoldSubLimit(e.target.value)}
+                                  className="flex-1"
+                                />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
 
-                      {/* Water Mitigation Sub-limit */}
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            id="water-mitigation-sub-limit"
-                            checked={checkedItems.waterMitigationSubLimit}
-                            onCheckedChange={(checked) => handleCheckboxChange('waterMitigationSubLimit', checked as boolean)}
-                          />
-                          <Input
-                            type="text"
-                            value={waterMitigationSubLimitDescription}
-                            onChange={(e) => setWaterMitigationSubLimitDescription(e.target.value)}
-                            className="text-sm flex-1"
-                            placeholder="Sub-limit name"
-                          />
-                        </div>
-                        {checkedItems.waterMitigationSubLimit && (
-                          <div className="ml-6 flex items-center gap-2">
-                            <span className="text-sm">$</span>
-                            <Input
-                              type="text"
-                              placeholder="Enter sub-limit amount"
-                              value={waterMitigationSubLimit}
-                              onChange={(e) => setWaterMitigationSubLimit(e.target.value)}
-                              className="flex-1"
-                            />
+                          {/* Water Mitigation Sub-limit */}
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="water-mitigation-sub-limit"
+                                checked={checkedItems.waterMitigationSubLimit}
+                                onCheckedChange={(checked) => handleCheckboxChange('waterMitigationSubLimit', checked as boolean)}
+                              />
+                              <Input
+                                type="text"
+                                value={waterMitigationSubLimitDescription}
+                                onChange={(e) => setWaterMitigationSubLimitDescription(e.target.value)}
+                                className="text-sm flex-1"
+                                placeholder="Sub-limit name"
+                              />
+                            </div>
+                            {checkedItems.waterMitigationSubLimit && (
+                              <div className="ml-6 flex items-center gap-2">
+                                <span className="text-sm">$</span>
+                                <Input
+                                  type="text"
+                                  placeholder="Enter sub-limit amount"
+                                  value={waterMitigationSubLimit}
+                                  onChange={(e) => setWaterMitigationSubLimit(e.target.value)}
+                                  className="flex-1"
+                                />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
+                        </CollapsibleContent>
+                      </Collapsible>
                     </div>
                   </div>
 
