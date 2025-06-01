@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -114,6 +115,19 @@ const Index = () => {
     return deductions;
   };
 
+  const calculatePriorPayments = () => {
+    let payments = 0;
+    
+    if (checkedItems.priorPayments) {
+      payments += parseFloat(priorPaymentsAmount) || 0;
+    }
+    if (checkedItems.priorCCSFees) {
+      payments += parseFloat(priorCCSFeesAmount) || 0;
+    }
+    
+    return payments;
+  };
+
   const calculatePaymentsWithoutFees = () => {
     let payments = 0;
     
@@ -150,10 +164,11 @@ const Index = () => {
 
   const totalCoverage = calculateTotalCoverage();
   const totalDeductions = calculateTotalDeductions();
+  const totalPriorPayments = calculatePriorPayments();
   const totalPaymentsWithoutFees = calculatePaymentsWithoutFees();
   
-  // Calculate balance: Total Coverage - Deductions - Payments without fees - Deductible
-  const balanceAfterDeductible = totalCoverage - totalDeductions - totalPaymentsWithoutFees - (parseFloat(deductible) || 0);
+  // Calculate balance: Total Coverage - Deductions - Prior Payments - Payments without fees - Deductible
+  const balanceAfterDeductible = totalCoverage - totalDeductions - totalPriorPayments - totalPaymentsWithoutFees - (parseFloat(deductible) || 0);
   
   // Calculate PA fees using the correct method
   const paFees = calculatePAFees();
