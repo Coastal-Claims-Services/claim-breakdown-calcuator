@@ -133,40 +133,19 @@ const Index = () => {
     return payments;
   };
 
-  // Calculate the weighted average PA fee percentage from coverage sections
-  const calculateWeightedAveragePAFeePercent = () => {
+  // Calculate PA fees directly from each coverage section
+  const calculatePAFees = () => {
     const a = parseFloat(coverageA) || 0;
     const b = parseFloat(coverageB) || 0;
     const c = parseFloat(coverageC) || 0;
     const d = parseFloat(coverageD) || 0;
     
-    const totalCoverage = a + b + c + d;
-    if (totalCoverage === 0) return 0;
+    const aFee = a * ((parseFloat(coverageAFeePercent) || 0) / 100);
+    const bFee = b * ((parseFloat(coverageBFeePercent) || 0) / 100);
+    const cFee = c * ((parseFloat(coverageCFeePercent) || 0) / 100);
+    const dFee = d * ((parseFloat(coverageDFeePercent) || 0) / 100);
     
-    const weightedFees = 
-      (a * (parseFloat(coverageAFeePercent) || 0)) +
-      (b * (parseFloat(coverageBFeePercent) || 0)) +
-      (c * (parseFloat(coverageCFeePercent) || 0)) +
-      (d * (parseFloat(coverageDFeePercent) || 0));
-    
-    return weightedFees / totalCoverage;
-  };
-
-  // Calculate total fees from coverages with PA fees applied
-  const calculateTotalCoverageForFees = () => {
-    const a = parseFloat(coverageA) || 0;
-    const b = parseFloat(coverageB) || 0;
-    const c = parseFloat(coverageC) || 0;
-    const d = parseFloat(coverageD) || 0;
-    
-    // Only calculate fees on coverages that have fees > 0
-    let totalForFees = 0;
-    if (parseFloat(coverageAFeePercent) > 0) totalForFees += a;
-    if (parseFloat(coverageBFeePercent) > 0) totalForFees += b;
-    if (parseFloat(coverageCFeePercent) > 0) totalForFees += c;
-    if (parseFloat(coverageDFeePercent) > 0) totalForFees += d;
-    
-    return totalForFees;
+    return aFee + bFee + cFee + dFee;
   };
 
   const totalCoverage = calculateTotalCoverage();
@@ -176,10 +155,8 @@ const Index = () => {
   // Calculate balance: Total Coverage - Deductions - Payments without fees - Deductible
   const balanceAfterDeductible = totalCoverage - totalDeductions - totalPaymentsWithoutFees - (parseFloat(deductible) || 0);
   
-  // Calculate PA fees based on the amount subject to fees and weighted average percentage
-  const totalCoverageForFees = calculateTotalCoverageForFees();
-  const weightedPAFeePercent = calculateWeightedAveragePAFeePercent();
-  const paFees = totalCoverageForFees * (weightedPAFeePercent / 100);
+  // Calculate PA fees using the correct method
+  const paFees = calculatePAFees();
   
   // Final balance after PA fees
   const finalBalance = balanceAfterDeductible - paFees;
@@ -669,7 +646,7 @@ const Index = () => {
               <span className="text-lg font-semibold">$ {balanceAfterDeductible.toFixed(2)}</span>
             </div>
 
-            {/* CCS Fees - calculated from weighted PA fees above */}
+            {/* CCS Fees - calculated directly from coverage amounts and percentages */}
             <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
               <div className="flex items-center gap-2">
                 <span className="font-medium">CCS Fees</span>
