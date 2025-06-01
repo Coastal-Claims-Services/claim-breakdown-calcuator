@@ -253,7 +253,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <Card className="mb-6">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-xl font-semibold">
@@ -277,7 +277,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Coverages A through D - with sub-limits under Coverage A */}
+            {/* Coverages A through D - restructured with two columns */}
             <Collapsible 
               open={openSections.coverages} 
               onOpenChange={() => toggleSection('coverages')}
@@ -287,165 +287,171 @@ const Index = () => {
                 <span className="font-medium">Coverages A through D</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-a" className="text-sm font-medium w-16">
-                      Coverage A
-                    </Label>
-                    <div className="flex items-center gap-1 flex-1">
-                      <span className="text-sm">$</span>
-                      <Input
-                        id="coverage-a"
-                        type="text"
-                        placeholder="0.00"
-                        value={coverageA}
-                        onChange={(e) => setCoverageA(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Sub-limits for Coverage A */}
-                  <div className="ml-4 space-y-3 border-l-2 border-gray-200 pl-4">
-                    <div className="text-sm font-medium text-gray-600">Coverage A Sub-limits</div>
-                    
-                    {/* Screen Enclosure Sub-limit */}
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox 
-                          id="screen-enclosure-sub-limit"
-                          checked={checkedItems.screenEnclosureSubLimit}
-                          onCheckedChange={(checked) => handleCheckboxChange('screenEnclosureSubLimit', checked as boolean)}
-                        />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Left Column - Coverage A with Sub-limits */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="coverage-a" className="text-sm font-medium w-20">
+                        Coverage A
+                      </Label>
+                      <div className="flex items-center gap-1 flex-1">
+                        <span className="text-sm">$</span>
                         <Input
+                          id="coverage-a"
                           type="text"
-                          value={screenEnclosureSubLimitDescription}
-                          onChange={(e) => setScreenEnclosureSubLimitDescription(e.target.value)}
-                          className="text-sm flex-1"
-                          placeholder="Sub-limit name"
+                          placeholder="0.00"
+                          value={coverageA}
+                          onChange={(e) => setCoverageA(e.target.value)}
+                          className="flex-1"
                         />
                       </div>
-                      {checkedItems.screenEnclosureSubLimit && (
-                        <div className="ml-6 flex items-center gap-2">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="Enter sub-limit amount"
-                            value={screenEnclosureSubLimit}
-                            onChange={(e) => setScreenEnclosureSubLimit(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      )}
                     </div>
 
-                    {/* Mold Sub-limit */}
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox 
-                          id="mold-sub-limit"
-                          checked={checkedItems.moldSubLimit}
-                          onCheckedChange={(checked) => handleCheckboxChange('moldSubLimit', checked as boolean)}
-                        />
+                    {/* Sub-limits for Coverage A */}
+                    <div className="ml-4 space-y-3 border-l-2 border-gray-200 pl-4">
+                      <div className="text-sm font-medium text-gray-600">Coverage A Sub-limits</div>
+                      
+                      {/* Screen Enclosure Sub-limit */}
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="screen-enclosure-sub-limit"
+                            checked={checkedItems.screenEnclosureSubLimit}
+                            onCheckedChange={(checked) => handleCheckboxChange('screenEnclosureSubLimit', checked as boolean)}
+                          />
+                          <Input
+                            type="text"
+                            value={screenEnclosureSubLimitDescription}
+                            onChange={(e) => setScreenEnclosureSubLimitDescription(e.target.value)}
+                            className="text-sm flex-1"
+                            placeholder="Sub-limit name"
+                          />
+                        </div>
+                        {checkedItems.screenEnclosureSubLimit && (
+                          <div className="ml-6 flex items-center gap-2">
+                            <span className="text-sm">$</span>
+                            <Input
+                              type="text"
+                              placeholder="Enter sub-limit amount"
+                              value={screenEnclosureSubLimit}
+                              onChange={(e) => setScreenEnclosureSubLimit(e.target.value)}
+                              className="flex-1"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Mold Sub-limit */}
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="mold-sub-limit"
+                            checked={checkedItems.moldSubLimit}
+                            onCheckedChange={(checked) => handleCheckboxChange('moldSubLimit', checked as boolean)}
+                          />
+                          <Input
+                            type="text"
+                            value={moldSubLimitDescription}
+                            onChange={(e) => setMoldSubLimitDescription(e.target.value)}
+                            className="text-sm flex-1"
+                            placeholder="Sub-limit name"
+                          />
+                        </div>
+                        {checkedItems.moldSubLimit && (
+                          <div className="ml-6 flex items-center gap-2">
+                            <span className="text-sm">$</span>
+                            <Input
+                              type="text"
+                              placeholder="Enter sub-limit amount"
+                              value={moldSubLimit}
+                              onChange={(e) => setMoldSubLimit(e.target.value)}
+                              className="flex-1"
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Water Mitigation Sub-limit */}
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="water-mitigation-sub-limit"
+                            checked={checkedItems.waterMitigationSubLimit}
+                            onCheckedChange={(checked) => handleCheckboxChange('waterMitigationSubLimit', checked as boolean)}
+                          />
+                          <Input
+                            type="text"
+                            value={waterMitigationSubLimitDescription}
+                            onChange={(e) => setWaterMitigationSubLimitDescription(e.target.value)}
+                            className="text-sm flex-1"
+                            placeholder="Sub-limit name"
+                          />
+                        </div>
+                        {checkedItems.waterMitigationSubLimit && (
+                          <div className="ml-6 flex items-center gap-2">
+                            <span className="text-sm">$</span>
+                            <Input
+                              type="text"
+                              placeholder="Enter sub-limit amount"
+                              value={waterMitigationSubLimit}
+                              onChange={(e) => setWaterMitigationSubLimit(e.target.value)}
+                              className="flex-1"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column - Coverages B, C, and D */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="coverage-b" className="text-sm font-medium w-20">
+                        Coverage B
+                      </Label>
+                      <div className="flex items-center gap-1 flex-1">
+                        <span className="text-sm">$</span>
                         <Input
+                          id="coverage-b"
                           type="text"
-                          value={moldSubLimitDescription}
-                          onChange={(e) => setMoldSubLimitDescription(e.target.value)}
-                          className="text-sm flex-1"
-                          placeholder="Sub-limit name"
+                          placeholder="0.00"
+                          value={coverageB}
+                          onChange={(e) => setCoverageB(e.target.value)}
+                          className="flex-1"
                         />
                       </div>
-                      {checkedItems.moldSubLimit && (
-                        <div className="ml-6 flex items-center gap-2">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="Enter sub-limit amount"
-                            value={moldSubLimit}
-                            onChange={(e) => setMoldSubLimit(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      )}
                     </div>
-
-                    {/* Water Mitigation Sub-limit */}
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox 
-                          id="water-mitigation-sub-limit"
-                          checked={checkedItems.waterMitigationSubLimit}
-                          onCheckedChange={(checked) => handleCheckboxChange('waterMitigationSubLimit', checked as boolean)}
-                        />
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="coverage-c" className="text-sm font-medium w-20">
+                        Coverage C
+                      </Label>
+                      <div className="flex items-center gap-1 flex-1">
+                        <span className="text-sm">$</span>
                         <Input
+                          id="coverage-c"
                           type="text"
-                          value={waterMitigationSubLimitDescription}
-                          onChange={(e) => setWaterMitigationSubLimitDescription(e.target.value)}
-                          className="text-sm flex-1"
-                          placeholder="Sub-limit name"
+                          placeholder="0.00"
+                          value={coverageC}
+                          onChange={(e) => setCoverageC(e.target.value)}
+                          className="flex-1"
                         />
                       </div>
-                      {checkedItems.waterMitigationSubLimit && (
-                        <div className="ml-6 flex items-center gap-2">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="Enter sub-limit amount"
-                            value={waterMitigationSubLimit}
-                            onChange={(e) => setWaterMitigationSubLimit(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      )}
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-b" className="text-sm font-medium w-16">
-                      Coverage B
-                    </Label>
-                    <div className="flex items-center gap-1 flex-1">
-                      <span className="text-sm">$</span>
-                      <Input
-                        id="coverage-b"
-                        type="text"
-                        placeholder="0.00"
-                        value={coverageB}
-                        onChange={(e) => setCoverageB(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-c" className="text-sm font-medium w-16">
-                      Coverage C
-                    </Label>
-                    <div className="flex items-center gap-1 flex-1">
-                      <span className="text-sm">$</span>
-                      <Input
-                        id="coverage-c"
-                        type="text"
-                        placeholder="0.00"
-                        value={coverageC}
-                        onChange={(e) => setCoverageC(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-d" className="text-sm font-medium w-16">
-                      Coverage D
-                    </Label>
-                    <div className="flex items-center gap-1 flex-1">
-                      <span className="text-sm">$</span>
-                      <Input
-                        id="coverage-d"
-                        type="text"
-                        placeholder="0.00"
-                        value={coverageD}
-                        onChange={(e) => setCoverageD(e.target.value)}
-                        className="flex-1"
-                      />
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="coverage-d" className="text-sm font-medium w-20">
+                        Coverage D
+                      </Label>
+                      <div className="flex items-center gap-1 flex-1">
+                        <span className="text-sm">$</span>
+                        <Input
+                          id="coverage-d"
+                          type="text"
+                          placeholder="0.00"
+                          value={coverageD}
+                          onChange={(e) => setCoverageD(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
