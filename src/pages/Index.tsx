@@ -1,354 +1,231 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [roofChecked, setRoofChecked] = useState(false);
-  const [roofSquares, setRoofSquares] = useState('');
-  const [roofCost, setRoofCost] = useState('');
-  const [roofPolicyLimit, setRoofPolicyLimit] = useState('');
+  const [squares, setSquares] = useState('');
+  const [totalCost, setTotalCost] = useState('');
+  const [coverageAChecked, setCoverageAChecked] = useState(false);
+  const [coverageAValue, setCoverageAValue] = useState('');
+  const [coverageBChecked, setCoverageBChecked] = useState(false);
+  const [coverageBValue, setCoverageBValue] = useState('');
+  const [coverageCChecked, setCoverageCChecked] = useState(false);
+  const [coverageCValue, setCoverageCValue] = useState('');
+  const [coverageDChecked, setCoverageDChecked] = useState(false);
+  const [coverageDValue, setCoverageDValue] = useState('');
 
-  // Coverage A sub-limits
-  const [screenEnclosureChecked, setScreenEnclosureChecked] = useState(false);
-  const [screenEnclosureCost, setScreenEnclosureCost] = useState('');
-  const [screenEnclosurePolicyLimit, setScreenEnclosurePolicyLimit] = useState('');
-
-  const [moldChecked, setMoldChecked] = useState(false);
-  const [moldCost, setMoldCost] = useState('');
-  const [moldPolicyLimit, setMoldPolicyLimit] = useState('');
-
-  const [waterMitigationChecked, setWaterMitigationChecked] = useState(false);
-  const [waterMitigationCost, setWaterMitigationCost] = useState('');
-  const [waterMitigationPolicyLimit, setWaterMitigationPolicyLimit] = useState('');
-
-  const [matchingChecked, setMatchingChecked] = useState(false);
-  const [matchingCost, setMatchingCost] = useState('');
-  const [matchingPolicyLimit, setMatchingPolicyLimit] = useState('');
-
-  const [ordinanceChecked, setOrdinanceChecked] = useState(false);
-  const [ordinanceCost, setOrdinanceCost] = useState('');
-  const [ordinancePolicyLimit, setOrdinancePolicyLimit] = useState('');
-
-  const formatCurrency = (value: string) => {
-    const num = parseFloat(value.replace(/[^\d.]/g, ''));
-    return isNaN(num) ? '$0.00' : new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(num);
+  const calculateTotal = () => {
+    let total = 0;
+    if (roofChecked && totalCost) {
+      total += parseFloat(totalCost);
+    }
+    if (coverageAChecked && coverageAValue) {
+      total += parseFloat(coverageAValue);
+    }
+    if (coverageBChecked && coverageBValue) {
+      total += parseFloat(coverageBValue);
+    }
+    if (coverageCChecked && coverageCValue) {
+      total += parseFloat(coverageCValue);
+    }
+    if (coverageDChecked && coverageDValue) {
+      total += parseFloat(coverageDValue);
+    }
+    return total.toFixed(2);
   };
 
-  const isOverLimit = (cost: string, limit: string) => {
-    const costNum = parseFloat(cost.replace(/[^\d.]/g, ''));
-    const limitNum = parseFloat(limit.replace(/[^\d.]/g, ''));
-    return !isNaN(costNum) && !isNaN(limitNum) && costNum > limitNum;
+  const handlePrint = () => {
+    window.print();
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <h1 className="text-3xl font-bold text-center mb-8">Insurance Estimate Calculator</h1>
-      
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Coverage A</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center space-x-3">
-            <Checkbox 
-              id="roof" 
-              checked={roofChecked} 
-              onCheckedChange={(checked) => setRoofChecked(checked === true)}
-            />
-            <Label htmlFor="roof" className="text-lg font-medium">Roof</Label>
-          </div>
-          
-          {roofChecked && (
-            <div className="ml-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="roofSquares">Squares with waste:</Label>
-                  <Input
-                    id="roofSquares"
-                    type="number"
-                    placeholder="Enter squares"
-                    value={roofSquares}
-                    onChange={(e) => setRoofSquares(e.target.value)}
-                    className="w-24"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="roofCost">Total Cost:</Label>
-                  <Input
-                    id="roofCost"
-                    type="text"
-                    placeholder="Enter total cost"
-                    value={roofCost}
-                    onChange={(e) => setRoofCost(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {roofCost && formatCurrency(roofCost)}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="roofPolicyLimit">Policy Limit:</Label>
-                  <Input
-                    id="roofPolicyLimit"
-                    type="text"
-                    placeholder="Enter policy limit"
-                    value={roofPolicyLimit}
-                    onChange={(e) => setRoofPolicyLimit(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {roofPolicyLimit && formatCurrency(roofPolicyLimit)}
-                  </div>
-                  {isOverLimit(roofCost, roofPolicyLimit) && (
-                    <div className="mt-1 text-sm text-red-600 font-medium">
-                      Over Limit
-                    </div>
-                  )}
-                </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-center">Insurance Loss Estimate</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Roof Section */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="roof"
+                  checked={roofChecked}
+                  onCheckedChange={setRoofChecked}
+                />
+                <Label htmlFor="roof" className="text-lg font-semibold">Roof</Label>
               </div>
-            </div>
-          )}
-          
-          <div className="flex items-center space-x-3">
-            <Checkbox 
-              id="screenEnclosure" 
-              checked={screenEnclosureChecked} 
-              onCheckedChange={(checked) => setScreenEnclosureChecked(checked === true)}
-            />
-            <Label htmlFor="screenEnclosure" className="text-lg font-medium">Screen Enclosure</Label>
-          </div>
-          
-          {screenEnclosureChecked && (
-            <div className="ml-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="screenEnclosureCost">Coverage Amount:</Label>
-                  <Input
-                    id="screenEnclosureCost"
-                    type="text"
-                    placeholder="Enter coverage amount"
-                    value={screenEnclosureCost}
-                    onChange={(e) => setScreenEnclosureCost(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {screenEnclosureCost && formatCurrency(screenEnclosureCost)}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="screenEnclosurePolicyLimit">Policy Limit:</Label>
-                  <Input
-                    id="screenEnclosurePolicyLimit"
-                    type="text"
-                    placeholder="Enter policy limit"
-                    value={screenEnclosurePolicyLimit}
-                    onChange={(e) => setScreenEnclosurePolicyLimit(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {screenEnclosurePolicyLimit && formatCurrency(screenEnclosurePolicyLimit)}
-                  </div>
-                  {isOverLimit(screenEnclosureCost, screenEnclosurePolicyLimit) && (
-                    <div className="mt-1 text-sm text-red-600 font-medium">
-                      Over Limit
+              
+              {roofChecked && (
+                <div className="ml-6 space-y-4 p-4 bg-gray-50 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="squares">Squares:</Label>
+                      <Input
+                        id="squares"
+                        type="number"
+                        value={squares}
+                        onChange={(e) => setSquares(e.target.value)}
+                        placeholder="Enter squares"
+                        className="w-32"
+                      />
                     </div>
-                  )}
+                    <div>
+                      <Label htmlFor="totalCost">Total Cost:</Label>
+                      <Input
+                        id="totalCost"
+                        type="number"
+                        value={totalCost}
+                        onChange={(e) => setTotalCost(e.target.value)}
+                        placeholder="Enter total cost"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
-          )}
 
-          <div className="flex items-center space-x-3">
-            <Checkbox 
-              id="mold" 
-              checked={moldChecked} 
-              onCheckedChange={(checked) => setMoldChecked(checked === true)}
-            />
-            <Label htmlFor="mold" className="text-lg font-medium">Mold</Label>
-          </div>
-          
-          {moldChecked && (
-            <div className="ml-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="moldCost">Coverage Amount:</Label>
-                  <Input
-                    id="moldCost"
-                    type="text"
-                    placeholder="Enter coverage amount"
-                    value={moldCost}
-                    onChange={(e) => setMoldCost(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {moldCost && formatCurrency(moldCost)}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="moldPolicyLimit">Policy Limit:</Label>
-                  <Input
-                    id="moldPolicyLimit"
-                    type="text"
-                    placeholder="Enter policy limit"
-                    value={moldPolicyLimit}
-                    onChange={(e) => setMoldPolicyLimit(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {moldPolicyLimit && formatCurrency(moldPolicyLimit)}
-                  </div>
-                  {isOverLimit(moldCost, moldPolicyLimit) && (
-                    <div className="mt-1 text-sm text-red-600 font-medium">
-                      Over Limit
-                    </div>
-                  )}
-                </div>
+            {/* Coverage A Section */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="coverageA"
+                  checked={coverageAChecked}
+                  onCheckedChange={setCoverageAChecked}
+                />
+                <Label htmlFor="coverageA" className="text-lg font-semibold">Coverage A - Dwelling</Label>
               </div>
+              
+              {coverageAChecked && (
+                <div className="ml-6 space-y-4 p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <Label htmlFor="coverageAValue">Total Coverage A Value:</Label>
+                    <Input
+                      id="coverageAValue"
+                      type="number"
+                      value={coverageAValue}
+                      onChange={(e) => setCoverageAValue(e.target.value)}
+                      placeholder="Enter Coverage A value"
+                    />
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    <p>Sub-limits:</p>
+                    <ul className="list-disc ml-5">
+                      <li>Foundation: 20% of Coverage A</li>
+                      <li>Roofing: 15% of Coverage A</li>
+                      <li>Electrical: 10% of Coverage A</li>
+                      <li>Plumbing: 10% of Coverage A</li>
+                      <li>HVAC: 10% of Coverage A</li>
+                      <li>Interior Finishes: 35% of Coverage A</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
 
-          <div className="flex items-center space-x-3">
-            <Checkbox 
-              id="waterMitigation" 
-              checked={waterMitigationChecked} 
-              onCheckedChange={(checked) => setWaterMitigationChecked(checked === true)}
-            />
-            <Label htmlFor="waterMitigation" className="text-lg font-medium">Water Mitigation</Label>
-          </div>
-          
-          {waterMitigationChecked && (
-            <div className="ml-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="waterMitigationCost">Coverage Amount:</Label>
-                  <Input
-                    id="waterMitigationCost"
-                    type="text"
-                    placeholder="Enter coverage amount"
-                    value={waterMitigationCost}
-                    onChange={(e) => setWaterMitigationCost(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {waterMitigationCost && formatCurrency(waterMitigationCost)}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="waterMitigationPolicyLimit">Policy Limit:</Label>
-                  <Input
-                    id="waterMitigationPolicyLimit"
-                    type="text"
-                    placeholder="Enter policy limit"
-                    value={waterMitigationPolicyLimit}
-                    onChange={(e) => setWaterMitigationPolicyLimit(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {waterMitigationPolicyLimit && formatCurrency(waterMitigationPolicyLimit)}
-                  </div>
-                  {isOverLimit(waterMitigationCost, waterMitigationPolicyLimit) && (
-                    <div className="mt-1 text-sm text-red-600 font-medium">
-                      Over Limit
-                    </div>
-                  )}
-                </div>
+            {/* Coverage B Section */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="coverageB"
+                  checked={coverageBChecked}
+                  onCheckedChange={setCoverageBChecked}
+                />
+                <Label htmlFor="coverageB" className="text-lg font-semibold">Coverage B - Other Structures</Label>
               </div>
+              
+              {coverageBChecked && (
+                <div className="ml-6 space-y-4 p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <Label htmlFor="coverageBValue">Total Coverage B Value:</Label>
+                    <Input
+                      id="coverageBValue"
+                      type="number"
+                      value={coverageBValue}
+                      onChange={(e) => setCoverageBValue(e.target.value)}
+                      placeholder="Enter Coverage B value"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          )}
 
-          <div className="flex items-center space-x-3">
-            <Checkbox 
-              id="matching" 
-              checked={matchingChecked} 
-              onCheckedChange={(checked) => setMatchingChecked(checked === true)}
-            />
-            <Label htmlFor="matching" className="text-lg font-medium">Matching</Label>
-          </div>
-          
-          {matchingChecked && (
-            <div className="ml-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="matchingCost">Coverage Amount:</Label>
-                  <Input
-                    id="matchingCost"
-                    type="text"
-                    placeholder="Enter coverage amount"
-                    value={matchingCost}
-                    onChange={(e) => setMatchingCost(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {matchingCost && formatCurrency(matchingCost)}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="matchingPolicyLimit">Policy Limit:</Label>
-                  <Input
-                    id="matchingPolicyLimit"
-                    type="text"
-                    placeholder="Enter policy limit"
-                    value={matchingPolicyLimit}
-                    onChange={(e) => setMatchingPolicyLimit(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {matchingPolicyLimit && formatCurrency(matchingPolicyLimit)}
-                  </div>
-                  {isOverLimit(matchingCost, matchingPolicyLimit) && (
-                    <div className="mt-1 text-sm text-red-600 font-medium">
-                      Over Limit
-                    </div>
-                  )}
-                </div>
+            {/* Coverage C Section */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="coverageC"
+                  checked={coverageCChecked}
+                  onCheckedChange={setCoverageCChecked}
+                />
+                <Label htmlFor="coverageC" className="text-lg font-semibold">Coverage C - Personal Property</Label>
               </div>
+              
+              {coverageCChecked && (
+                <div className="ml-6 space-y-4 p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <Label htmlFor="coverageCValue">Total Coverage C Value:</Label>
+                    <Input
+                      id="coverageCValue"
+                      type="number"
+                      value={coverageCValue}
+                      onChange={(e) => setCoverageCValue(e.target.value)}
+                      placeholder="Enter Coverage C value"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
-          )}
 
-          <div className="flex items-center space-x-3">
-            <Checkbox 
-              id="ordinance" 
-              checked={ordinanceChecked} 
-              onCheckedChange={(checked) => setOrdinanceChecked(checked === true)}
-            />
-            <Label htmlFor="ordinance" className="text-lg font-medium">Ordinance & Law</Label>
-          </div>
-          
-          {ordinanceChecked && (
-            <div className="ml-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="ordinanceCost">Coverage Amount:</Label>
-                  <Input
-                    id="ordinanceCost"
-                    type="text"
-                    placeholder="Enter coverage amount"
-                    value={ordinanceCost}
-                    onChange={(e) => setOrdinanceCost(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {ordinanceCost && formatCurrency(ordinanceCost)}
+            {/* Coverage D Section */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="coverageD"
+                  checked={coverageDChecked}
+                  onCheckedChange={setCoverageDChecked}
+                />
+                <Label htmlFor="coverageD" className="text-lg font-semibold">Coverage D - Loss of Use</Label>
+              </div>
+              
+              {coverageDChecked && (
+                <div className="ml-6 space-y-4 p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <Label htmlFor="coverageDValue">Total Coverage D Value:</Label>
+                    <Input
+                      id="coverageDValue"
+                      type="number"
+                      value={coverageDValue}
+                      onChange={(e) => setCoverageDValue(e.target.value)}
+                      placeholder="Enter Coverage D value"
+                    />
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="ordinancePolicyLimit">Policy Limit:</Label>
-                  <Input
-                    id="ordinancePolicyLimit"
-                    type="text"
-                    placeholder="Enter policy limit"
-                    value={ordinancePolicyLimit}
-                    onChange={(e) => setOrdinancePolicyLimit(e.target.value)}
-                  />
-                  <div className="mt-1 text-sm text-gray-600">
-                    {ordinancePolicyLimit && formatCurrency(ordinancePolicyLimit)}
-                  </div>
-                  {isOverLimit(ordinanceCost, ordinancePolicyLimit) && (
-                    <div className="mt-1 text-sm text-red-600 font-medium">
-                      Over Limit
-                    </div>
-                  )}
-                </div>
+              )}
+            </div>
+
+            {/* Totals Section */}
+            <div className="mt-8 p-4 bg-gray-100 rounded-lg">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold">Total Estimated Loss:</h3>
+                <span className="text-xl font-bold">${calculateTotal()}</span>
               </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+
+            {/* Print Button */}
+            <div className="flex justify-center mt-6">
+              <Button onClick={handlePrint} className="print:hidden">
+                Print Report
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
