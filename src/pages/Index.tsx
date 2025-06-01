@@ -32,6 +32,14 @@ const Index = () => {
   const [optionalPaymentAmount, setOptionalPaymentAmount] = useState('');
   const [optionalPaymentDescription, setOptionalPaymentDescription] = useState('Optional Payment');
 
+  // Repairs by the Insured amounts
+  const [interiorRepairsAmount, setInteriorRepairsAmount] = useState('');
+  const [exteriorRepairsAmount, setExteriorRepairsAmount] = useState('');
+  const [fencesAmount, setFencesAmount] = useState('');
+  const [screenEnclosureAmount, setScreenEnclosureAmount] = useState('');
+  const [optionalRepairAmount, setOptionalRepairAmount] = useState('');
+  const [optionalRepairDescription, setOptionalRepairDescription] = useState('Optional Repair');
+
   // PA fee percentages (editable, default to 10%)
   const [coverageAFeePercent, setCoverageAFeePercent] = useState('10');
   const [coverageBFeePercent, setCoverageBFeePercent] = useState('10');
@@ -713,35 +721,133 @@ const Index = () => {
                 <span className="font-medium">Repairs by the Insured</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="interior-repairs"
-                    checked={checkedItems.interiorRepairs}
-                    onCheckedChange={(checked) => handleCheckboxChange('interiorRepairs', checked as boolean)}
-                  />
-                  <Label htmlFor="interior-repairs" className="text-sm">
-                    Interior Repairs
-                  </Label>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="interior-repairs"
+                      checked={checkedItems.interiorRepairs}
+                      onCheckedChange={(checked) => handleCheckboxChange('interiorRepairs', checked as boolean)}
+                    />
+                    <Label htmlFor="interior-repairs" className="text-sm">
+                      Interior Repairs
+                    </Label>
+                  </div>
+                  {checkedItems.interiorRepairs && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={interiorRepairsAmount}
+                        onChange={(e) => setInteriorRepairsAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="exterior-repairs"
-                    checked={checkedItems.exteriorRepairs}
-                    onCheckedChange={(checked) => handleCheckboxChange('exteriorRepairs', checked as boolean)}
-                  />
-                  <Label htmlFor="exterior-repairs" className="text-sm">
-                    Exterior Repairs
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="exterior-repairs"
+                      checked={checkedItems.exteriorRepairs}
+                      onCheckedChange={(checked) => handleCheckboxChange('exteriorRepairs', checked as boolean)}
+                    />
+                    <Label htmlFor="exterior-repairs" className="text-sm">
+                      Exterior Repairs
+                    </Label>
+                  </div>
+                  {checkedItems.exteriorRepairs && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={exteriorRepairsAmount}
+                        onChange={(e) => setExteriorRepairsAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="fences"
-                    checked={checkedItems.fences}
-                    onCheckedChange={(checked) => handleCheckboxChange('fences', checked as boolean)}
-                  />
-                  <Label htmlFor="fences" className="text-sm">
-                    Fences
-                  </Label>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="fences"
+                      checked={checkedItems.fences}
+                      onCheckedChange={(checked) => handleCheckboxChange('fences', checked as boolean)}
+                    />
+                    <Label htmlFor="fences" className="text-sm">
+                      Fences
+                    </Label>
+                  </div>
+                  {checkedItems.fences && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={fencesAmount}
+                        onChange={(e) => setFencesAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="screen-enclosure"
+                      checked={checkedItems.screenEnclosure}
+                      onCheckedChange={(checked) => handleCheckboxChange('screenEnclosure', checked as boolean)}
+                    />
+                    <Label htmlFor="screen-enclosure" className="text-sm">
+                      Screen Enclosure
+                    </Label>
+                  </div>
+                  {checkedItems.screenEnclosure && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={screenEnclosureAmount}
+                        onChange={(e) => setScreenEnclosureAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="optional-repair"
+                      checked={checkedItems.optionalRepair}
+                      onCheckedChange={(checked) => handleCheckboxChange('optionalRepair', checked as boolean)}
+                    />
+                    <Input
+                      type="text"
+                      value={optionalRepairDescription}
+                      onChange={(e) => setOptionalRepairDescription(e.target.value)}
+                      className="text-sm flex-1"
+                      placeholder="Optional Repair"
+                    />
+                  </div>
+                  {checkedItems.optionalRepair && (
+                    <div className="ml-6 flex items-center gap-2">
+                      <span className="text-sm">$</span>
+                      <Input
+                        type="text"
+                        placeholder="Enter amount"
+                        value={optionalRepairAmount}
+                        onChange={(e) => setOptionalRepairAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
+                  )}
                 </div>
               </CollapsibleContent>
             </Collapsible>
