@@ -622,7 +622,7 @@ const Index = () => {
               <span className="text-lg font-semibold">$ {balanceAfterDeductible.toFixed(2)}</span>
             </div>
 
-            {/* CCS Fees - now expandable with individual coverage fee inputs */}
+            {/* CCS Fees - now expandable with individual coverage fee inputs in 2x2 grid */}
             <Collapsible 
               open={openSections.ccsFees} 
               onOpenChange={() => toggleSection('ccsFees')}
@@ -635,9 +635,9 @@ const Index = () => {
                 <span className="text-lg font-semibold">$ {paFees.toFixed(2)}</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-a-fees" className="text-sm font-medium w-24">
+                    <Label htmlFor="coverage-a-fees" className="text-sm font-medium w-20">
                       Coverage A Fees
                     </Label>
                     <Input
@@ -649,19 +649,7 @@ const Index = () => {
                     <span className="text-sm">%</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-b-fees" className="text-sm font-medium w-24">
-                      Coverage B Fees
-                    </Label>
-                    <Input
-                      type="text"
-                      value={coverageBFeePercent}
-                      onChange={(e) => setCoverageBFeePercent(e.target.value)}
-                      className="w-16 text-center"
-                    />
-                    <span className="text-sm">%</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-c-fees" className="text-sm font-medium w-24">
+                    <Label htmlFor="coverage-c-fees" className="text-sm font-medium w-20">
                       Coverage C Fees
                     </Label>
                     <Input
@@ -673,7 +661,19 @@ const Index = () => {
                     <span className="text-sm">%</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="coverage-d-fees" className="text-sm font-medium w-24">
+                    <Label htmlFor="coverage-b-fees" className="text-sm font-medium w-20">
+                      Coverage B Fees
+                    </Label>
+                    <Input
+                      type="text"
+                      value={coverageBFeePercent}
+                      onChange={(e) => setCoverageBFeePercent(e.target.value)}
+                      className="w-16 text-center"
+                    />
+                    <span className="text-sm">%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="coverage-d-fees" className="text-sm font-medium w-20">
                       Coverage D Fees
                     </Label>
                     <Input
