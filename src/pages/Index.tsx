@@ -40,6 +40,20 @@ const Index = () => {
   const [optionalRepairAmount, setOptionalRepairAmount] = useState('');
   const [optionalRepairDescription, setOptionalRepairDescription] = useState('Optional Repair');
 
+  // Repairs by Contractor amounts and quantities
+  const [roofSquares, setRoofSquares] = useState('');
+  const [roofTotalCost, setRoofTotalCost] = useState('');
+  const [additionalRoofSquares, setAdditionalRoofSquares] = useState('');
+  const [additionalRoofTotalCost, setAdditionalRoofTotalCost] = useState('');
+  const [guttersLinearFeet, setGuttersLinearFeet] = useState('');
+  const [guttersTotalCost, setGuttersTotalCost] = useState('');
+  const [solarPanels, setSolarPanels] = useState('');
+  const [solarTotalCost, setSolarTotalCost] = useState('');
+  const [soffitLinearFeet, setSoffitLinearFeet] = useState('');
+  const [soffitTotalCost, setSoffitTotalCost] = useState('');
+  const [fasciaLinearFeet, setFasciaLinearFeet] = useState('');
+  const [fasciaTotalCost, setFasciaTotalCost] = useState('');
+
   // PA fee percentages (editable, default to 10%)
   const [coverageAFeePercent, setCoverageAFeePercent] = useState('10');
   const [coverageBFeePercent, setCoverageBFeePercent] = useState('10');
@@ -177,6 +191,25 @@ const Index = () => {
     const dFee = dBalance * ((parseFloat(coverageDFeePercent) || 0) / 100);
     
     return aFee + bFee + cFee + dFee;
+  };
+
+  // Calculate cost per unit functions
+  const calculateCostPerSquare = (totalCost: string, squares: string) => {
+    const cost = parseFloat(totalCost) || 0;
+    const sq = parseFloat(squares) || 0;
+    return sq > 0 ? (cost / sq).toFixed(2) : '0.00';
+  };
+
+  const calculateCostPerLinearFoot = (totalCost: string, linearFeet: string) => {
+    const cost = parseFloat(totalCost) || 0;
+    const feet = parseFloat(linearFeet) || 0;
+    return feet > 0 ? (cost / feet).toFixed(2) : '0.00';
+  };
+
+  const calculateCostPerPanel = (totalCost: string, panels: string) => {
+    const cost = parseFloat(totalCost) || 0;
+    const panelCount = parseFloat(panels) || 0;
+    return panelCount > 0 ? (cost / panelCount).toFixed(2) : '0.00';
   };
 
   const totalCoverage = calculateTotalCoverage();
@@ -846,6 +879,312 @@ const Index = () => {
                         onChange={(e) => setOptionalRepairAmount(e.target.value)}
                         className="flex-1"
                       />
+                    </div>
+                  )}
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Repairs by Contractor */}
+            <Collapsible 
+              open={openSections.repairsByContractor} 
+              onOpenChange={() => toggleSection('repairsByContractor')}
+            >
+              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.repairsByContractor && "rotate-180")} />
+                <span className="font-medium">Repairs by Contractor</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-4 space-y-4">
+                {/* Roof */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="roof"
+                      checked={checkedItems.roof}
+                      onCheckedChange={(checked) => handleCheckboxChange('roof', checked as boolean)}
+                    />
+                    <Label htmlFor="roof" className="text-sm">
+                      Roof
+                    </Label>
+                  </div>
+                  {checkedItems.roof && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Squares (including recommended waste):</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter squares"
+                          value={roofSquares}
+                          onChange={(e) => setRoofSquares(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Total Cost:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter total cost"
+                          value={roofTotalCost}
+                          onChange={(e) => setRoofTotalCost(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Cost/Square:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          value={calculateCostPerSquare(roofTotalCost, roofSquares)}
+                          readOnly
+                          className="flex-1 bg-gray-100"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Additional Roof */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="additional-roof"
+                      checked={checkedItems.additionalRoof}
+                      onCheckedChange={(checked) => handleCheckboxChange('additionalRoof', checked as boolean)}
+                    />
+                    <Label htmlFor="additional-roof" className="text-sm">
+                      Additional Roof
+                    </Label>
+                  </div>
+                  {checkedItems.additionalRoof && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Squares:</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter squares"
+                          value={additionalRoofSquares}
+                          onChange={(e) => setAdditionalRoofSquares(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Total Cost:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter total cost"
+                          value={additionalRoofTotalCost}
+                          onChange={(e) => setAdditionalRoofTotalCost(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Cost/Square:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          value={calculateCostPerSquare(additionalRoofTotalCost, additionalRoofSquares)}
+                          readOnly
+                          className="flex-1 bg-gray-100"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Gutters */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="gutters"
+                      checked={checkedItems.gutters}
+                      onCheckedChange={(checked) => handleCheckboxChange('gutters', checked as boolean)}
+                    />
+                    <Label htmlFor="gutters" className="text-sm">
+                      Gutters
+                    </Label>
+                  </div>
+                  {checkedItems.gutters && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Linear Feet:</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter linear feet"
+                          value={guttersLinearFeet}
+                          onChange={(e) => setGuttersLinearFeet(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Total Cost:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter total cost"
+                          value={guttersTotalCost}
+                          onChange={(e) => setGuttersTotalCost(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Cost/Foot:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          value={calculateCostPerLinearFoot(guttersTotalCost, guttersLinearFeet)}
+                          readOnly
+                          className="flex-1 bg-gray-100"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Solar */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="solar"
+                      checked={checkedItems.solar}
+                      onCheckedChange={(checked) => handleCheckboxChange('solar', checked as boolean)}
+                    />
+                    <Label htmlFor="solar" className="text-sm">
+                      Solar
+                    </Label>
+                  </div>
+                  {checkedItems.solar && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Panels:</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter number of panels"
+                          value={solarPanels}
+                          onChange={(e) => setSolarPanels(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Total Cost:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter total cost"
+                          value={solarTotalCost}
+                          onChange={(e) => setSolarTotalCost(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Cost/Panel:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          value={calculateCostPerPanel(solarTotalCost, solarPanels)}
+                          readOnly
+                          className="flex-1 bg-gray-100"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Soffit */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="soffit"
+                      checked={checkedItems.soffit}
+                      onCheckedChange={(checked) => handleCheckboxChange('soffit', checked as boolean)}
+                    />
+                    <Label htmlFor="soffit" className="text-sm">
+                      Soffit
+                    </Label>
+                  </div>
+                  {checkedItems.soffit && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Linear Feet:</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter linear feet"
+                          value={soffitLinearFeet}
+                          onChange={(e) => setSoffitLinearFeet(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Total Cost:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter total cost"
+                          value={soffitTotalCost}
+                          onChange={(e) => setSoffitTotalCost(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Cost/Foot:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          value={calculateCostPerLinearFoot(soffitTotalCost, soffitLinearFeet)}
+                          readOnly
+                          className="flex-1 bg-gray-100"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Fascia */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="fascia"
+                      checked={checkedItems.fascia}
+                      onCheckedChange={(checked) => handleCheckboxChange('fascia', checked as boolean)}
+                    />
+                    <Label htmlFor="fascia" className="text-sm">
+                      Fascia
+                    </Label>
+                  </div>
+                  {checkedItems.fascia && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Linear Feet:</Label>
+                        <Input
+                          type="text"
+                          placeholder="Enter linear feet"
+                          value={fasciaLinearFeet}
+                          onChange={(e) => setFasciaLinearFeet(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Total Cost:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter total cost"
+                          value={fasciaTotalCost}
+                          onChange={(e) => setFasciaTotalCost(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Cost/Foot:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          value={calculateCostPerLinearFoot(fasciaTotalCost, fasciaLinearFeet)}
+                          readOnly
+                          className="flex-1 bg-gray-100"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
