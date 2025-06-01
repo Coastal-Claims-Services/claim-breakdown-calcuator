@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -166,6 +166,16 @@ const Index = () => {
   const ccsFees = balance * ((parseFloat(ccsFeesPercent) || 0) / 100);
   const balanceAfterFees = balance - ccsFees;
   const balanceWithDeductible = balanceAfterFees - (parseFloat(deductible) || 0);
+
+  // Auto-calculate Prior CCS Fees when Prior Payments amount or percentage changes
+  useEffect(() => {
+    if (checkedItems.priorCCSFees && priorPaymentsAmount) {
+      const priorPayment = parseFloat(priorPaymentsAmount) || 0;
+      const feePercent = parseFloat(priorCCSFeePercent) || 0;
+      const calculatedFee = (priorPayment * feePercent / 100).toFixed(2);
+      setPriorCCSFeesAmount(calculatedFee);
+    }
+  }, [priorPaymentsAmount, priorCCSFeePercent, checkedItems.priorCCSFees]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -514,6 +524,7 @@ const Index = () => {
                         value={priorCCSFeesAmount}
                         onChange={(e) => setPriorCCSFeesAmount(e.target.value)}
                         className="flex-1"
+                        readOnly
                       />
                     </div>
                   )}
