@@ -414,7 +414,7 @@ const EstimateCalculation = () => {
                   <span className="font-medium">-${deductible.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between border-t pt-2 text-lg">
-                  <span className="font-bold">Balance + Deductible:</span>
+                  <span className="font-bold">Balance After Deductible:</span>
                   <span className="font-bold text-green-600">${balanceAfterDeductible.toLocaleString()}</span>
                 </div>
               </div>
