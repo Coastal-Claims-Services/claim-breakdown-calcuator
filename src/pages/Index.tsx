@@ -949,7 +949,26 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.priorPayments && "rotate-180")} />
-                <span className="font-medium">Prior Payments</span>
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-medium">Prior Payments</span>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newId = Math.max(...priorPayments.map(p => p.id)) + 1;
+                      setPriorPayments([...priorPayments, {
+                        id: newId,
+                        amount: '',
+                        description: '',
+                        paFeesChecked: false,
+                        paFeesPercent: '10',
+                        paFeesAmount: '0.00'
+                      }]);
+                    }}
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                  >
+                    + Add Prior Payment
+                  </button>
+                </div>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
                 {/* Compact 3-column layout */}
@@ -1056,27 +1075,9 @@ const Index = () => {
                           </div>
                         </div>
                       ))}
-                      
-                      {/* Add Payment Button */}
-                      <button
-                        onClick={() => {
-                          const newId = Math.max(...priorPayments.map(p => p.id)) + 1;
-                          setPriorPayments([...priorPayments, {
-                            id: newId,
-                            amount: '',
-                            description: '',
-                            paFeesChecked: false,
-                            paFeesPercent: '10',
-                            paFeesAmount: '0.00'
-                          }]);
-                        }}
-                        className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
-                      >
-                        + Add Prior Payment
-                      </button>
-                    </div>
-                  )}
-                </div>
+                     </div>
+                   )}
+                 </div>
               </CollapsibleContent>
             </Collapsible>
 
