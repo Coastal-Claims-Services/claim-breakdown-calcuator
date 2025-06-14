@@ -206,7 +206,11 @@ const Index = () => {
     const cappedC = limitC > 0 ? Math.min(c, limitC) : c;
     const cappedD = limitD > 0 ? Math.min(d, limitD) : d;
     
-    return cappedA + screenEnc + cappedB + cappedC + cappedD;
+    console.log('Coverage calculation:', { a, screenEnc, b, c, d, cappedA, cappedB, cappedC, cappedD, limitD });
+    const total = cappedA + screenEnc + cappedB + cappedC + cappedD;
+    console.log('Total coverage:', total);
+    
+    return total;
   };
 
   const calculateTotalDeductions = () => {
