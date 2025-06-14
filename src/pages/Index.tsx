@@ -464,7 +464,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Coverages A through D - restructured with two columns and policy limits */}
+            {/* Coverages A through D - Two Panel Layout */}
             <Collapsible 
               open={openSections.coverages} 
               onOpenChange={() => toggleSection('coverages')}
@@ -475,65 +475,316 @@ const Index = () => {
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Left Column - Coverage A with Sub-limits */}
+                  {/* Left Panel - Main Coverages */}
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="coverage-a" className="text-sm font-medium w-20">
-                          Coverage A
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
+                    <h3 className="text-lg font-medium mb-4">Coverages A through D</h3>
+                    
+                    {/* Coverage A */}
+                    <Card className="p-4 border-2 border-primary/20 bg-primary/5">
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-primary">Coverage A - Dwelling</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Claim Amount</Label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                value={coverageA}
+                                onChange={(e) => setCoverageA(e.target.value)}
+                                placeholder="0.00"
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Policy Limit</Label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                value={policyLimitA}
+                                onChange={(e) => setPolicyLimitA(e.target.value)}
+                                placeholder="0.00"
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {calculateOverage(coverageA, policyLimitA) > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-red-600 font-medium">Overage: ${calculateOverage(coverageA, policyLimitA).toFixed(2)}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs">Apply to deductible</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setOverageAppliedToDeductible(prev => ({
+                                  ...prev,
+                                  coverageA: !prev.coverageA
+                                }))}
+                                className={cn(
+                                  "h-6 w-6 p-0",
+                                  overageAppliedToDeductible.coverageA && "bg-green-100 border-green-500"
+                                )}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+
+                    {/* Coverage B */}
+                    <Card className="p-4">
+                      <div className="space-y-3">
+                        <h4 className="font-medium">Coverage B - Other Structures</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Claim Amount</Label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                value={coverageB}
+                                onChange={(e) => setCoverageB(e.target.value)}
+                                placeholder="0.00"
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Policy Limit</Label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                value={policyLimitB}
+                                onChange={(e) => setPolicyLimitB(e.target.value)}
+                                placeholder="0.00"
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {calculateOverage(coverageB, policyLimitB) > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-red-600 font-medium">Overage: ${calculateOverage(coverageB, policyLimitB).toFixed(2)}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs">Apply to deductible</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setOverageAppliedToDeductible(prev => ({
+                                  ...prev,
+                                  coverageB: !prev.coverageB
+                                }))}
+                                className={cn(
+                                  "h-6 w-6 p-0",
+                                  overageAppliedToDeductible.coverageB && "bg-green-100 border-green-500"
+                                )}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+
+                    {/* Coverage C */}
+                    <Card className="p-4">
+                      <div className="space-y-3">
+                        <h4 className="font-medium">Coverage C - Personal Property</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Claim Amount</Label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                value={coverageC}
+                                onChange={(e) => setCoverageC(e.target.value)}
+                                placeholder="0.00"
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Policy Limit</Label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                value={policyLimitC}
+                                onChange={(e) => setPolicyLimitC(e.target.value)}
+                                placeholder="0.00"
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {calculateOverage(coverageC, policyLimitC) > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-red-600 font-medium">Overage: ${calculateOverage(coverageC, policyLimitC).toFixed(2)}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs">Apply to deductible</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setOverageAppliedToDeductible(prev => ({
+                                  ...prev,
+                                  coverageC: !prev.coverageC
+                                }))}
+                                className={cn(
+                                  "h-6 w-6 p-0",
+                                  overageAppliedToDeductible.coverageC && "bg-green-100 border-green-500"
+                                )}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+
+                    {/* Coverage D */}
+                    <Card className="p-4">
+                      <div className="space-y-3">
+                        <h4 className="font-medium">Coverage D - Loss of Use</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Claim Amount</Label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                value={coverageD}
+                                onChange={(e) => setCoverageD(e.target.value)}
+                                placeholder="0.00"
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs text-muted-foreground">Policy Limit</Label>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                value={policyLimitD}
+                                onChange={(e) => setPolicyLimitD(e.target.value)}
+                                placeholder="0.00"
+                                className="h-8 text-sm"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {calculateOverage(coverageD, policyLimitD) > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-red-600 font-medium">Overage: ${calculateOverage(coverageD, policyLimitD).toFixed(2)}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs">Apply to deductible</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setOverageAppliedToDeductible(prev => ({
+                                  ...prev,
+                                  coverageD: !prev.coverageD
+                                }))}
+                                className={cn(
+                                  "h-6 w-6 p-0",
+                                  overageAppliedToDeductible.coverageD && "bg-green-100 border-green-500"
+                                )}
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  </div>
+
+                  {/* Right Panel - Coverage A Sub-limits */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium mb-4">Coverage A Sub-limits</h3>
+                    
+                    {/* Screen Enclosure */}
+                    <Card className="p-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Checkbox 
+                            id="screen-enclosure-sub-limit"
+                            checked={checkedItems.screenEnclosureSubLimit}
+                            onCheckedChange={(checked) => handleCheckboxChange('screenEnclosureSubLimit', checked as boolean)}
+                          />
                           <Input
-                            id="coverage-a"
                             type="text"
-                            placeholder="0.00"
-                            value={coverageA}
-                            onChange={(e) => setCoverageA(e.target.value)}
-                            className="flex-1"
+                            value={screenEnclosureSubLimitDescription}
+                            onChange={(e) => setScreenEnclosureSubLimitDescription(e.target.value)}
+                            className="text-sm font-medium"
+                            placeholder="Sub-limit name"
                           />
                         </div>
+                        {checkedItems.screenEnclosureSubLimit && (
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1">
+                                <Label className="text-xs text-muted-foreground">Claim Amount</Label>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-sm">$</span>
+                                  <Input
+                                    type="text"
+                                    value={screenEnclosureSubLimit}
+                                    onChange={(e) => setScreenEnclosureSubLimit(e.target.value)}
+                                    placeholder="0.00"
+                                    className="h-8 text-sm"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs text-muted-foreground">Policy Limit</Label>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-sm">$</span>
+                                  <Input
+                                    type="text"
+                                    value={screenEnclosureSubLimitPolicy}
+                                    onChange={(e) => setScreenEnclosureSubLimitPolicy(e.target.value)}
+                                    placeholder="0.00"
+                                    className="h-8 text-sm"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            {calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy) > 0 && (
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-red-600 font-medium">Overage: ${calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy).toFixed(2)}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs">Apply to deductible</span>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setOverageAppliedToDeductible(prev => ({
+                                      ...prev,
+                                      screenEnclosureSubLimit: !prev.screenEnclosureSubLimit
+                                    }))}
+                                    className={cn(
+                                      "h-6 w-6 p-0",
+                                      overageAppliedToDeductible.screenEnclosureSubLimit && "bg-green-100 border-green-500"
+                                    )}
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-muted-foreground">
-                          Policy Limit
-                        </Label>
-                        <div className="flex items-center gap-1 flex-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="0.00"
-                            value={policyLimitA}
-                            onChange={(e) => setPolicyLimitA(e.target.value)}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                       {calculateOverage(coverageA, policyLimitA) > 0 && (
-                         <div className="ml-20 flex items-center gap-2">
-                           <div className="text-red-600 text-sm font-medium bg-yellow-100 px-2 py-1 rounded">
-                             Over Limit: ${calculateOverage(coverageA, policyLimitA).toFixed(2)}
-                           </div>
-                           <Button
-                             variant="outline"
-                             size="sm"
-                             onClick={() => setOverageAppliedToDeductible(prev => ({
-                               ...prev,
-                               coverageA: !prev.coverageA
-                             }))}
-                             className={cn(
-                               "h-6 w-6 p-0",
-                               overageAppliedToDeductible.coverageA && "bg-green-100 border-green-500"
-                             )}
-                           >
-                             <Plus className="h-3 w-3" />
-                           </Button>
-                           {overageAppliedToDeductible.coverageA && (
-                             <span className="text-green-600 text-xs">Applied to deductible</span>
-                           )}
-                         </div>
-                       )}
-                    </div>
+                    </Card>
 
                     {/* Collapsible Sub-limits for Coverage A */}
                     <div className="ml-4">
