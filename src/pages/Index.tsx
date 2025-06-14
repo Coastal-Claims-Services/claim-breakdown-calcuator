@@ -205,11 +205,16 @@ const Index = () => {
     const cappedC = limitC > 0 ? Math.min(c, limitC) : c;
     const cappedD = limitD > 0 ? Math.min(d, limitD) : d;
     
-    // Screen enclosure is a sub-limit of Coverage A, not additional coverage
-    // So we don't add it separately - it's already included in Coverage A
+    // Add any checked endorsements/sub-limits as additional coverage
+    let endorsementTotal = 0;
+    customSubLimits.forEach(subLimit => {
+      if (subLimit.checked) {
+        endorsementTotal += parseFloat(subLimit.amount) || 0;
+      }
+    });
     
-    console.log('Coverage calculation:', { a, b, c, d, cappedA, cappedB, cappedC, cappedD, limitD });
-    const total = cappedA + cappedB + cappedC + cappedD;
+    console.log('Coverage calculation:', { a, b, c, d, cappedA, cappedB, cappedC, cappedD, limitD, endorsementTotal });
+    const total = cappedA + cappedB + cappedC + cappedD + endorsementTotal;
     console.log('Total coverage:', total);
     
     return total;
@@ -581,7 +586,7 @@ const Index = () => {
                             }}
                             className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1 ml-auto"
                           >
-                            + Add Sub Limit
+                            + Add Endorsement
                           </button>
                         </CollapsibleTrigger>
                         <CollapsibleContent className="pl-4 space-y-3 mt-3 border-l-2 border-border">
@@ -637,7 +642,7 @@ const Index = () => {
                                     <span className="text-sm">$</span>
                                     <Input
                                       type="text"
-                                      placeholder="Enter sub-limit amount"
+                                      placeholder="Enter endorsement amount"
                                       value={subLimit.amount}
                                       onChange={(e) => {
                                         const newSubLimits = [...customSubLimits];
