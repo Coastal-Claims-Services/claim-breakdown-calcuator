@@ -964,55 +964,61 @@ const Index = () => {
                 
                 {/* Custom Payment Deductions */}
                 {customPaymentDeductions.length > 0 && (
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-4 space-y-4">
                     <h4 className="text-sm font-medium text-muted-foreground">Custom Deductions</h4>
-                    {customPaymentDeductions.map((deduction, index) => (
-                      <div key={deduction.id} className="flex items-center gap-4 p-3 bg-muted/30 rounded-md">
-                        <Checkbox 
-                          checked={deduction.checked}
-                          onCheckedChange={(checked) => {
-                            const updated = [...customPaymentDeductions];
-                            updated[index].checked = checked as boolean;
-                            setCustomPaymentDeductions(updated);
-                          }}
-                        />
-                        <Input
-                          type="text"
-                          placeholder="Deduction name"
-                          value={deduction.description}
-                          onChange={(e) => {
-                            const updated = [...customPaymentDeductions];
-                            updated[index].description = e.target.value;
-                            setCustomPaymentDeductions(updated);
-                          }}
-                          className="flex-1"
-                        />
-                        {deduction.checked && (
-                          <div className="flex items-center gap-1">
-                            <span className="text-sm">$</span>
-                            <Input
-                              type="text"
-                              placeholder="Enter amount"
-                              value={deduction.amount}
-                              onChange={(e) => {
-                                const updated = [...customPaymentDeductions];
-                                updated[index].amount = e.target.value;
-                                setCustomPaymentDeductions(updated);
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      {customPaymentDeductions.map((deduction, index) => (
+                        <div key={deduction.id} className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2 flex-1">
+                              <Checkbox 
+                                checked={deduction.checked}
+                                onCheckedChange={(checked) => {
+                                  const updated = [...customPaymentDeductions];
+                                  updated[index].checked = checked as boolean;
+                                  setCustomPaymentDeductions(updated);
+                                }}
+                              />
+                              <Input
+                                type="text"
+                                placeholder="Enter deduction name"
+                                value={deduction.description}
+                                onChange={(e) => {
+                                  const updated = [...customPaymentDeductions];
+                                  updated[index].description = e.target.value;
+                                  setCustomPaymentDeductions(updated);
+                                }}
+                                className="border-none bg-transparent p-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+                              />
+                            </div>
+                            <button
+                              onClick={() => {
+                                setCustomPaymentDeductions(customPaymentDeductions.filter((_, i) => i !== index));
                               }}
-                              className="w-32"
-                            />
+                              className="text-red-500 hover:text-red-700 text-sm ml-2"
+                            >
+                              ✕
+                            </button>
                           </div>
-                        )}
-                        <button
-                          onClick={() => {
-                            setCustomPaymentDeductions(customPaymentDeductions.filter((_, i) => i !== index));
-                          }}
-                          className="text-red-500 hover:text-red-700 text-sm"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
+                          {deduction.checked && (
+                            <div className="ml-6 flex items-center gap-2">
+                              <span className="text-sm">$</span>
+                              <Input
+                                type="text"
+                                placeholder="Enter amount"
+                                value={deduction.amount}
+                                onChange={(e) => {
+                                  const updated = [...customPaymentDeductions];
+                                  updated[index].amount = e.target.value;
+                                  setCustomPaymentDeductions(updated);
+                                }}
+                                className="w-32"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </CollapsibleContent>
