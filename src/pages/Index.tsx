@@ -333,18 +333,18 @@ const Index = () => {
   }, [priorPaymentsAmount, priorCCSFeePercent, checkedItems.priorCCSFees]);
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
         <Card className="mb-6">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <img 
-                  src={theme === "dark" ? "/lovable-uploads/8f45e96c-928c-49b8-9ae6-bab24bce01cb.png" : "/lovable-uploads/d8102e62-174d-41ec-8e54-53ba66b1e02d.png"}
+                  src="/lovable-uploads/d8102e62-174d-41ec-8e54-53ba66b1e02d.png" 
                   alt="Coastal Claims Services Logo" 
                   className="h-12 w-auto"
                 />
-                <CardTitle className="text-2xl font-semibold text-primary">
+                <CardTitle className="text-2xl font-semibold" style={{ color: '#1e3a8a' }}>
                   Claim Breakdown Calculator
                 </CardTitle>
               </div>
@@ -362,8 +362,8 @@ const Index = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Total Coverage Amount - Sum of A+B+C+D only */}
-            <div className="flex items-center justify-between p-3 rounded-lg bg-primary text-primary-foreground">
-              <Label htmlFor="total-coverage" className="text-sm font-medium text-primary-foreground">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#1e3a8a', color: 'white' }}>
+              <Label htmlFor="total-coverage" className="text-sm font-medium" style={{ color: 'white' }}>
                 Total Coverage
               </Label>
               <div className="flex items-center gap-2">
@@ -1121,7 +1121,7 @@ const Index = () => {
             </div>
 
             {/* Balance after Deductible */}
-            <div className="flex items-center justify-between p-3 rounded-lg bg-primary text-primary-foreground">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#1e3a8a', color: 'white' }}>
               <span className="font-medium">Balance</span>
               <span className="text-lg font-semibold">$ {balanceAfterDeductible.toFixed(2)}</span>
             </div>
@@ -1193,13 +1193,13 @@ const Index = () => {
             </Collapsible>
 
             {/* Balance after PA Fees */}
-            <div className="flex items-center justify-between p-3 rounded-lg bg-secondary text-secondary-foreground">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#22c55e', color: 'white' }}>
               <span className="font-medium">Balance after PA Fees</span>
               <span className="text-lg font-semibold">$ {finalBalance.toFixed(2)}</span>
             </div>
 
             {/* Balance + Deductible */}
-            <div className="flex items-center justify-between p-3 rounded-lg bg-secondary text-secondary-foreground">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#22c55e', color: 'white' }}>
               <span className="font-medium">Balance + Deductible</span>
               <span className="text-lg font-semibold">$ {balancePlusDeductible.toFixed(2)}</span>
             </div>
@@ -1689,10 +1689,11 @@ const Index = () => {
         {/* Final Balance Display */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className={`flex items-center justify-between p-4 rounded-lg ${
-              finalBalanceAfterRepairs >= 0 ? 'bg-primary text-primary-foreground' : 'bg-destructive text-destructive-foreground'
-            }`}>
-              <Label className="text-lg font-semibold text-inherit">
+            <div className="flex items-center justify-between p-4 rounded-lg" style={{ 
+              backgroundColor: finalBalanceAfterRepairs >= 0 ? '#1e3a8a' : '#dc2626',
+              color: 'white'
+            }}>
+              <Label className="text-lg font-semibold">
                 {finalBalanceAfterRepairs >= 0 
                   ? 'Final Balance' 
                   : 'Total Out of Pocket Expense After Deductible by Insured'
