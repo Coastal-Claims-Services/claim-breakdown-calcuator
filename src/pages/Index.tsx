@@ -344,7 +344,7 @@ const Index = () => {
                   alt="Coastal Claims Services Logo" 
                   className="h-12 w-auto"
                 />
-                <CardTitle className="text-2xl font-semibold text-primary">
+                <CardTitle className="text-2xl font-semibold" style={{ color: '#1e3a8a' }}>
                   Claim Breakdown Calculator
                 </CardTitle>
               </div>
@@ -362,8 +362,8 @@ const Index = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Total Coverage Amount - Sum of A+B+C+D only */}
-            <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
-              <Label htmlFor="total-coverage" className="text-sm font-medium">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#1e3a8a', color: 'white' }}>
+              <Label htmlFor="total-coverage" className="text-sm font-medium" style={{ color: 'white' }}>
                 Total Coverage
               </Label>
               <div className="flex items-center gap-2">
@@ -1121,7 +1121,7 @@ const Index = () => {
             </div>
 
             {/* Balance after Deductible */}
-            <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#1e3a8a', color: 'white' }}>
               <span className="font-medium">Balance</span>
               <span className="text-lg font-semibold">$ {balanceAfterDeductible.toFixed(2)}</span>
             </div>
@@ -1193,15 +1193,15 @@ const Index = () => {
             </Collapsible>
 
             {/* Balance after PA Fees */}
-            <div className="flex items-center justify-between bg-green-100 p-3 rounded-lg">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#22c55e', color: 'white' }}>
               <span className="font-medium">Balance after PA Fees</span>
-              <span className="text-lg font-semibold text-green-700">$ {finalBalance.toFixed(2)}</span>
+              <span className="text-lg font-semibold">$ {finalBalance.toFixed(2)}</span>
             </div>
 
             {/* Balance + Deductible */}
-            <div className="flex items-center justify-between bg-green-100 p-3 rounded-lg">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#22c55e', color: 'white' }}>
               <span className="font-medium">Balance + Deductible</span>
-              <span className="text-lg font-semibold text-green-700">$ {balancePlusDeductible.toFixed(2)}</span>
+              <span className="text-lg font-semibold">$ {balancePlusDeductible.toFixed(2)}</span>
             </div>
 
             {/* Repairs by the Insured */}
@@ -1689,9 +1689,10 @@ const Index = () => {
         {/* Final Balance Display */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className={`flex items-center justify-between p-4 rounded-lg ${
-              finalBalanceAfterRepairs >= 0 ? 'bg-green-50' : 'bg-red-50'
-            }`}>
+            <div className="flex items-center justify-between p-4 rounded-lg" style={{ 
+              backgroundColor: finalBalanceAfterRepairs >= 0 ? '#1e3a8a' : '#dc2626',
+              color: 'white'
+            }}>
               <Label className="text-lg font-semibold">
                 {finalBalanceAfterRepairs >= 0 
                   ? 'Final Balance' 
