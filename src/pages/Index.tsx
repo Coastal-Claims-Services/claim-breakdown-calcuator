@@ -1532,6 +1532,12 @@ const Index = () => {
               <span className="text-lg font-semibold">$ {balancePlusDeductible.toFixed(2)}</span>
             </div>
 
+            {/* Add Back Prior Payments Less Prior Fees */}
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#f59e0b', color: 'white' }}>
+              <span className="font-medium">Add Back Prior Payments Less Prior Fees</span>
+              <span className="text-lg font-semibold">$ {(calculatePriorPayments() - calculatePriorPAFees()).toFixed(2)}</span>
+            </div>
+
             {/* Amount Withheld (Deductions) */}
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#dc2626', color: 'white' }}>
               <span className="font-medium">Amount Withheld (Deductions)</span>
