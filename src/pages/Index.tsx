@@ -3,11 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 const Index = () => {
+  const { theme, setTheme } = useTheme();
   const [claimAmount, setClaimAmount] = useState('');
   const [deductible, setDeductible] = useState('');
   const [coverageA, setCoverageA] = useState('');
@@ -334,14 +337,28 @@ const Index = () => {
       <div className="max-w-4xl mx-auto">
         <Card className="mb-6">
           <CardHeader className="pb-4">
-            <CardTitle className="flex items-center justify-center gap-4 text-2xl font-semibold">
-              <img 
-                src="/lovable-uploads/a822d896-9826-4f13-944c-6177d3786d1a.png" 
-                alt="Coastal Claims Services Logo" 
-                className="h-10 w-auto"
-              />
-              <span className="text-primary">CCS Claim Breakdown Calculator</span>
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <img 
+                  src="/lovable-uploads/d8102e62-174d-41ec-8e54-53ba66b1e02d.png" 
+                  alt="Coastal Claims Services Logo" 
+                  className="h-12 w-auto"
+                />
+                <CardTitle className="text-2xl font-semibold text-primary">
+                  CCS Claim Breakdown Calculator
+                </CardTitle>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                className="ml-auto"
+              >
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Total Coverage Amount - Sum of A+B+C+D only */}
