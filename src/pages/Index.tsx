@@ -2142,7 +2142,7 @@ const Index = () => {
         <Card className="mb-6">
           <CardContent className="p-6">
             <div className="flex items-center justify-between p-4 rounded-lg" style={{ 
-              backgroundColor: finalBalanceAfterRepairs >= 0 ? '#1e3a8a' : '#dc2626',
+              backgroundColor: '#1e3a8a',
               color: 'white'
             }}>
               <Label className="text-lg font-semibold">
@@ -2152,9 +2152,9 @@ const Index = () => {
                 }
               </Label>
               <div className="flex items-center gap-2">
-                <span className="text-xl">$</span>
+                <span className={`text-xl ${finalBalanceAfterRepairs >= 0 ? 'text-white' : 'text-red-400'}`}>$</span>
                 <span className={`text-xl font-bold min-w-32 text-right ${
-                  finalBalanceAfterRepairs >= 0 ? 'text-green-600' : 'text-red-600'
+                  finalBalanceAfterRepairs >= 0 ? 'text-white' : 'text-red-400'
                 }`}>
                   {finalBalanceAfterRepairs >= 0 
                     ? finalBalanceAfterRepairs.toFixed(2)
