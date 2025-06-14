@@ -2116,7 +2116,8 @@ const Index = () => {
         <Card className="mb-6">
           <CardContent className="p-6">
             {(() => {
-              const finalBalanceAmount = finalBalanceAfterRepairs;
+              const baseAmount = balancePlusDeductible + (calculatePriorPayments() - calculatePriorPAFees());
+              const finalBalanceAmount = baseAmount - totalRepairCosts;
               const withheldAmount = totalDeductions;
               
               if (finalBalanceAmount > 0) {
