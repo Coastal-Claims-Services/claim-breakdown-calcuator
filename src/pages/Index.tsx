@@ -1063,7 +1063,7 @@ const Index = () => {
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.optionalDeductions && "rotate-180")} />
                 <div className="flex items-center justify-between w-full">
-                  <span className="font-medium">Payment (deductions / withholding)</span>
+                  <span className="font-medium">Payment (Deductions / Withholding)</span>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1259,7 +1259,7 @@ const Index = () => {
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.priorPayments && "rotate-180")} />
                 <div className="flex items-center justify-between w-full">
-                  <span className="font-medium">Payments (prior)</span>
+                  <span className="font-medium">Payments (Prior)</span>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1397,7 +1397,7 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.paymentsWithoutFees && "rotate-180")} />
-                <span className="font-medium">Payments (without fees)</span>
+                <span className="font-medium">Payments (Without Fees)</span>
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
