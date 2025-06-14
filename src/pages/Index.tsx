@@ -1562,7 +1562,60 @@ const Index = () => {
                 </div>
                 <span className="text-lg font-semibold">$ {remainingPAFees.toFixed(2)}</span>
               </CollapsibleTrigger>
-              <CollapsibleContent className="p-4 space-y-4">
+              <CollapsibleContent className="p-4 space-y-6">
+                {/* PA Fees Breakdown */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h4 className="font-semibold mb-4 text-gray-800">PA Fees Breakdown</h4>
+                  
+                  {/* Total PA Fees */}
+                  <div className="mb-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm text-gray-600">Total PA Fees (10% of ${totalCoverage.toFixed(2)})</span>
+                      <span className="font-medium">$ {calculateTotalPAFees().toFixed(2)}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className="bg-blue-500 h-3 rounded-full"
+                        style={{ width: '100%' }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  {/* Prior PA Fees Paid */}
+                  {calculatePriorPAFees() > 0 && (
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-600">Prior PA Fees Already Paid</span>
+                        <span className="font-medium text-red-600">- $ {calculatePriorPAFees().toFixed(2)}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className="bg-red-500 h-3 rounded-full"
+                          style={{ 
+                            width: `${(calculatePriorPAFees() / calculateTotalPAFees()) * 100}%`
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Remaining PA Fees Due */}
+                  <div className="pt-3 border-t border-gray-300">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-800">Remaining PA Fees Due</span>
+                      <span className="font-semibold text-green-600">$ {remainingPAFees.toFixed(2)}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div 
+                        className="bg-green-500 h-3 rounded-full"
+                        style={{ 
+                          width: `${calculateTotalPAFees() > 0 ? (remainingPAFees / calculateTotalPAFees()) * 100 : 0}%`
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center gap-2">
                     <Label htmlFor="coverage-a-fees" className="text-sm font-medium w-20">
