@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Moon, Sun } from 'lucide-react';
+import { ChevronDown, Moon, Sun, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
@@ -101,6 +101,14 @@ const Index = () => {
   const [coverageCFeePercent, setCoverageCFeePercent] = useState('10');
   const [coverageDFeePercent, setCoverageDFeePercent] = useState('10');
   const [priorCCSFeePercent, setPriorCCSFeePercent] = useState('10');
+
+  // Overage applied to deductible tracking
+  const [overageAppliedToDeductible, setOverageAppliedToDeductible] = useState({
+    coverageA: false,
+    coverageB: false,
+    coverageC: false,
+    coverageD: false
+  });
 
   const [openSections, setOpenSections] = useState({
     coverages: false,
@@ -200,6 +208,26 @@ const Index = () => {
     return deductions;
   };
 
+  // Calculate total overage applied to deductible
+  const calculateOverageAppliedToDeductible = () => {
+    let totalOverageApplied = 0;
+    
+    if (overageAppliedToDeductible.coverageA) {
+      totalOverageApplied += calculateOverage(coverageA, policyLimitA);
+    }
+    if (overageAppliedToDeductible.coverageB) {
+      totalOverageApplied += calculateOverage(coverageB, policyLimitB);
+    }
+    if (overageAppliedToDeductible.coverageC) {
+      totalOverageApplied += calculateOverage(coverageC, policyLimitC);
+    }
+    if (overageAppliedToDeductible.coverageD) {
+      totalOverageApplied += calculateOverage(coverageD, policyLimitD);
+    }
+    
+    return totalOverageApplied;
+  };
+
   const calculatePriorPayments = () => {
     let payments = 0;
     
@@ -278,9 +306,13 @@ const Index = () => {
   const totalDeductions = calculateTotalDeductions();
   const totalPriorPayments = calculatePriorPayments();
   const totalPaymentsWithoutFees = calculatePaymentsWithoutFees();
+  const totalOverageApplied = calculateOverageAppliedToDeductible();
   
-  // Calculate balance: Total Coverage - Deductions - Prior Payments - Payments without fees - Deductible
-  const balanceAfterDeductible = totalCoverage - totalDeductions - totalPriorPayments - totalPaymentsWithoutFees - (parseFloat(deductible) || 0);
+  // Calculate effective deductible (reduced by applied overage)
+  const effectiveDeductible = Math.max(0, (parseFloat(deductible) || 0) - totalOverageApplied);
+  
+  // Calculate balance: Total Coverage - Deductions - Prior Payments - Payments without fees - Effective Deductible
+  const balanceAfterDeductible = totalCoverage - totalDeductions - totalPriorPayments - totalPaymentsWithoutFees - effectiveDeductible;
   
   // Calculate PA fees using the balance
   const paFees = calculatePAFees(balanceAfterDeductible);
@@ -288,8 +320,8 @@ const Index = () => {
   // Final balance after PA fees
   const finalBalance = balanceAfterDeductible - paFees;
 
-  // Balance plus deductible for repairs
-  const balancePlusDeductible = finalBalance + (parseFloat(deductible) || 0);
+  // Balance plus deductible for repairs (using effective deductible)
+  const balancePlusDeductible = finalBalance + effectiveDeductible;
 
   // Calculate total repair costs (Repairs by Insured + Repairs by Contractor)
   const calculateTotalRepairCosts = () => {
@@ -443,11 +475,30 @@ const Index = () => {
                           />
                         </div>
                       </div>
-                      {calculateOverage(coverageA, policyLimitA) > 0 && (
-                        <div className="ml-20 text-red-600 text-sm font-medium">
-                          Over Limit: ${calculateOverage(coverageA, policyLimitA).toFixed(2)}
-                        </div>
-                      )}
+                       {calculateOverage(coverageA, policyLimitA) > 0 && (
+                         <div className="ml-20 flex items-center gap-2">
+                           <div className="text-red-600 text-sm font-medium bg-yellow-100 px-2 py-1 rounded">
+                             Over Limit: ${calculateOverage(coverageA, policyLimitA).toFixed(2)}
+                           </div>
+                           <Button
+                             variant="outline"
+                             size="sm"
+                             onClick={() => setOverageAppliedToDeductible(prev => ({
+                               ...prev,
+                               coverageA: !prev.coverageA
+                             }))}
+                             className={cn(
+                               "h-6 w-6 p-0",
+                               overageAppliedToDeductible.coverageA && "bg-green-100 border-green-500"
+                             )}
+                           >
+                             <Plus className="h-3 w-3" />
+                           </Button>
+                           {overageAppliedToDeductible.coverageA && (
+                             <span className="text-green-600 text-xs">Applied to deductible</span>
+                           )}
+                         </div>
+                       )}
                     </div>
 
                     {/* Collapsible Sub-limits for Coverage A */}
@@ -739,11 +790,30 @@ const Index = () => {
                           />
                         </div>
                       </div>
-                      {calculateOverage(coverageB, policyLimitB) > 0 && (
-                        <div className="ml-20 text-red-600 text-sm font-medium">
-                          Over Limit: ${calculateOverage(coverageB, policyLimitB).toFixed(2)}
-                        </div>
-                      )}
+                       {calculateOverage(coverageB, policyLimitB) > 0 && (
+                         <div className="ml-20 flex items-center gap-2">
+                           <div className="text-red-600 text-sm font-medium bg-yellow-100 px-2 py-1 rounded">
+                             Over Limit: ${calculateOverage(coverageB, policyLimitB).toFixed(2)}
+                           </div>
+                           <Button
+                             variant="outline"
+                             size="sm"
+                             onClick={() => setOverageAppliedToDeductible(prev => ({
+                               ...prev,
+                               coverageB: !prev.coverageB
+                             }))}
+                             className={cn(
+                               "h-6 w-6 p-0",
+                               overageAppliedToDeductible.coverageB && "bg-green-100 border-green-500"
+                             )}
+                           >
+                             <Plus className="h-3 w-3" />
+                           </Button>
+                           {overageAppliedToDeductible.coverageB && (
+                             <span className="text-green-600 text-xs">Applied to deductible</span>
+                           )}
+                         </div>
+                       )}
                     </div>
 
                     <div className="space-y-2">
@@ -778,11 +848,30 @@ const Index = () => {
                           />
                         </div>
                       </div>
-                      {calculateOverage(coverageC, policyLimitC) > 0 && (
-                        <div className="ml-20 text-red-600 text-sm font-medium">
-                          Over Limit: ${calculateOverage(coverageC, policyLimitC).toFixed(2)}
-                        </div>
-                      )}
+                       {calculateOverage(coverageC, policyLimitC) > 0 && (
+                         <div className="ml-20 flex items-center gap-2">
+                           <div className="text-red-600 text-sm font-medium bg-yellow-100 px-2 py-1 rounded">
+                             Over Limit: ${calculateOverage(coverageC, policyLimitC).toFixed(2)}
+                           </div>
+                           <Button
+                             variant="outline"
+                             size="sm"
+                             onClick={() => setOverageAppliedToDeductible(prev => ({
+                               ...prev,
+                               coverageC: !prev.coverageC
+                             }))}
+                             className={cn(
+                               "h-6 w-6 p-0",
+                               overageAppliedToDeductible.coverageC && "bg-green-100 border-green-500"
+                             )}
+                           >
+                             <Plus className="h-3 w-3" />
+                           </Button>
+                           {overageAppliedToDeductible.coverageC && (
+                             <span className="text-green-600 text-xs">Applied to deductible</span>
+                           )}
+                         </div>
+                       )}
                     </div>
 
                     <div className="space-y-2">
@@ -817,11 +906,30 @@ const Index = () => {
                           />
                         </div>
                       </div>
-                      {calculateOverage(coverageD, policyLimitD) > 0 && (
-                        <div className="ml-20 text-red-600 text-sm font-medium">
-                          Over Limit: ${calculateOverage(coverageD, policyLimitD).toFixed(2)}
-                        </div>
-                      )}
+                       {calculateOverage(coverageD, policyLimitD) > 0 && (
+                         <div className="ml-20 flex items-center gap-2">
+                           <div className="text-red-600 text-sm font-medium bg-yellow-100 px-2 py-1 rounded">
+                             Over Limit: ${calculateOverage(coverageD, policyLimitD).toFixed(2)}
+                           </div>
+                           <Button
+                             variant="outline"
+                             size="sm"
+                             onClick={() => setOverageAppliedToDeductible(prev => ({
+                               ...prev,
+                               coverageD: !prev.coverageD
+                             }))}
+                             className={cn(
+                               "h-6 w-6 p-0",
+                               overageAppliedToDeductible.coverageD && "bg-green-100 border-green-500"
+                             )}
+                           >
+                             <Plus className="h-3 w-3" />
+                           </Button>
+                           {overageAppliedToDeductible.coverageD && (
+                             <span className="text-green-600 text-xs">Applied to deductible</span>
+                           )}
+                         </div>
+                       )}
                     </div>
                   </div>
                 </div>
