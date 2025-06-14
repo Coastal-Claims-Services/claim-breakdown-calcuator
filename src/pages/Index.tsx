@@ -485,11 +485,27 @@ const Index = () => {
     );
   }, [priorPayments]);
 
+  // Load opening statement when release type changes
+  useEffect(() => {
+    if (releaseType) {
+      const saved = localStorage.getItem('adminReleaseTypes');
+      if (saved) {
+        const releaseTypes = JSON.parse(saved);
+        const selectedRelease = releaseTypes.find(type => type.id === releaseType);
+        if (selectedRelease) {
+          setOpeningStatement(selectedRelease.openingStatement);
+        }
+      }
+    }
+  }, [releaseType]);
+
   const handlePinSubmit = () => {
     if (pinInput === '1950') {
       setIsAdminMode(true);
       setShowPinDialog(false);
       setPinInput('');
+      // Redirect to admin page
+      window.location.href = '/admin';
     } else {
       alert('Incorrect PIN');
       setPinInput('');
@@ -559,25 +575,19 @@ const Index = () => {
               <div className="flex items-center gap-4">
                 <Label htmlFor="releaseType" className="text-lg font-medium min-w-[120px]">
                   Release Type
-                  {!isAdminMode && (
-                    <span className="text-sm text-muted-foreground ml-2">(Admin only)</span>
-                  )}
                 </Label>
                 <div className="flex-1 max-w-md">
                   <Select 
                     value={releaseType} 
-                    onValueChange={isAdminMode ? setReleaseType : undefined}
-                    disabled={!isAdminMode}
+                    onValueChange={setReleaseType}
                   >
-                    <SelectTrigger className={cn(!isAdminMode && "bg-gray-100 cursor-not-allowed")}>
-                      <SelectValue placeholder={isAdminMode ? "Select release type" : "Release type (Admin only)"} />
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select release type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="proposed">Proposed Release</SelectItem>
                       <SelectItem value="litigated">Litigated Release</SelectItem>
                       <SelectItem value="mediation">Mediation Release</SelectItem>
-                      <SelectItem value="appraisal">Appraisal Release</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="standard">Standard Release</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -607,27 +617,20 @@ const Index = () => {
               {/* Opening Statement */}
               {releaseType && (
                 <div>
-                  <Label htmlFor="openingStatement">
-                    Opening Statement / Expectations
-                    {!isAdminMode && (
-                      <span className="text-sm text-muted-foreground ml-2">(Admin only)</span>
-                    )}
-                  </Label>
-                  <textarea
-                    id="openingStatement"
-                    value={openingStatement}
-                    onChange={isAdminMode ? (e) => setOpeningStatement(e.target.value) : undefined}
-                    placeholder={isAdminMode ? "Enter detailed explanation, expectations, and any relevant information for this release type..." : "Opening statement content (read-only)"}
-                    className={cn(
-                      "w-full min-h-[120px] p-3 border border-border rounded-md resize-vertical",
-                      !isAdminMode && "bg-gray-100 cursor-not-allowed"
-                    )}
-                    readOnly={!isAdminMode}
-                  />
-                  <div className="text-sm text-muted-foreground mt-1">
-                    This will appear as the main content on page 1 of your release document.
-                    {!isAdminMode && " (Admin access required to edit)"}
-                  </div>
+                   <Label htmlFor="openingStatement">
+                     Opening Statement / Expectations
+                     <span className="text-sm text-muted-foreground ml-2">(Read-only)</span>
+                   </Label>
+                   <textarea
+                     id="openingStatement"
+                     value={openingStatement}
+                     placeholder="Opening statement content (read-only)"
+                     className="w-full min-h-[120px] p-3 border border-border rounded-md resize-vertical bg-gray-100 cursor-not-allowed"
+                     readOnly
+                   />
+                   <div className="text-sm text-muted-foreground mt-1">
+                     This will appear as the main content on page 1 of your release document. (Admin access required to edit)
+                   </div>
                 </div>
               )}
             </div>
