@@ -345,7 +345,7 @@ const Index = () => {
                   className="h-12 w-auto"
                 />
                 <CardTitle className="text-2xl font-semibold text-primary">
-                  CCS Claim Breakdown Calculator
+                  Claim Breakdown Calculator
                 </CardTitle>
               </div>
               <Button
