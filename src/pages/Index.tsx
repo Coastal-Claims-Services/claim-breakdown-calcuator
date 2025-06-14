@@ -49,10 +49,17 @@ const Index = () => {
   const [paidWhenIncurredAmount, setPaidWhenIncurredAmount] = useState('');
   const [ordinanceLawAmount, setOrdinanceLawAmount] = useState('');
 
-  // Prior payments amounts
-  const [priorPaymentsAmount, setPriorPaymentsAmount] = useState('');
-  const [priorPaymentsDescription, setPriorPaymentsDescription] = useState('');
-  const [priorCCSFeesAmount, setPriorCCSFeesAmount] = useState('');
+  // Prior payments amounts - now supports multiple payments
+  const [priorPayments, setPriorPayments] = useState([
+    {
+      id: 1,
+      amount: '',
+      description: '',
+      paFeesChecked: false,
+      paFeesPercent: '10',
+      paFeesAmount: '0.00'
+    }
+  ]);
 
   // Payments without CCS fees amounts
   const [priorToCCSAmount, setPriorToCCSAmount] = useState('');
@@ -187,9 +194,10 @@ const Index = () => {
     let payments = 0;
     
     if (checkedItems.priorPayments) {
-      payments += parseFloat(priorPaymentsAmount) || 0;
+      payments = priorPayments.reduce((sum, payment) => {
+        return sum + (parseFloat(payment.amount) || 0);
+      }, 0);
     }
-    // Don't add priorCCSFeesAmount separately since it's already included as 10% of priorPaymentsAmount
     
     return payments;
   };
@@ -323,15 +331,20 @@ const Index = () => {
   const totalRepairCosts = calculateTotalRepairCosts();
   const finalBalanceAfterRepairs = balancePlusDeductible - totalRepairCosts;
 
-  // Auto-calculate Prior CCS Fees when Prior Payments amount or percentage changes
+  // Auto-calculate PA Fees for each payment when amount or percentage changes
   useEffect(() => {
-    if (checkedItems.priorCCSFees && priorPaymentsAmount) {
-      const priorPayment = parseFloat(priorPaymentsAmount) || 0;
-      const feePercent = parseFloat(priorCCSFeePercent) || 0;
-      const calculatedFee = (priorPayment * feePercent / 100).toFixed(2);
-      setPriorCCSFeesAmount(calculatedFee);
-    }
-  }, [priorPaymentsAmount, priorCCSFeePercent, checkedItems.priorCCSFees]);
+    setPriorPayments(prevPayments => 
+      prevPayments.map(payment => {
+        if (payment.paFeesChecked && payment.amount) {
+          const amount = parseFloat(payment.amount) || 0;
+          const percent = parseFloat(payment.paFeesPercent) || 0;
+          const calculatedFee = (amount * percent / 100).toFixed(2);
+          return { ...payment, paFeesAmount: calculatedFee };
+        }
+        return { ...payment, paFeesAmount: '0.00' };
+      })
+    );
+  }, [priorPayments]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -940,66 +953,115 @@ const Index = () => {
                     </Label>
                   </div>
                   {checkedItems.priorPayments && (
-                    <div className="ml-6 grid grid-cols-4 gap-4 items-end">
-                      {/* Amount */}
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">Amount</Label>
-                        <div className="flex items-center gap-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            placeholder="0.00"
-                            value={priorPaymentsAmount}
-                            onChange={(e) => setPriorPaymentsAmount(e.target.value)}
-                            className="w-24"
-                          />
-                        </div>
+                    <div className="ml-6 space-y-2">
+                      {/* Header Row */}
+                      <div className="grid grid-cols-5 gap-4 text-xs text-muted-foreground font-medium">
+                        <div>Amount</div>
+                        <div>Description</div>
+                        <div>PA Fees</div>
+                        <div>Fee Total</div>
+                        <div></div>
                       </div>
                       
-                      {/* Description */}
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">Description</Label>
-                        <Input
-                          type="text"
-                          placeholder="Check #, payment type, etc."
-                          value={priorPaymentsDescription}
-                          onChange={(e) => setPriorPaymentsDescription(e.target.value)}
-                          className="w-full"
-                        />
-                      </div>
-                      
-                      {/* PA Fees */}
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">PA Fees</Label>
-                        <div className="flex items-center gap-1">
-                          <Checkbox 
-                            id="prior-ccs-fees"
-                            checked={checkedItems.priorCCSFees}
-                            onCheckedChange={(checked) => handleCheckboxChange('priorCCSFees', checked as boolean)}
-                          />
+                      {/* Payment Rows */}
+                      {priorPayments.map((payment, index) => (
+                        <div key={payment.id} className="grid grid-cols-5 gap-4 items-center">
+                          {/* Amount */}
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm">$</span>
+                            <Input
+                              type="text"
+                              placeholder="0.00"
+                              value={payment.amount}
+                              onChange={(e) => {
+                                const newPayments = [...priorPayments];
+                                newPayments[index].amount = e.target.value;
+                                setPriorPayments(newPayments);
+                              }}
+                              className="w-24"
+                            />
+                          </div>
+                          
+                          {/* Description */}
                           <Input
                             type="text"
-                            value={priorCCSFeePercent}
-                            onChange={(e) => setPriorCCSFeePercent(e.target.value)}
-                            className="w-12 text-center text-xs"
+                            placeholder="Check #, payment type, etc."
+                            value={payment.description}
+                            onChange={(e) => {
+                              const newPayments = [...priorPayments];
+                              newPayments[index].description = e.target.value;
+                              setPriorPayments(newPayments);
+                            }}
+                            className="w-full"
                           />
-                          <span className="text-xs">%</span>
+                          
+                          {/* PA Fees */}
+                          <div className="flex items-center gap-1">
+                            <Checkbox 
+                              checked={payment.paFeesChecked}
+                              onCheckedChange={(checked) => {
+                                const newPayments = [...priorPayments];
+                                newPayments[index].paFeesChecked = checked as boolean;
+                                setPriorPayments(newPayments);
+                              }}
+                            />
+                            <Input
+                              type="text"
+                              value={payment.paFeesPercent}
+                              onChange={(e) => {
+                                const newPayments = [...priorPayments];
+                                newPayments[index].paFeesPercent = e.target.value;
+                                setPriorPayments(newPayments);
+                              }}
+                              className="w-12 text-center text-xs"
+                            />
+                            <span className="text-xs">%</span>
+                          </div>
+                          
+                          {/* Fee Total */}
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm">$</span>
+                            <Input
+                              type="text"
+                              value={payment.paFeesChecked ? payment.paFeesAmount : '0.00'}
+                              className="w-20 bg-muted/50 text-sm"
+                              readOnly
+                            />
+                          </div>
+                          
+                          {/* Delete Button */}
+                          <div>
+                            {priorPayments.length > 1 && (
+                              <button
+                                onClick={() => {
+                                  setPriorPayments(priorPayments.filter((_, i) => i !== index));
+                                }}
+                                className="text-red-500 hover:text-red-700 text-sm"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ))}
                       
-                      {/* Fee Total */}
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">Fee Total</Label>
-                        <div className="flex items-center gap-1">
-                          <span className="text-sm">$</span>
-                          <Input
-                            type="text"
-                            value={checkedItems.priorCCSFees ? priorCCSFeesAmount : '0.00'}
-                            className="w-20 bg-muted/50 text-sm"
-                            readOnly
-                          />
-                        </div>
-                      </div>
+                      {/* Add Payment Button */}
+                      <button
+                        onClick={() => {
+                          const newId = Math.max(...priorPayments.map(p => p.id)) + 1;
+                          setPriorPayments([...priorPayments, {
+                            id: newId,
+                            amount: '',
+                            description: '',
+                            paFeesChecked: false,
+                            paFeesPercent: '10',
+                            paFeesAmount: '0.00'
+                          }]);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                      >
+                        + Add Prior Payment
+                      </button>
                     </div>
                   )}
                 </div>
