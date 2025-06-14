@@ -567,7 +567,7 @@ const Index = () => {
                       >
                         <CollapsibleTrigger className="flex items-center gap-2 w-full p-2 bg-muted/50 rounded-lg hover:bg-muted transition-colors border-l-2 border-border">
                           <ChevronDown className={cn("h-3 w-3 transition-transform", openSections.coverageASubLimits && "rotate-180")} />
-                          <span className="text-sm font-medium text-muted-foreground">Coverage A Sub-limits</span>
+                          <span className="text-sm font-medium text-muted-foreground">Limits and Endorsements</span>
                           <button
                             onClick={() => {
                               const newId = Date.now();
