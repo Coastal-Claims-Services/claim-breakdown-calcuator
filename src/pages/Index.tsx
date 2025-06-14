@@ -2179,8 +2179,8 @@ const Index = () => {
               const finalBalanceAmount = baseAmount - totalRepairCosts;
               const withheldAmount = totalDeductions;
               
-              if (finalBalanceAmount > 0) {
-                // GREEN: Positive final balance
+              if (finalBalanceAmount >= 0) {
+                // GREEN: Positive or zero final balance
                 return (
                   <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: '#22c55e', color: 'white' }}>
                     <Label className="text-lg font-semibold">Final Balance</Label>
