@@ -295,19 +295,34 @@ const Index = () => {
     }, 0);
   };
   
-  // Calculate total PA fees based on total coverage (always)
+  // Calculate balance before PA fees (this is what PA fees should be calculated from)
+  const calculateBalanceBeforePAFees = () => {
+    const totalCoverage = calculateTotalCoverage();
+    
+    // Calculate all deductions
+    const paymentDeductions = calculateTotalDeductions();
+    const priorPayments = calculatePriorPayments();
+    const paymentsWithoutFees = calculatePaymentsWithoutFees();
+    const priorPAFees = calculatePriorPAFees();
+    const effectiveDeductible = Math.max(0, (parseFloat(deductible) || 0) - calculateOverageAppliedToDeductible());
+    
+    // Balance = Total Coverage - All Deductions - Prior Payments - Payments Without Fees - Prior PA Fees - Effective Deductible
+    const balance = totalCoverage - paymentDeductions - priorPayments - paymentsWithoutFees - priorPAFees - effectiveDeductible;
+    
+    return Math.max(0, balance);
+  };
+
+  // Calculate current PA fees based on balance (10% of balance)
+  const calculateCurrentPAFees = () => {
+    const balance = calculateBalanceBeforePAFees();
+    return balance * 0.10; // 10% of balance
+  };
+
+  // Calculate total PA fees (current + prior)
   const calculateTotalPAFees = () => {
-    const a = parseFloat(coverageA) || 0;
-    const b = parseFloat(coverageB) || 0;
-    const c = parseFloat(coverageC) || 0;
-    const d = parseFloat(coverageD) || 0;
-    
-    const aFee = a * ((parseFloat(coverageAFeePercent) || 0) / 100);
-    const bFee = b * ((parseFloat(coverageBFeePercent) || 0) / 100);
-    const cFee = c * ((parseFloat(coverageCFeePercent) || 0) / 100);
-    const dFee = d * ((parseFloat(coverageDFeePercent) || 0) / 100);
-    
-    return aFee + bFee + cFee + dFee;
+    const currentPAFees = calculateCurrentPAFees();
+    const priorPAFees = calculatePriorPAFees();
+    return currentPAFees + priorPAFees;
   };
 
   // Calculate prior PA fees already paid
@@ -357,14 +372,14 @@ const Index = () => {
   // Calculate effective deductible (reduced by applied overage)
   const effectiveDeductible = Math.max(0, (parseFloat(deductible) || 0) - totalOverageApplied);
   
-  // Calculate balance: Total Coverage - Deductions - Prior Payments - Payments without fees - Effective Deductible
-  const balanceAfterDeductible = totalCoverage - totalDeductions - totalPriorPayments - totalPaymentsWithoutFees - effectiveDeductible;
+  // Calculate balance before PA fees (this is the blue bar)
+  const balanceBeforePAFees = calculateBalanceBeforePAFees();
   
-  // Calculate remaining PA fees due (total PA fees - prior PA fees already paid)
-  const remainingPAFees = calculateRemainingPAFees();
+  // Calculate current PA fees due
+  const currentPAFees = calculateCurrentPAFees();
   
-  // Final balance after remaining PA fees
-  const finalBalance = balanceAfterDeductible - remainingPAFees;
+  // Final balance after current PA fees
+  const finalBalance = balanceBeforePAFees - currentPAFees;
 
   // Balance plus deductible for repairs (using effective deductible)
   const balancePlusDeductible = finalBalance + effectiveDeductible;
@@ -1364,7 +1379,7 @@ const Index = () => {
             {/* Balance after Deductible */}
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#1e3a8a', color: 'white' }}>
               <span className="font-medium">Balance</span>
-              <span className="text-lg font-semibold">$ {balanceAfterDeductible.toFixed(2)}</span>
+              <span className="text-lg font-semibold">$ {balanceBeforePAFees.toFixed(2)}</span>
             </div>
 
             {/* CCS Fees - now expandable with individual coverage fee inputs in 2x2 grid */}
@@ -1377,7 +1392,7 @@ const Index = () => {
                   <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.ccsFees && "rotate-180")} />
                   <span className="font-medium">CCS Fees</span>
                 </div>
-                <span className="text-lg font-semibold">$ {remainingPAFees.toFixed(2)}</span>
+                <span className="text-lg font-semibold">$ {currentPAFees.toFixed(2)}</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-6">
                 {/* PA Fees Breakdown */}
@@ -1387,7 +1402,7 @@ const Index = () => {
                   {/* Total PA Fees */}
                   <div className="mb-4">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm text-gray-600">Total PA Fees</span>
+                      <span className="text-sm text-gray-600">Total PA Fees (10% of ${balanceBeforePAFees.toFixed(2)})</span>
                       <span className="font-medium">$ {calculateTotalPAFees().toFixed(2)}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
@@ -1416,17 +1431,17 @@ const Index = () => {
                     </div>
                   )}
 
-                  {/* Remaining PA Fees Due */}
+                  {/* Current PA Fees Due */}
                   <div className="pt-3 border-t border-gray-300">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-800">Remaining PA Fees Due</span>
-                      <span className="font-semibold text-green-600">$ {remainingPAFees.toFixed(2)}</span>
+                      <span className="text-sm font-medium text-gray-800">Current PA Fees Due</span>
+                      <span className="font-semibold text-green-600">$ {currentPAFees.toFixed(2)}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
                       <div 
                         className="bg-green-500 h-3 rounded-full"
                         style={{ 
-                          width: `${calculateTotalPAFees() > 0 ? (remainingPAFees / calculateTotalPAFees()) * 100 : 0}%`
+                          width: `${calculateTotalPAFees() > 0 ? (currentPAFees / calculateTotalPAFees()) * 100 : 0}%`
                         }}
                       ></div>
                     </div>
