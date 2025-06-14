@@ -1538,10 +1538,12 @@ const Index = () => {
               <span className="text-lg font-semibold">$ {(calculatePriorPayments() - calculatePriorPAFees()).toFixed(2)}</span>
             </div>
 
-            {/* Amount Withheld (Deductions) */}
+            {/* Amount Withheld (Deductions Less Non-RD) */}
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#dc2626', color: 'white' }}>
-              <span className="font-medium">Amount Withheld (Deductions)</span>
-              <span className="text-lg font-semibold">$ {totalDeductions.toFixed(2)}</span>
+              <span className="font-medium">
+                Amount Withheld (Deductions Less Non-RD ${(parseFloat(nonRecoverableDepreciationAmount) || 0).toFixed(0)} - ${totalDeductions.toFixed(0)})
+              </span>
+              <span className="text-lg font-semibold">$ {(totalDeductions - (parseFloat(nonRecoverableDepreciationAmount) || 0)).toFixed(2)}</span>
             </div>
 
             {/* Total Possible Recovered (if costs are incurred) */}
