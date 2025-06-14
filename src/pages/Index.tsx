@@ -585,9 +585,26 @@ const Index = () => {
                       <SelectValue placeholder="Select release type" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="proposed">Proposed Release</SelectItem>
                       <SelectItem value="litigated">Litigated Release</SelectItem>
                       <SelectItem value="mediation">Mediation Release</SelectItem>
+                      <SelectItem value="appraisal">Appraisal Release</SelectItem>
                       <SelectItem value="standard">Standard Release</SelectItem>
+                      {/* Load custom release types from admin settings */}
+                      {(() => {
+                        const saved = localStorage.getItem('adminReleaseTypes');
+                        if (saved) {
+                          const releaseTypes = JSON.parse(saved);
+                          return releaseTypes
+                            .filter(type => type.id.startsWith('custom-'))
+                            .map(type => (
+                              <SelectItem key={type.id} value={type.id}>
+                                {type.name}
+                              </SelectItem>
+                            ));
+                        }
+                        return null;
+                      })()}
                     </SelectContent>
                   </Select>
                 </div>

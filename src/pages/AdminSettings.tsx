@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface ReleaseType {
@@ -17,6 +18,11 @@ const AdminSettings = () => {
   const { toast } = useToast();
   const [releaseTypes, setReleaseTypes] = useState<ReleaseType[]>([
     {
+      id: "proposed",
+      name: "Proposed Release",
+      openingStatement: "Enter detailed explanation, expectations, and any relevant information for this release type..."
+    },
+    {
       id: "litigated",
       name: "Litigated Release",
       openingStatement: "Enter detailed explanation, expectations, and any relevant information for this release type..."
@@ -24,6 +30,11 @@ const AdminSettings = () => {
     {
       id: "mediation",
       name: "Mediation Release", 
+      openingStatement: "Enter detailed explanation, expectations, and any relevant information for this release type..."
+    },
+    {
+      id: "appraisal",
+      name: "Appraisal Release",
       openingStatement: "Enter detailed explanation, expectations, and any relevant information for this release type..."
     },
     {
@@ -45,6 +56,28 @@ const AdminSettings = () => {
     setReleaseTypes(prev => 
       prev.map(type => 
         type.id === id ? { ...type, openingStatement: value } : type
+      )
+    );
+  };
+
+  const addCustomReleaseType = () => {
+    const newId = `custom-${Date.now()}`;
+    const newReleaseType: ReleaseType = {
+      id: newId,
+      name: "Custom Release Type",
+      openingStatement: "Enter detailed explanation, expectations, and any relevant information for this release type..."
+    };
+    setReleaseTypes(prev => [...prev, newReleaseType]);
+  };
+
+  const removeReleaseType = (id: string) => {
+    setReleaseTypes(prev => prev.filter(type => type.id !== id));
+  };
+
+  const handleNameChange = (id: string, value: string) => {
+    setReleaseTypes(prev => 
+      prev.map(type => 
+        type.id === id ? { ...type, name: value } : type
       )
     );
   };
@@ -79,12 +112,40 @@ const AdminSettings = () => {
 
         {/* Release Types Settings */}
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-foreground">Opening Statement Templates</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-foreground">Opening Statement Templates</h2>
+            <Button onClick={addCustomReleaseType} variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Custom Release Type
+            </Button>
+          </div>
           
           {releaseTypes.map((releaseType) => (
             <Card key={releaseType.id} className="border-border">
               <CardHeader>
-                <CardTitle className="text-foreground">{releaseType.name}</CardTitle>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <Label htmlFor={`name-${releaseType.id}`} className="text-sm text-muted-foreground">
+                      Release Type Name
+                    </Label>
+                    <Input
+                      id={`name-${releaseType.id}`}
+                      value={releaseType.name}
+                      onChange={(e) => handleNameChange(releaseType.id, e.target.value)}
+                      className="mt-1 font-semibold"
+                    />
+                  </div>
+                  {releaseType.id.startsWith('custom-') && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeReleaseType(releaseType.id)}
+                      className="ml-4 text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
