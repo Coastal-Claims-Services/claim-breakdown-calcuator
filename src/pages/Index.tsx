@@ -92,6 +92,11 @@ const Index = () => {
     checked: boolean;
   }>>([]);
 
+  // Release type state
+  const [releaseType, setReleaseType] = useState('');
+  const [customReleaseTypeName, setCustomReleaseTypeName] = useState('');
+  const [openingStatement, setOpeningStatement] = useState('');
+
   // Print preview state
   const [showPrintPreview, setShowPrintPreview] = useState(false);
 
@@ -515,6 +520,76 @@ const Index = () => {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Release Type Selector */}
+            <div className="space-y-4">
+              <Label className="text-lg font-semibold">Release Type</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {[
+                  { id: 'proposed', label: 'Proposed Release', description: 'Carrier negotiations, back and forth' },
+                  { id: 'litigated', label: 'Litigated Release', description: 'Attorney finalized true-up' },
+                  { id: 'mediation', label: 'Mediation Release', description: 'Non-formal lump sum settlement' },
+                  { id: 'appraisal', label: 'Appraisal Release', description: 'Estimate-based process' },
+                  { id: 'other', label: 'Other', description: 'Custom release type' }
+                ].map((type) => (
+                  <div
+                    key={type.id}
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      releaseType === type.id 
+                        ? 'border-primary bg-primary/5' 
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                    onClick={() => setReleaseType(type.id)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name="releaseType"
+                        value={type.id}
+                        checked={releaseType === type.id}
+                        onChange={() => setReleaseType(type.id)}
+                        className="text-primary"
+                      />
+                      <div>
+                        <div className="font-medium">{type.label}</div>
+                        <div className="text-sm text-muted-foreground">{type.description}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Custom Release Type Name */}
+              {releaseType === 'other' && (
+                <div>
+                  <Label htmlFor="customReleaseType">Custom Release Type Name</Label>
+                  <Input
+                    id="customReleaseType"
+                    type="text"
+                    value={customReleaseTypeName}
+                    onChange={(e) => setCustomReleaseTypeName(e.target.value)}
+                    placeholder="Enter custom release type name"
+                  />
+                </div>
+              )}
+
+              {/* Opening Statement */}
+              {releaseType && (
+                <div>
+                  <Label htmlFor="openingStatement">Opening Statement / Expectations</Label>
+                  <textarea
+                    id="openingStatement"
+                    value={openingStatement}
+                    onChange={(e) => setOpeningStatement(e.target.value)}
+                    placeholder="Enter detailed explanation, expectations, and any relevant information for this release type..."
+                    className="w-full min-h-[120px] p-3 border border-border rounded-md resize-vertical"
+                  />
+                  <div className="text-sm text-muted-foreground mt-1">
+                    This will appear as the main content on page 1 of your release document.
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Total Coverage Amount - Sum of A+B+C+D only */}
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#1e3a8a', color: 'white' }}>
               <Label htmlFor="total-coverage" className="text-sm font-medium" style={{ color: 'white' }}>
@@ -2173,6 +2248,9 @@ const Index = () => {
           isOpen={showPrintPreview}
           onClose={() => setShowPrintPreview(false)}
           data={{
+            releaseType,
+            customReleaseTypeName,
+            openingStatement,
             claimAmount,
             deductible,
             coverageA,

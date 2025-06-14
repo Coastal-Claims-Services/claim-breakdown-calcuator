@@ -11,6 +11,9 @@ interface PrintPreviewProps {
   isOpen: boolean;
   onClose: () => void;
   data: {
+    releaseType: string;
+    customReleaseTypeName: string;
+    openingStatement: string;
     claimAmount: string;
     deductible: string;
     coverageA: string;
