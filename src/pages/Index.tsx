@@ -64,12 +64,23 @@ const Index = () => {
     }
   ]);
 
-  // Payments without CCS fees amounts
-  const [priorToCCSAmount, setPriorToCCSAmount] = useState('');
-  const [legalFeesAmount, setLegalFeesAmount] = useState('');
-  const [paidIncurredAmount, setPaidIncurredAmount] = useState('');
-  const [optionalPaymentAmount, setOptionalPaymentAmount] = useState('');
-  const [optionalPaymentDescription, setOptionalPaymentDescription] = useState('Optional Payment');
+  // Payments without fees - now supports multiple payments
+  const [paymentsWithoutFees, setPaymentsWithoutFees] = useState([
+    {
+      id: 1,
+      type: 'legalFees',
+      typeName: 'Legal Fees',
+      amount: '',
+      checked: false
+    },
+    {
+      id: 2,
+      type: 'paidIncurred',
+      typeName: 'Paid/Incurred',
+      amount: '',
+      checked: false
+    }
+  ]);
 
   // Repairs by the Insured amounts
   const [interiorRepairsAmount, setInteriorRepairsAmount] = useState('');
@@ -275,22 +286,12 @@ const Index = () => {
   };
 
   const calculatePaymentsWithoutFees = () => {
-    let payments = 0;
-    
-    if (checkedItems.priorToCCS) {
-      payments += parseFloat(priorToCCSAmount) || 0;
-    }
-    if (checkedItems.legalFees) {
-      payments += parseFloat(legalFeesAmount) || 0;
-    }
-    if (checkedItems.paidIncurred) {
-      payments += parseFloat(paidIncurredAmount) || 0;
-    }
-    if (checkedItems.optionalPayment) {
-      payments += parseFloat(optionalPaymentAmount) || 0;
-    }
-    
-    return payments;
+    return paymentsWithoutFees.reduce((sum, payment) => {
+      if (payment.checked) {
+        return sum + (parseFloat(payment.amount) || 0);
+      }
+      return sum;
+    }, 0);
   };
   
   // Calculate total PA fees based on total coverage (always)
@@ -1410,70 +1411,78 @@ const Index = () => {
               </CollapsibleContent>
             </Collapsible>
 
-            {/* Payments to CCS without Fees */}
+            {/* Payments without Fees */}
             <Collapsible 
               open={openSections.paymentsWithoutFees} 
               onOpenChange={() => toggleSection('paymentsWithoutFees')}
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.paymentsWithoutFees && "rotate-180")} />
-                 <span className="font-medium">Payments without Fees</span>
-                 <Button variant="outline" size="sm" className="ml-auto bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100">
-                   <Plus className="h-4 w-4 mr-1" />
-                   Add Payment
-                 </Button>
+                <span className="font-medium">Payments without Fees</span>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const newId = Math.max(...paymentsWithoutFees.map(p => p.id)) + 1;
+                    setPaymentsWithoutFees([...paymentsWithoutFees, {
+                      id: newId,
+                      type: 'custom',
+                      typeName: 'Custom Payment',
+                      amount: '',
+                      checked: false
+                    }]);
+                  }}
+                  className="ml-auto bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded text-sm font-medium flex items-center gap-1"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Payment
+                </button>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="legal-fees"
-                        checked={checkedItems.legalFees}
-                        onCheckedChange={(checked) => handleCheckboxChange('legalFees', checked as boolean)}
-                      />
-                      <Label htmlFor="legal-fees" className="text-sm">
-                        Legal Fees
-                      </Label>
-                    </div>
-                    {checkedItems.legalFees && (
-                      <div className="ml-6 flex items-center gap-2">
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter amount"
-                          value={legalFeesAmount}
-                          onChange={(e) => setLegalFeesAmount(e.target.value)}
-                          className="flex-1"
+                  {paymentsWithoutFees.map((payment, index) => (
+                    <div key={payment.id} className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`payment-${payment.id}`}
+                          checked={payment.checked}
+                          onCheckedChange={(checked) => {
+                            const newPayments = [...paymentsWithoutFees];
+                            newPayments[index].checked = checked as boolean;
+                            setPaymentsWithoutFees(newPayments);
+                          }}
                         />
+                        <Label htmlFor={`payment-${payment.id}`} className="text-sm">
+                          {payment.typeName}
+                        </Label>
+                        {paymentsWithoutFees.length > 2 && (
+                          <button
+                            onClick={() => {
+                              setPaymentsWithoutFees(paymentsWithoutFees.filter((_, i) => i !== index));
+                            }}
+                            className="text-red-500 hover:text-red-700 text-sm ml-auto"
+                          >
+                            ✕
+                          </button>
+                        )}
                       </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="paid-incurred"
-                        checked={checkedItems.paidIncurred}
-                        onCheckedChange={(checked) => handleCheckboxChange('paidIncurred', checked as boolean)}
-                      />
-                      <Label htmlFor="paid-incurred" className="text-sm">
-                        Paid/Incurred
-                      </Label>
+                      {payment.checked && (
+                        <div className="ml-6 flex items-center gap-2">
+                          <span className="text-sm">$</span>
+                          <Input
+                            type="text"
+                            placeholder="Enter amount"
+                            value={payment.amount}
+                            onChange={(e) => {
+                              const newPayments = [...paymentsWithoutFees];
+                              newPayments[index].amount = e.target.value;
+                              setPaymentsWithoutFees(newPayments);
+                            }}
+                            className="flex-1"
+                          />
+                        </div>
+                      )}
                     </div>
-                    {checkedItems.paidIncurred && (
-                      <div className="ml-6 flex items-center gap-2">
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter amount"
-                          value={paidIncurredAmount}
-                          onChange={(e) => setPaidIncurredAmount(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
-                    )}
-                  </div>
+                  ))}
                 </div>
               </CollapsibleContent>
             </Collapsible>
