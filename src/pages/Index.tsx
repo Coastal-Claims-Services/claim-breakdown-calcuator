@@ -271,6 +271,56 @@ const Index = () => {
   // Balance plus deductible for repairs
   const balancePlusDeductible = finalBalance + (parseFloat(deductible) || 0);
 
+  // Calculate total repair costs (Repairs by Insured + Repairs by Contractor)
+  const calculateTotalRepairCosts = () => {
+    let repairCosts = 0;
+    
+    // Repairs by Insured
+    if (checkedItems.interiorRepairs) {
+      repairCosts += parseFloat(interiorRepairsAmount) || 0;
+    }
+    if (checkedItems.exteriorRepairs) {
+      repairCosts += parseFloat(exteriorRepairsAmount) || 0;
+    }
+    if (checkedItems.fences) {
+      repairCosts += parseFloat(fencesAmount) || 0;
+    }
+    if (checkedItems.screenEnclosure) {
+      repairCosts += parseFloat(screenEnclosureAmount) || 0;
+    }
+    if (checkedItems.optionalRepair) {
+      repairCosts += parseFloat(optionalRepairAmount) || 0;
+    }
+    
+    // Repairs by Contractor
+    if (checkedItems.roof) {
+      repairCosts += parseFloat(roofTotalCost) || 0;
+    }
+    if (checkedItems.additionalRoof) {
+      repairCosts += parseFloat(additionalRoofTotalCost) || 0;
+    }
+    if (checkedItems.gutters) {
+      repairCosts += parseFloat(guttersTotalCost) || 0;
+    }
+    if (checkedItems.solar) {
+      repairCosts += parseFloat(solarTotalCost) || 0;
+    }
+    if (checkedItems.soffit) {
+      repairCosts += parseFloat(soffitTotalCost) || 0;
+    }
+    if (checkedItems.fascia) {
+      repairCosts += parseFloat(fasciaTotalCost) || 0;
+    }
+    if (checkedItems.contractorOptionalRepair) {
+      repairCosts += parseFloat(contractorOptionalRepairAmount) || 0;
+    }
+    
+    return repairCosts;
+  };
+
+  const totalRepairCosts = calculateTotalRepairCosts();
+  const finalBalanceAfterRepairs = balancePlusDeductible - totalRepairCosts;
+
   // Auto-calculate Prior CCS Fees when Prior Payments amount or percentage changes
   useEffect(() => {
     if (checkedItems.priorCCSFees && priorPaymentsAmount) {
@@ -1616,6 +1666,33 @@ const Index = () => {
                 </div>
               </CollapsibleContent>
             </Collapsible>
+          </CardContent>
+        </Card>
+
+        {/* Final Balance Display */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className={`flex items-center justify-between p-4 rounded-lg ${
+              finalBalanceAfterRepairs >= 0 ? 'bg-green-50' : 'bg-red-50'
+            }`}>
+              <Label className="text-lg font-semibold">
+                {finalBalanceAfterRepairs >= 0 
+                  ? 'Final Balance' 
+                  : 'Total Out of Pocket Expense After Deductible by Insured'
+                }
+              </Label>
+              <div className="flex items-center gap-2">
+                <span className="text-xl">$</span>
+                <span className={`text-xl font-bold min-w-32 text-right ${
+                  finalBalanceAfterRepairs >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {finalBalanceAfterRepairs >= 0 
+                    ? finalBalanceAfterRepairs.toFixed(2)
+                    : Math.abs(finalBalanceAfterRepairs).toFixed(2)
+                  }
+                </span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
