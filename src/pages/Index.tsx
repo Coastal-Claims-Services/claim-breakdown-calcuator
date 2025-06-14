@@ -2118,7 +2118,7 @@ const Index = () => {
         <Card className="mb-6">
           <CardContent className="p-6">
             {(() => {
-              const baseAmount = balancePlusDeductible + (calculatePriorPayments() - calculatePriorPAFees());
+              const baseAmount = totalPossibleRecovered - (parseFloat(nonRecoverableDepreciationAmount) || 0);
               const finalBalanceAmount = baseAmount - totalRepairCosts;
               const withheldAmount = totalDeductions;
               
