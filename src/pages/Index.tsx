@@ -1417,86 +1417,63 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.paymentsWithoutFees && "rotate-180")} />
-                <span className="font-medium">Payments to CCS without Fees</span>
+                 <span className="font-medium">Payments without Fees</span>
+                 <Button variant="outline" size="sm" className="ml-auto bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100">
+                   <Plus className="h-4 w-4 mr-1" />
+                   Add Payment
+                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="legal-fees"
-                      checked={checkedItems.legalFees}
-                      onCheckedChange={(checked) => handleCheckboxChange('legalFees', checked as boolean)}
-                    />
-                    <Label htmlFor="legal-fees" className="text-sm">
-                      Legal Fees
-                    </Label>
-                  </div>
-                  {checkedItems.legalFees && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={legalFeesAmount}
-                        onChange={(e) => setLegalFeesAmount(e.target.value)}
-                        className="flex-1"
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="legal-fees"
+                        checked={checkedItems.legalFees}
+                        onCheckedChange={(checked) => handleCheckboxChange('legalFees', checked as boolean)}
                       />
+                      <Label htmlFor="legal-fees" className="text-sm">
+                        Legal Fees
+                      </Label>
                     </div>
-                  )}
-                </div>
+                    {checkedItems.legalFees && (
+                      <div className="ml-6 flex items-center gap-2">
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter amount"
+                          value={legalFeesAmount}
+                          onChange={(e) => setLegalFeesAmount(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                    )}
+                  </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="paid-incurred"
-                      checked={checkedItems.paidIncurred}
-                      onCheckedChange={(checked) => handleCheckboxChange('paidIncurred', checked as boolean)}
-                    />
-                    <Label htmlFor="paid-incurred" className="text-sm">
-                      Paid/Incurred
-                    </Label>
-                  </div>
-                  {checkedItems.paidIncurred && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={paidIncurredAmount}
-                        onChange={(e) => setPaidIncurredAmount(e.target.value)}
-                        className="flex-1"
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="paid-incurred"
+                        checked={checkedItems.paidIncurred}
+                        onCheckedChange={(checked) => handleCheckboxChange('paidIncurred', checked as boolean)}
                       />
+                      <Label htmlFor="paid-incurred" className="text-sm">
+                        Paid/Incurred
+                      </Label>
                     </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="optional-payment"
-                      checked={checkedItems.optionalPayment}
-                      onCheckedChange={(checked) => handleCheckboxChange('optionalPayment', checked as boolean)}
-                    />
-                    <Input
-                      type="text"
-                      value={optionalPaymentDescription}
-                      onChange={(e) => setOptionalPaymentDescription(e.target.value)}
-                      className="text-sm flex-1"
-                      placeholder="Optional Payment"
-                    />
+                    {checkedItems.paidIncurred && (
+                      <div className="ml-6 flex items-center gap-2">
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter amount"
+                          value={paidIncurredAmount}
+                          onChange={(e) => setPaidIncurredAmount(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                    )}
                   </div>
-                  {checkedItems.optionalPayment && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={optionalPaymentAmount}
-                        onChange={(e) => setOptionalPaymentAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
                 </div>
               </CollapsibleContent>
             </Collapsible>
