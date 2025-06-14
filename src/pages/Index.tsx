@@ -657,10 +657,9 @@ const Index = () => {
               <Label htmlFor="total-coverage" className="text-sm font-medium" style={{ color: 'white' }}>
                 Total Coverage
               </Label>
-              <div className="flex items-center gap-2">
-                <span className="text-lg">$</span>
-                <span className="text-lg font-semibold min-w-24 text-right">
-                  {totalCoverage.toFixed(2)}
+              <div className="flex items-center">
+                <span className="text-lg font-semibold">
+                  ${totalCoverage.toFixed(2)}
                 </span>
               </div>
             </div>
