@@ -1532,6 +1532,12 @@ const Index = () => {
               <span className="text-lg font-semibold">$ {balancePlusDeductible.toFixed(2)}</span>
             </div>
 
+            {/* Amount Withheld (Deductions) */}
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#dc2626', color: 'white' }}>
+              <span className="font-medium">Amount Withheld (Deductions)</span>
+              <span className="text-lg font-semibold">$ {totalDeductions.toFixed(2)}</span>
+            </div>
+
             {/* Total Possible Recovered (if costs are incurred) */}
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#f59e0b', color: 'white' }}>
               <span className="font-medium">Total Possible Recovered (if costs are incurred)</span>
