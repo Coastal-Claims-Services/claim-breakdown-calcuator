@@ -1547,7 +1547,7 @@ const Index = () => {
             {/* Total Possible Recovered (if costs are incurred) */}
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#f59e0b', color: 'white' }}>
               <span className="font-medium">Total Possible Recovered (if costs are incurred)</span>
-              <span className="text-lg font-semibold">$ {totalPossibleRecovered.toFixed(2)}</span>
+              <span className="text-lg font-semibold">$ {(balancePlusDeductible + (calculatePriorPayments() - calculatePriorPAFees())).toFixed(2)}</span>
             </div>
 
             {/* Repairs by the Insured */}
