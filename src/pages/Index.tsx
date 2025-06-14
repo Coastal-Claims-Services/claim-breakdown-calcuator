@@ -33,6 +33,9 @@ const Index = () => {
   const [paidWhenIncurredAmount, setPaidWhenIncurredAmount] = useState('');
   const [ordinanceLawAmount, setOrdinanceLawAmount] = useState('');
 
+  // UI state for expandable sections
+  const [isDeductibleExpanded, setIsDeductibleExpanded] = useState(false);
+
   // Dynamic payment deductions
   const [customPaymentDeductions, setCustomPaymentDeductions] = useState([]);
 
@@ -1293,22 +1296,56 @@ const Index = () => {
               </CollapsibleContent>
             </Collapsible>
 
-            {/* Deductible */}
-            <div className="flex items-center gap-4 bg-muted/50 p-3 rounded-lg">
-              <Label htmlFor="deductible" className="text-sm font-medium w-20">
-                Deductible
-              </Label>
-              <div className="flex items-center gap-2 flex-1">
-                <span className="text-lg">$</span>
-                <Input
-                  id="deductible"
-                  type="text"
-                  placeholder="Enter deductible amount"
-                  value={deductible}
-                  onChange={(e) => setDeductible(e.target.value)}
-                  className="flex-1"
-                />
+            {/* Deductible with Breakdown */}
+            <div className="bg-muted/50 rounded-lg">
+              <div 
+                className="flex items-center gap-4 p-3 cursor-pointer"
+                onClick={() => setIsDeductibleExpanded(!isDeductibleExpanded)}
+              >
+                <Label className="text-sm font-medium w-20">
+                  Deductible
+                </Label>
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="text-lg">$</span>
+                  <Input
+                    id="deductible"
+                    type="text"
+                    placeholder="Enter deductible amount"
+                    value={deductible}
+                    onChange={(e) => setDeductible(e.target.value)}
+                    className="flex-1"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-semibold">$ {effectiveDeductible.toFixed(2)}</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${isDeductibleExpanded ? 'rotate-180' : ''}`} />
+                </div>
               </div>
+              
+              {isDeductibleExpanded && (
+                <div className="px-3 pb-3">
+                  <div className="bg-white p-3 rounded border-l-4 border-blue-500">
+                    <h4 className="font-medium mb-2">Deductible Breakdown</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Original Deductible:</span>
+                        <span>$ {(parseFloat(deductible) || 0).toFixed(2)}</span>
+                      </div>
+                      {totalOverageApplied > 0 && (
+                        <div className="flex justify-between text-green-600">
+                          <span>Over Limit Applied:</span>
+                          <span>- $ {totalOverageApplied.toFixed(2)}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between font-medium border-t pt-2">
+                        <span>Effective Deductible:</span>
+                        <span>$ {effectiveDeductible.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Balance after Deductible */}
