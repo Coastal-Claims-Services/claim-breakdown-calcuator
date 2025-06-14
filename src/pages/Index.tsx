@@ -1836,6 +1836,7 @@ const Index = () => {
                     </div>
                     {repair.checked && (
                       <div className="ml-6 flex items-center gap-2">
+                        <Label className="text-sm w-20">Amount:</Label>
                         <span className="text-sm">$</span>
                         <Input
                           type="text"
