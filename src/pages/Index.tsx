@@ -2263,10 +2263,9 @@ const Index = () => {
                 return (
                   <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: '#22c55e', color: 'white' }}>
                     <Label className="text-lg font-semibold">Final Balance</Label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl text-white">$</span>
-                      <span className="text-xl font-bold min-w-32 text-right text-white">
-                        {finalBalanceAmount.toFixed(2)}
+                    <div className="flex items-center">
+                      <span className="text-xl font-bold text-white">
+                        ${finalBalanceAmount.toFixed(2)}
                       </span>
                     </div>
                   </div>
