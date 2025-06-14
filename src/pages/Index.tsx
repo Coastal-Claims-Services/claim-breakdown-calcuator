@@ -51,6 +51,7 @@ const Index = () => {
 
   // Prior payments amounts
   const [priorPaymentsAmount, setPriorPaymentsAmount] = useState('');
+  const [priorPaymentsDescription, setPriorPaymentsDescription] = useState('');
   const [priorCCSFeesAmount, setPriorCCSFeesAmount] = useState('');
 
   // Payments without CCS fees amounts
@@ -926,6 +927,7 @@ const Index = () => {
                 <span className="font-medium">Prior Payments</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
+                {/* Compact 3-column layout */}
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <Checkbox 
@@ -938,48 +940,67 @@ const Index = () => {
                     </Label>
                   </div>
                   {checkedItems.priorPayments && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={priorPaymentsAmount}
-                        onChange={(e) => setPriorPaymentsAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="prior-ccs-fees"
-                      checked={checkedItems.priorCCSFees}
-                      onCheckedChange={(checked) => handleCheckboxChange('priorCCSFees', checked as boolean)}
-                    />
-                    <Label htmlFor="prior-ccs-fees" className="text-sm">
-                      Prior CCS Fees
-                    </Label>
-                    <Input
-                      type="text"
-                      value={priorCCSFeePercent}
-                      onChange={(e) => setPriorCCSFeePercent(e.target.value)}
-                      className="w-16 text-center"
-                    />
-                    <span className="text-sm">%</span>
-                  </div>
-                  {checkedItems.priorCCSFees && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="0.00"
-                        value={priorCCSFeesAmount}
-                        onChange={(e) => setPriorCCSFeesAmount(e.target.value)}
-                        className="flex-1"
-                        readOnly
-                      />
+                    <div className="ml-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                      {/* Payment Amount */}
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Amount</Label>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            type="text"
+                            placeholder="0.00"
+                            value={priorPaymentsAmount}
+                            onChange={(e) => setPriorPaymentsAmount(e.target.value)}
+                            className="w-32"
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Description */}
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Description</Label>
+                        <Input
+                          type="text"
+                          placeholder="Check #, payment type, etc."
+                          value={priorPaymentsDescription}
+                          onChange={(e) => setPriorPaymentsDescription(e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      {/* PA Fees */}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Checkbox 
+                            id="prior-ccs-fees"
+                            checked={checkedItems.priorCCSFees}
+                            onCheckedChange={(checked) => handleCheckboxChange('priorCCSFees', checked as boolean)}
+                          />
+                          <Label htmlFor="prior-ccs-fees" className="text-xs text-muted-foreground">
+                            PA Fees
+                          </Label>
+                          <Input
+                            type="text"
+                            value={priorCCSFeePercent}
+                            onChange={(e) => setPriorCCSFeePercent(e.target.value)}
+                            className="w-12 text-center text-xs"
+                          />
+                          <span className="text-xs">%</span>
+                        </div>
+                        {checkedItems.priorCCSFees && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm">$</span>
+                            <Input
+                              type="text"
+                              placeholder="0.00"
+                              value={priorCCSFeesAmount}
+                              onChange={(e) => setPriorCCSFeesAmount(e.target.value)}
+                              className="w-28 bg-muted/50"
+                              readOnly
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
