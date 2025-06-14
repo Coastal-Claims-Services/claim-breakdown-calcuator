@@ -344,6 +344,22 @@ const Index = () => {
     return Math.max(0, totalPAFees - priorPAFees);
   };
 
+  // Calculate Total Possible Recovered (following the exact math flow from user)
+  const calculateTotalPossibleRecovered = () => {
+    const balanceBeforePAFees = calculateBalanceBeforePAFees(); // $34,000
+    const newPAFees = balanceBeforePAFees * 0.1; // $3,400
+    const netAfterNewPAFees = balanceBeforePAFees - newPAFees; // $30,600
+    const priorPayments = calculatePriorPayments(); // $200
+    const priorPAFees = calculatePriorPAFees(); // $10
+    const addBackPriorPayments = netAfterNewPAFees + priorPayments; // $30,800
+    const subtractOldPAFees = addBackPriorPayments - priorPAFees; // $30,790
+    const effectiveDeductible = Math.max(0, (parseFloat(deductible) || 0) - calculateOverageAppliedToDeductible()); // $5,000
+    const totalDeductions = calculateTotalDeductions(); // $800
+    const totalPossibleRecovered = subtractOldPAFees + effectiveDeductible + totalDeductions; // $30,790 + $5,000 + $800 = $36,590
+    
+    return Math.max(0, totalPossibleRecovered);
+  };
+
   // Calculate cost per unit functions
   const calculateCostPerSquare = (totalCost: string, squares: string) => {
     const cost = parseFloat(totalCost) || 0;
@@ -441,6 +457,9 @@ const Index = () => {
 
   const totalRepairCosts = calculateTotalRepairCosts();
   const finalBalanceAfterRepairs = balancePlusDeductible - totalRepairCosts;
+
+  // Calculate total possible recovered
+  const totalPossibleRecovered = calculateTotalPossibleRecovered();
 
   // Auto-calculate PA Fees for each payment when amount or percentage changes
   useEffect(() => {
@@ -1511,6 +1530,12 @@ const Index = () => {
             <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#22c55e', color: 'white' }}>
               <span className="font-medium">Balance + Deductible</span>
               <span className="text-lg font-semibold">$ {balancePlusDeductible.toFixed(2)}</span>
+            </div>
+
+            {/* Total Possible Recovered (if costs are incurred) */}
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#f59e0b', color: 'white' }}>
+              <span className="font-medium">Total Possible Recovered (if costs are incurred)</span>
+              <span className="text-lg font-semibold">$ {totalPossibleRecovered.toFixed(2)}</span>
             </div>
 
             {/* Repairs by the Insured */}
