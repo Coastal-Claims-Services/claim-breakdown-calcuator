@@ -672,7 +672,7 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.coverages && "rotate-180")} />
-                <span className="font-medium">Coverage</span>
+                <span className="font-medium">Coverage (A-D)</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1063,7 +1063,7 @@ const Index = () => {
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.optionalDeductions && "rotate-180")} />
                 <div className="flex items-center justify-between w-full">
-                  <span className="font-medium">Payment Deductions</span>
+                  <span className="font-medium">Payment (deductions / withholding)</span>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1259,7 +1259,7 @@ const Index = () => {
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.priorPayments && "rotate-180")} />
                 <div className="flex items-center justify-between w-full">
-                  <span className="font-medium">Prior Payments</span>
+                  <span className="font-medium">Payments (prior)</span>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
@@ -1397,7 +1397,7 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.paymentsWithoutFees && "rotate-180")} />
-                <span className="font-medium">Payments without Fees</span>
+                <span className="font-medium">Payments (without fees)</span>
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
