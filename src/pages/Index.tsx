@@ -522,55 +522,37 @@ const Index = () => {
           <CardContent className="space-y-6">
             {/* Release Type Selector */}
             <div className="space-y-4">
-              <Label className="text-lg font-semibold">Release Type</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {[
-                  { id: 'proposed', label: 'Proposed Release', description: 'Carrier negotiations, back and forth' },
-                  { id: 'litigated', label: 'Litigated Release', description: 'Attorney finalized true-up' },
-                  { id: 'mediation', label: 'Mediation Release', description: 'Non-formal lump sum settlement' },
-                  { id: 'appraisal', label: 'Appraisal Release', description: 'Estimate-based process' },
-                  { id: 'other', label: 'Other', description: 'Custom release type' }
-                ].map((type) => (
-                  <div
-                    key={type.id}
-                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                      releaseType === type.id 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                    onClick={() => setReleaseType(type.id)}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        name="releaseType"
-                        value={type.id}
-                        checked={releaseType === type.id}
-                        onChange={() => setReleaseType(type.id)}
-                        className="text-primary"
-                      />
-                      <div>
-                        <div className="font-medium">{type.label}</div>
-                        <div className="text-sm text-muted-foreground">{type.description}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Custom Release Type Name */}
-              {releaseType === 'other' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="customReleaseType">Custom Release Type Name</Label>
-                  <Input
-                    id="customReleaseType"
-                    type="text"
-                    value={customReleaseTypeName}
-                    onChange={(e) => setCustomReleaseTypeName(e.target.value)}
-                    placeholder="Enter custom release type name"
-                  />
+                  <Label htmlFor="releaseType" className="text-sm font-medium">Release Type</Label>
+                  <Select value={releaseType} onValueChange={setReleaseType}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select release type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="proposed">Proposed Release</SelectItem>
+                      <SelectItem value="litigated">Litigated Release</SelectItem>
+                      <SelectItem value="mediation">Mediation Release</SelectItem>
+                      <SelectItem value="appraisal">Appraisal Release</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              )}
+                
+                {/* Custom Release Type Name */}
+                {releaseType === 'other' && (
+                  <div>
+                    <Label htmlFor="customReleaseType">Custom Release Type Name</Label>
+                    <Input
+                      id="customReleaseType"
+                      type="text"
+                      value={customReleaseTypeName}
+                      onChange={(e) => setCustomReleaseTypeName(e.target.value)}
+                      placeholder="Enter custom release type name"
+                    />
+                  </div>
+                )}
+              </div>
 
               {/* Opening Statement */}
               {releaseType && (
