@@ -190,7 +190,6 @@ const Index = () => {
 
   const calculateTotalCoverage = () => {
     const a = parseFloat(coverageA) || 0;
-    const screenEnc = parseFloat(screenEnclosureAmount) || 0;
     const b = parseFloat(coverageB) || 0;
     const c = parseFloat(coverageC) || 0;
     const d = parseFloat(coverageD) || 0;
@@ -206,8 +205,11 @@ const Index = () => {
     const cappedC = limitC > 0 ? Math.min(c, limitC) : c;
     const cappedD = limitD > 0 ? Math.min(d, limitD) : d;
     
-    console.log('Coverage calculation:', { a, screenEnc, b, c, d, cappedA, cappedB, cappedC, cappedD, limitD });
-    const total = cappedA + screenEnc + cappedB + cappedC + cappedD;
+    // Screen enclosure is a sub-limit of Coverage A, not additional coverage
+    // So we don't add it separately - it's already included in Coverage A
+    
+    console.log('Coverage calculation:', { a, b, c, d, cappedA, cappedB, cappedC, cappedD, limitD });
+    const total = cappedA + cappedB + cappedC + cappedD;
     console.log('Total coverage:', total);
     
     return total;
