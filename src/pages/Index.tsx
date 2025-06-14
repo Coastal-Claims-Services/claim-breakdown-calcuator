@@ -940,8 +940,8 @@ const Index = () => {
                     </Label>
                   </div>
                   {checkedItems.priorPayments && (
-                    <div className="ml-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
-                      {/* Payment Amount */}
+                    <div className="ml-6 grid grid-cols-4 gap-4 items-end">
+                      {/* Amount */}
                       <div className="space-y-1">
                         <Label className="text-xs text-muted-foreground">Amount</Label>
                         <div className="flex items-center gap-1">
@@ -951,7 +951,7 @@ const Index = () => {
                             placeholder="0.00"
                             value={priorPaymentsAmount}
                             onChange={(e) => setPriorPaymentsAmount(e.target.value)}
-                            className="w-32"
+                            className="w-24"
                           />
                         </div>
                       </div>
@@ -970,15 +970,13 @@ const Index = () => {
                       
                       {/* PA Fees */}
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2">
+                        <Label className="text-xs text-muted-foreground">PA Fees</Label>
+                        <div className="flex items-center gap-1">
                           <Checkbox 
                             id="prior-ccs-fees"
                             checked={checkedItems.priorCCSFees}
                             onCheckedChange={(checked) => handleCheckboxChange('priorCCSFees', checked as boolean)}
                           />
-                          <Label htmlFor="prior-ccs-fees" className="text-xs text-muted-foreground">
-                            PA Fees
-                          </Label>
                           <Input
                             type="text"
                             value={priorCCSFeePercent}
@@ -987,19 +985,20 @@ const Index = () => {
                           />
                           <span className="text-xs">%</span>
                         </div>
-                        {checkedItems.priorCCSFees && (
-                          <div className="flex items-center gap-1">
-                            <span className="text-sm">$</span>
-                            <Input
-                              type="text"
-                              placeholder="0.00"
-                              value={priorCCSFeesAmount}
-                              onChange={(e) => setPriorCCSFeesAmount(e.target.value)}
-                              className="w-28 bg-muted/50"
-                              readOnly
-                            />
-                          </div>
-                        )}
+                      </div>
+                      
+                      {/* Fee Total */}
+                      <div className="space-y-1">
+                        <Label className="text-xs text-muted-foreground">Fee Total</Label>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm">$</span>
+                          <Input
+                            type="text"
+                            value={checkedItems.priorCCSFees ? priorCCSFeesAmount : '0.00'}
+                            className="w-20 bg-muted/50 text-sm"
+                            readOnly
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
