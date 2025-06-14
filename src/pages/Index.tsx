@@ -78,6 +78,8 @@ const Index = () => {
   const [soffitTotalCost, setSoffitTotalCost] = useState('');
   const [fasciaLinearFeet, setFasciaLinearFeet] = useState('');
   const [fasciaTotalCost, setFasciaTotalCost] = useState('');
+  const [contractorOptionalRepairAmount, setContractorOptionalRepairAmount] = useState('');
+  const [contractorOptionalRepairDescription, setContractorOptionalRepairDescription] = useState('Optional Repair');
 
   // PA fee percentages (editable, default to 10%)
   const [coverageAFeePercent, setCoverageAFeePercent] = useState('10');
@@ -125,7 +127,8 @@ const Index = () => {
     gutters: false,
     solar: false,
     soffit: false,
-    fascia: false
+    fascia: false,
+    contractorOptionalRepair: false
   });
 
   const toggleSection = (section: string) => {
@@ -1573,6 +1576,39 @@ const Index = () => {
                           value={calculateCostPerLinearFoot(fasciaTotalCost, fasciaLinearFeet)}
                           readOnly
                           className="flex-1 bg-gray-100"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Optional Repair (Contractor) */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="contractor-optional-repair"
+                      checked={checkedItems.contractorOptionalRepair}
+                      onCheckedChange={(checked) => handleCheckboxChange('contractorOptionalRepair', checked as boolean)}
+                    />
+                    <Input
+                      type="text"
+                      value={contractorOptionalRepairDescription}
+                      onChange={(e) => setContractorOptionalRepairDescription(e.target.value)}
+                      className="text-sm flex-1"
+                      placeholder="Optional repair description"
+                    />
+                  </div>
+                  {checkedItems.contractorOptionalRepair && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Label className="text-sm w-20">Total Cost:</Label>
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter total cost"
+                          value={contractorOptionalRepairAmount}
+                          onChange={(e) => setContractorOptionalRepairAmount(e.target.value)}
+                          className="flex-1"
                         />
                       </div>
                     </div>
