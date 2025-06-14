@@ -189,15 +189,16 @@ const Index = () => {
   };
 
   const calculateTotalCoverage = () => {
-    const a = parseFloat(coverageA) || 0;
-    const b = parseFloat(coverageB) || 0;
-    const c = parseFloat(coverageC) || 0;
-    const d = parseFloat(coverageD) || 0;
+    // Remove commas from values before parsing
+    const a = parseFloat(coverageA.replace(/,/g, '')) || 0;
+    const b = parseFloat(coverageB.replace(/,/g, '')) || 0;
+    const c = parseFloat(coverageC.replace(/,/g, '')) || 0;
+    const d = parseFloat(coverageD.replace(/,/g, '')) || 0;
     
-    const limitA = parseFloat(policyLimitA) || 0;
-    const limitB = parseFloat(policyLimitB) || 0;
-    const limitC = parseFloat(policyLimitC) || 0;
-    const limitD = parseFloat(policyLimitD) || 0;
+    const limitA = parseFloat(policyLimitA.replace(/,/g, '')) || 0;
+    const limitB = parseFloat(policyLimitB.replace(/,/g, '')) || 0;
+    const limitC = parseFloat(policyLimitC.replace(/,/g, '')) || 0;
+    const limitD = parseFloat(policyLimitD.replace(/,/g, '')) || 0;
     
     // Use min(claim amount, policy limit) for each coverage
     const cappedA = limitA > 0 ? Math.min(a, limitA) : a;
@@ -209,7 +210,7 @@ const Index = () => {
     let endorsementTotal = 0;
     customSubLimits.forEach(subLimit => {
       if (subLimit.checked) {
-        endorsementTotal += parseFloat(subLimit.amount) || 0;
+        endorsementTotal += parseFloat(subLimit.amount.replace(/,/g, '')) || 0;
       }
     });
     
