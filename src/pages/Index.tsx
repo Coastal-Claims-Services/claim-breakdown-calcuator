@@ -1423,31 +1423,6 @@ const Index = () => {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
                     <Checkbox 
-                      id="prior-to-ccs"
-                      checked={checkedItems.priorToCCS}
-                      onCheckedChange={(checked) => handleCheckboxChange('priorToCCS', checked as boolean)}
-                    />
-                    <Label htmlFor="prior-to-ccs" className="text-sm">
-                      Prior to CCS (No Fees)
-                    </Label>
-                  </div>
-                  {checkedItems.priorToCCS && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
-                      <Input
-                        type="text"
-                        placeholder="Enter amount"
-                        value={priorToCCSAmount}
-                        onChange={(e) => setPriorToCCSAmount(e.target.value)}
-                        className="flex-1"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
                       id="legal-fees"
                       checked={checkedItems.legalFees}
                       onCheckedChange={(checked) => handleCheckboxChange('legalFees', checked as boolean)}
