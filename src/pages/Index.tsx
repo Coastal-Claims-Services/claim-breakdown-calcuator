@@ -293,28 +293,38 @@ const Index = () => {
     return payments;
   };
   
-  // Calculate PA fees based on the balance after deductible, not the full coverage amounts
-  const calculatePAFees = (balance: number) => {
+  // Calculate total PA fees based on total coverage (always)
+  const calculateTotalPAFees = () => {
     const a = parseFloat(coverageA) || 0;
     const b = parseFloat(coverageB) || 0;
     const c = parseFloat(coverageC) || 0;
     const d = parseFloat(coverageD) || 0;
-    const totalCoverage = a + b + c + d;
     
-    if (totalCoverage === 0) return 0;
-    
-    // Calculate proportional amounts based on balance
-    const aBalance = (a / totalCoverage) * balance;
-    const bBalance = (b / totalCoverage) * balance;
-    const cBalance = (c / totalCoverage) * balance;
-    const dBalance = (d / totalCoverage) * balance;
-    
-    const aFee = aBalance * ((parseFloat(coverageAFeePercent) || 0) / 100);
-    const bFee = bBalance * ((parseFloat(coverageBFeePercent) || 0) / 100);
-    const cFee = cBalance * ((parseFloat(coverageCFeePercent) || 0) / 100);
-    const dFee = dBalance * ((parseFloat(coverageDFeePercent) || 0) / 100);
+    const aFee = a * ((parseFloat(coverageAFeePercent) || 0) / 100);
+    const bFee = b * ((parseFloat(coverageBFeePercent) || 0) / 100);
+    const cFee = c * ((parseFloat(coverageCFeePercent) || 0) / 100);
+    const dFee = d * ((parseFloat(coverageDFeePercent) || 0) / 100);
     
     return aFee + bFee + cFee + dFee;
+  };
+
+  // Calculate prior PA fees already paid
+  const calculatePriorPAFees = () => {
+    if (!checkedItems.priorPayments) return 0;
+    
+    return priorPayments.reduce((total, payment) => {
+      if (payment.paFeesChecked) {
+        return total + (parseFloat(payment.paFeesAmount) || 0);
+      }
+      return total;
+    }, 0);
+  };
+
+  // Calculate remaining PA fees due
+  const calculateRemainingPAFees = () => {
+    const totalPAFees = calculateTotalPAFees();
+    const priorPAFees = calculatePriorPAFees();
+    return Math.max(0, totalPAFees - priorPAFees);
   };
 
   // Calculate cost per unit functions
@@ -348,11 +358,11 @@ const Index = () => {
   // Calculate balance: Total Coverage - Deductions - Prior Payments - Payments without fees - Effective Deductible
   const balanceAfterDeductible = totalCoverage - totalDeductions - totalPriorPayments - totalPaymentsWithoutFees - effectiveDeductible;
   
-  // Calculate PA fees using the balance
-  const paFees = calculatePAFees(balanceAfterDeductible);
+  // Calculate remaining PA fees due (total PA fees - prior PA fees already paid)
+  const remainingPAFees = calculateRemainingPAFees();
   
-  // Final balance after PA fees
-  const finalBalance = balanceAfterDeductible - paFees;
+  // Final balance after remaining PA fees
+  const finalBalance = balanceAfterDeductible - remainingPAFees;
 
   // Balance plus deductible for repairs (using effective deductible)
   const balancePlusDeductible = finalBalance + effectiveDeductible;
@@ -1550,7 +1560,7 @@ const Index = () => {
                   <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.ccsFees && "rotate-180")} />
                   <span className="font-medium">CCS Fees</span>
                 </div>
-                <span className="text-lg font-semibold">$ {paFees.toFixed(2)}</span>
+                <span className="text-lg font-semibold">$ {remainingPAFees.toFixed(2)}</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
