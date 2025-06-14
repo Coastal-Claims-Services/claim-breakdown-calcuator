@@ -642,7 +642,7 @@ const Index = () => {
                                     <span className="text-sm">$</span>
                                     <Input
                                       type="text"
-                                      placeholder="Add amount"
+                                      placeholder="Enter amount"
                                       value={subLimit.amount}
                                       onChange={(e) => {
                                         const newSubLimits = [...customSubLimits];
