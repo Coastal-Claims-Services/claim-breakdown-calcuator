@@ -49,6 +49,9 @@ const Index = () => {
   const [paidWhenIncurredAmount, setPaidWhenIncurredAmount] = useState('');
   const [ordinanceLawAmount, setOrdinanceLawAmount] = useState('');
 
+  // Dynamic payment deductions
+  const [customPaymentDeductions, setCustomPaymentDeductions] = useState([]);
+
   // Prior payments amounts - now supports multiple payments
   const [priorPayments, setPriorPayments] = useState([
     {
@@ -186,6 +189,13 @@ const Index = () => {
     if (checkedItems.ordinanceLaw) {
       deductions += parseFloat(ordinanceLawAmount) || 0;
     }
+    
+    // Add custom payment deductions
+    customPaymentDeductions.forEach(deduction => {
+      if (deduction.checked) {
+        deductions += parseFloat(deduction.amount) || 0;
+      }
+    });
     
     return deductions;
   };
@@ -827,7 +837,19 @@ const Index = () => {
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.optionalDeductions && "rotate-180")} />
                 <div className="flex items-center justify-between w-full">
                   <span className="font-medium">Payment Deductions</span>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newId = Math.max(...customPaymentDeductions.map(d => d.id), 0) + 1;
+                      setCustomPaymentDeductions([...customPaymentDeductions, {
+                        id: newId,
+                        description: 'Custom Deduction',
+                        amount: '',
+                        checked: false
+                      }]);
+                    }}
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                  >
                     + Add Payment Deduction
                   </button>
                 </div>
@@ -939,6 +961,60 @@ const Index = () => {
                     )}
                   </div>
                 </div>
+                
+                {/* Custom Payment Deductions */}
+                {customPaymentDeductions.length > 0 && (
+                  <div className="mt-4 space-y-3">
+                    <h4 className="text-sm font-medium text-muted-foreground">Custom Deductions</h4>
+                    {customPaymentDeductions.map((deduction, index) => (
+                      <div key={deduction.id} className="flex items-center gap-4 p-3 bg-muted/30 rounded-md">
+                        <Checkbox 
+                          checked={deduction.checked}
+                          onCheckedChange={(checked) => {
+                            const updated = [...customPaymentDeductions];
+                            updated[index].checked = checked as boolean;
+                            setCustomPaymentDeductions(updated);
+                          }}
+                        />
+                        <Input
+                          type="text"
+                          placeholder="Deduction name"
+                          value={deduction.description}
+                          onChange={(e) => {
+                            const updated = [...customPaymentDeductions];
+                            updated[index].description = e.target.value;
+                            setCustomPaymentDeductions(updated);
+                          }}
+                          className="flex-1"
+                        />
+                        {deduction.checked && (
+                          <div className="flex items-center gap-1">
+                            <span className="text-sm">$</span>
+                            <Input
+                              type="text"
+                              placeholder="Enter amount"
+                              value={deduction.amount}
+                              onChange={(e) => {
+                                const updated = [...customPaymentDeductions];
+                                updated[index].amount = e.target.value;
+                                setCustomPaymentDeductions(updated);
+                              }}
+                              className="w-32"
+                            />
+                          </div>
+                        )}
+                        <button
+                          onClick={() => {
+                            setCustomPaymentDeductions(customPaymentDeductions.filter((_, i) => i !== index));
+                          }}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CollapsibleContent>
             </Collapsible>
 
