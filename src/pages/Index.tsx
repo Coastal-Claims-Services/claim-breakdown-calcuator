@@ -1374,7 +1374,7 @@ const Index = () => {
                   {/* Total PA Fees */}
                   <div className="mb-4">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm text-gray-600">Total PA Fees (10% of ${totalCoverage.toFixed(2)})</span>
+                      <span className="text-sm text-gray-600">Total PA Fees</span>
                       <span className="font-medium">$ {calculateTotalPAFees().toFixed(2)}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
