@@ -2106,31 +2106,56 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        {/* Final Balance Display */}
+        {/* Final Balance Display with Traffic Light Logic */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between p-4 rounded-lg" style={{ 
-              backgroundColor: '#1e3a8a',
-              color: 'white'
-            }}>
-              <Label className="text-lg font-semibold">
-                {finalBalanceAfterRepairs >= 0 
-                  ? 'Final Balance' 
-                  : 'Total Out of Pocket Expense After Deductible by Insured'
-                }
-              </Label>
-              <div className="flex items-center gap-2">
-                <span className={`text-xl ${finalBalanceAfterRepairs >= 0 ? 'text-white' : 'text-red-400'}`}>$</span>
-                <span className={`text-xl font-bold min-w-32 text-right ${
-                  finalBalanceAfterRepairs >= 0 ? 'text-white' : 'text-red-400'
-                }`}>
-                  {finalBalanceAfterRepairs >= 0 
-                    ? finalBalanceAfterRepairs.toFixed(2)
-                    : Math.abs(finalBalanceAfterRepairs).toFixed(2)
-                  }
-                </span>
-              </div>
-            </div>
+            {(() => {
+              const finalBalanceAmount = finalBalanceAfterRepairs;
+              const withheldAmount = totalDeductions;
+              
+              if (finalBalanceAmount > 0) {
+                // GREEN: Positive final balance
+                return (
+                  <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: '#22c55e', color: 'white' }}>
+                    <Label className="text-lg font-semibold">Final Balance</Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl text-white">$</span>
+                      <span className="text-xl font-bold min-w-32 text-right text-white">
+                        {finalBalanceAmount.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              } else if (Math.abs(finalBalanceAmount) <= withheldAmount) {
+                // YELLOW: Dipping into withheld deductions
+                const recoverable = Math.abs(finalBalanceAmount);
+                return (
+                  <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: '#f59e0b', color: 'white' }}>
+                    <Label className="text-lg font-semibold">You Can Possibly Recover</Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl text-white">$</span>
+                      <span className="text-xl font-bold min-w-32 text-right text-white">
+                        {recoverable.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              } else {
+                // RED: True out-of-pocket cost
+                const outOfPocket = Math.abs(finalBalanceAmount) - withheldAmount;
+                return (
+                  <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: '#dc2626', color: 'white' }}>
+                    <Label className="text-lg font-semibold">Additional Cost to Insured</Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl text-white">$</span>
+                      <span className="text-xl font-bold min-w-32 text-right text-white">
+                        {outOfPocket.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              }
+            })()}
           </CardContent>
         </Card>
 
