@@ -190,6 +190,7 @@ const Index = () => {
 
   const calculateTotalCoverage = () => {
     const a = parseFloat(coverageA) || 0;
+    const screenEnc = parseFloat(screenEnclosureAmount) || 0;
     const b = parseFloat(coverageB) || 0;
     const c = parseFloat(coverageC) || 0;
     const d = parseFloat(coverageD) || 0;
@@ -205,7 +206,7 @@ const Index = () => {
     const cappedC = limitC > 0 ? Math.min(c, limitC) : c;
     const cappedD = limitD > 0 ? Math.min(d, limitD) : d;
     
-    return cappedA + cappedB + cappedC + cappedD;
+    return cappedA + screenEnc + cappedB + cappedC + cappedD;
   };
 
   const calculateTotalDeductions = () => {
