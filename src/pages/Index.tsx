@@ -185,9 +185,7 @@ const Index = () => {
     if (checkedItems.priorPayments) {
       payments += parseFloat(priorPaymentsAmount) || 0;
     }
-    if (checkedItems.priorCCSFees) {
-      payments += parseFloat(priorCCSFeesAmount) || 0;
-    }
+    // Don't add priorCCSFeesAmount separately since it's already included as 10% of priorPaymentsAmount
     
     return payments;
   };
