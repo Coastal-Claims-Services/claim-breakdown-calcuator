@@ -8,11 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, Moon, Sun, Plus, Printer } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
 const Index = () => {
   const { theme, setTheme } = useTheme();
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [showPinDialog, setShowPinDialog] = useState(false);
+  const [pinInput, setPinInput] = useState('');
   const [claimAmount, setClaimAmount] = useState('');
   const [deductible, setDeductible] = useState('');
   const [coverageA, setCoverageA] = useState('');
@@ -481,6 +485,25 @@ const Index = () => {
     );
   }, [priorPayments]);
 
+  const handlePinSubmit = () => {
+    if (pinInput === '1950') {
+      setIsAdminMode(true);
+      setShowPinDialog(false);
+      setPinInput('');
+    } else {
+      alert('Incorrect PIN');
+      setPinInput('');
+    }
+  };
+
+  const handleAdminToggle = () => {
+    if (isAdminMode) {
+      setIsAdminMode(false);
+    } else {
+      setShowPinDialog(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto">
@@ -501,6 +524,17 @@ const Index = () => {
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={handleAdminToggle}
+                  className={cn(
+                    "flex items-center gap-2",
+                    isAdminMode && "bg-blue-100 border-blue-500"
+                  )}
+                >
+                  {isAdminMode ? "Exit Admin" : "Admin Mode"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowPrintPreview(true)}
                   className="flex items-center gap-2"
                 >
@@ -513,7 +547,7 @@ const Index = () => {
                   onClick={() => setTheme(theme === "light" ? "dark" : "light")}
                 >
                   <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:scale-0 dark:scale-100" />
                   <span className="sr-only">Toggle theme</span>
                 </Button>
               </div>
@@ -523,11 +557,20 @@ const Index = () => {
             {/* Release Type Selector */}
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <Label htmlFor="releaseType" className="text-lg font-medium min-w-[120px]">Release Type</Label>
+                <Label htmlFor="releaseType" className="text-lg font-medium min-w-[120px]">
+                  Release Type
+                  {!isAdminMode && (
+                    <span className="text-sm text-muted-foreground ml-2">(Admin only)</span>
+                  )}
+                </Label>
                 <div className="flex-1 max-w-md">
-                  <Select value={releaseType} onValueChange={setReleaseType}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select release type" />
+                  <Select 
+                    value={releaseType} 
+                    onValueChange={isAdminMode ? setReleaseType : undefined}
+                    disabled={!isAdminMode}
+                  >
+                    <SelectTrigger className={cn(!isAdminMode && "bg-gray-100 cursor-not-allowed")}>
+                      <SelectValue placeholder={isAdminMode ? "Select release type" : "Release type (Admin only)"} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="proposed">Proposed Release</SelectItem>
@@ -543,13 +586,20 @@ const Index = () => {
               {/* Custom Release Type Name */}
               {releaseType === 'other' && (
                 <div>
-                  <Label htmlFor="customReleaseType">Custom Release Type Name</Label>
+                  <Label htmlFor="customReleaseType">
+                    Custom Release Type Name
+                    {!isAdminMode && (
+                      <span className="text-sm text-muted-foreground ml-2">(Admin only)</span>
+                    )}
+                  </Label>
                   <Input
                     id="customReleaseType"
                     type="text"
                     value={customReleaseTypeName}
-                    onChange={(e) => setCustomReleaseTypeName(e.target.value)}
-                    placeholder="Enter custom release type name"
+                    onChange={isAdminMode ? (e) => setCustomReleaseTypeName(e.target.value) : undefined}
+                    placeholder={isAdminMode ? "Enter custom release type name" : "Custom release type (read-only)"}
+                    className={cn(!isAdminMode && "bg-gray-100 cursor-not-allowed")}
+                    readOnly={!isAdminMode}
                   />
                 </div>
               )}
@@ -557,16 +607,26 @@ const Index = () => {
               {/* Opening Statement */}
               {releaseType && (
                 <div>
-                  <Label htmlFor="openingStatement">Opening Statement / Expectations</Label>
+                  <Label htmlFor="openingStatement">
+                    Opening Statement / Expectations
+                    {!isAdminMode && (
+                      <span className="text-sm text-muted-foreground ml-2">(Admin only)</span>
+                    )}
+                  </Label>
                   <textarea
                     id="openingStatement"
                     value={openingStatement}
-                    onChange={(e) => setOpeningStatement(e.target.value)}
-                    placeholder="Enter detailed explanation, expectations, and any relevant information for this release type..."
-                    className="w-full min-h-[120px] p-3 border border-border rounded-md resize-vertical"
+                    onChange={isAdminMode ? (e) => setOpeningStatement(e.target.value) : undefined}
+                    placeholder={isAdminMode ? "Enter detailed explanation, expectations, and any relevant information for this release type..." : "Opening statement content (read-only)"}
+                    className={cn(
+                      "w-full min-h-[120px] p-3 border border-border rounded-md resize-vertical",
+                      !isAdminMode && "bg-gray-100 cursor-not-allowed"
+                    )}
+                    readOnly={!isAdminMode}
                   />
                   <div className="text-sm text-muted-foreground mt-1">
                     This will appear as the main content on page 1 of your release document.
+                    {!isAdminMode && " (Admin access required to edit)"}
                   </div>
                 </div>
               )}
@@ -2249,6 +2309,29 @@ const Index = () => {
             finalBalance: finalBalanceAfterRepairs
           }}
         />
+
+        {/* PIN Dialog */}
+        <Dialog open={showPinDialog} onOpenChange={setShowPinDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Admin Access</DialogTitle>
+              <DialogDescription>
+                Enter the admin PIN to access release type and opening statement editing.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center space-x-2">
+              <Input
+                type="password"
+                placeholder="Enter PIN"
+                value={pinInput}
+                onChange={(e) => setPinInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handlePinSubmit()}
+                className="flex-1"
+              />
+              <Button onClick={handlePinSubmit}>Submit</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
