@@ -87,8 +87,14 @@ const Index = () => {
   const [exteriorRepairsAmount, setExteriorRepairsAmount] = useState('');
   const [fencesAmount, setFencesAmount] = useState('');
   const [screenEnclosureAmount, setScreenEnclosureAmount] = useState('');
-  const [optionalRepairAmount, setOptionalRepairAmount] = useState('');
-  const [optionalRepairDescription, setOptionalRepairDescription] = useState('Optional Repair');
+  
+  // Custom repairs by insured (dynamic)
+  const [customInsuredRepairs, setCustomInsuredRepairs] = useState<Array<{
+    id: number;
+    description: string;
+    amount: string;
+    checked: boolean;
+  }>>([]);
 
   // Repairs by Contractor amounts and quantities
   const [roofSquares, setRoofSquares] = useState('');
@@ -103,8 +109,14 @@ const Index = () => {
   const [soffitTotalCost, setSoffitTotalCost] = useState('');
   const [fasciaLinearFeet, setFasciaLinearFeet] = useState('');
   const [fasciaTotalCost, setFasciaTotalCost] = useState('');
-  const [contractorOptionalRepairAmount, setContractorOptionalRepairAmount] = useState('');
-  const [contractorOptionalRepairDescription, setContractorOptionalRepairDescription] = useState('Optional Repair');
+  
+  // Custom repairs by contractor (dynamic)
+  const [customContractorRepairs, setCustomContractorRepairs] = useState<Array<{
+    id: number;
+    description: string;
+    amount: string;
+    checked: boolean;
+  }>>([]);
 
   // PA fee percentages (editable, default to 10%)
   const [coverageAFeePercent, setCoverageAFeePercent] = useState('10');
@@ -159,14 +171,12 @@ const Index = () => {
     exteriorRepairs: false,
     fences: false,
     screenEnclosure: false,
-    optionalRepair: false,
     roof: false,
     additionalRoof: false,
     gutters: false,
     solar: false,
     soffit: false,
-    fascia: false,
-    contractorOptionalRepair: false
+    fascia: false
   });
 
   const toggleSection = (section: string) => {
@@ -385,9 +395,13 @@ const Index = () => {
     if (checkedItems.screenEnclosure) {
       repairCosts += parseFloat(screenEnclosureAmount) || 0;
     }
-    if (checkedItems.optionalRepair) {
-      repairCosts += parseFloat(optionalRepairAmount) || 0;
-    }
+    
+    // Custom repairs by insured
+    customInsuredRepairs.forEach(repair => {
+      if (repair.checked) {
+        repairCosts += parseFloat(repair.amount) || 0;
+      }
+    });
     
     // Repairs by Contractor
     if (checkedItems.roof) {
@@ -408,9 +422,13 @@ const Index = () => {
     if (checkedItems.fascia) {
       repairCosts += parseFloat(fasciaTotalCost) || 0;
     }
-    if (checkedItems.contractorOptionalRepair) {
-      repairCosts += parseFloat(contractorOptionalRepairAmount) || 0;
-    }
+    
+    // Custom repairs by contractor
+    customContractorRepairs.forEach(repair => {
+      if (repair.checked) {
+        repairCosts += parseFloat(repair.amount) || 0;
+      }
+    });
     
     return repairCosts;
   };
@@ -1663,7 +1681,24 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.repairsByInsured && "rotate-180")} />
-                <span className="font-medium">Repairs by the Insured</span>
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-medium">Repairs by the Insured</span>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newId = Math.max(...customInsuredRepairs.map(r => r.id), 0) + 1;
+                      setCustomInsuredRepairs([...customInsuredRepairs, {
+                        id: newId,
+                        description: 'Additional Repair',
+                        amount: '',
+                        checked: false
+                      }]);
+                    }}
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                  >
+                    + Add Additional Repairs
+                  </button>
+                </div>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-3">
                 <div className="space-y-3">
@@ -1766,34 +1801,57 @@ const Index = () => {
                   )}
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="optional-repair"
-                      checked={checkedItems.optionalRepair}
-                      onCheckedChange={(checked) => handleCheckboxChange('optionalRepair', checked as boolean)}
-                    />
-                    <Input
-                      type="text"
-                      value={optionalRepairDescription}
-                      onChange={(e) => setOptionalRepairDescription(e.target.value)}
-                      className="text-sm flex-1"
-                      placeholder="Optional Repair"
-                    />
-                  </div>
-                  {checkedItems.optionalRepair && (
-                    <div className="ml-6 flex items-center gap-2">
-                      <span className="text-sm">$</span>
+                {/* Custom Additional Repairs */}
+                {customInsuredRepairs.map((repair, index) => (
+                  <div key={repair.id} className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`custom-insured-repair-${repair.id}`}
+                        checked={repair.checked}
+                        onCheckedChange={(checked) => {
+                          const newRepairs = [...customInsuredRepairs];
+                          newRepairs[index].checked = checked as boolean;
+                          setCustomInsuredRepairs(newRepairs);
+                        }}
+                      />
                       <Input
                         type="text"
-                        placeholder="Enter amount"
-                        value={optionalRepairAmount}
-                        onChange={(e) => setOptionalRepairAmount(e.target.value)}
-                        className="flex-1"
+                        placeholder="Custom Repair"
+                        value={repair.description}
+                        onChange={(e) => {
+                          const newRepairs = [...customInsuredRepairs];
+                          newRepairs[index].description = e.target.value;
+                          setCustomInsuredRepairs(newRepairs);
+                        }}
+                        className="text-sm flex-1"
                       />
+                      <button
+                        onClick={() => {
+                          setCustomInsuredRepairs(customInsuredRepairs.filter((_, i) => i !== index));
+                        }}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        ✕
+                      </button>
                     </div>
-                  )}
-                </div>
+                    {repair.checked && (
+                      <div className="ml-6 flex items-center gap-2">
+                        <span className="text-sm">$</span>
+                        <Input
+                          type="text"
+                          placeholder="Enter amount"
+                          value={repair.amount}
+                          onChange={(e) => {
+                            const newRepairs = [...customInsuredRepairs];
+                            newRepairs[index].amount = e.target.value;
+                            setCustomInsuredRepairs(newRepairs);
+                          }}
+                          className="flex-1"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
               </CollapsibleContent>
             </Collapsible>
 
@@ -1804,7 +1862,24 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.repairsByContractor && "rotate-180")} />
-                <span className="font-medium">Repairs by Contractor</span>
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-medium">Repairs by Contractor</span>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newId = Math.max(...customContractorRepairs.map(r => r.id), 0) + 1;
+                      setCustomContractorRepairs([...customContractorRepairs, {
+                        id: newId,
+                        description: 'Additional Repair',
+                        amount: '',
+                        checked: false
+                      }]);
+                    }}
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+                  >
+                    + Add Additional Repairs
+                  </button>
+                </div>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
                 {/* Roof */}
@@ -2101,38 +2176,60 @@ const Index = () => {
                   )}
                 </div>
 
-                {/* Optional Repair (Contractor) */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="contractor-optional-repair"
-                      checked={checkedItems.contractorOptionalRepair}
-                      onCheckedChange={(checked) => handleCheckboxChange('contractorOptionalRepair', checked as boolean)}
-                    />
-                    <Input
-                      type="text"
-                      value={contractorOptionalRepairDescription}
-                      onChange={(e) => setContractorOptionalRepairDescription(e.target.value)}
-                      className="text-sm flex-1"
-                      placeholder="Optional repair description"
-                    />
-                  </div>
-                  {checkedItems.contractorOptionalRepair && (
-                    <div className="ml-6 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm w-20">Total Cost:</Label>
-                        <span className="text-sm">$</span>
-                        <Input
-                          type="text"
-                          placeholder="Enter total cost"
-                          value={contractorOptionalRepairAmount}
-                          onChange={(e) => setContractorOptionalRepairAmount(e.target.value)}
-                          className="flex-1"
-                        />
-                      </div>
+                {/* Custom Additional Contractor Repairs */}
+                {customContractorRepairs.map((repair, index) => (
+                  <div key={repair.id} className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`custom-contractor-repair-${repair.id}`}
+                        checked={repair.checked}
+                        onCheckedChange={(checked) => {
+                          const newRepairs = [...customContractorRepairs];
+                          newRepairs[index].checked = checked as boolean;
+                          setCustomContractorRepairs(newRepairs);
+                        }}
+                      />
+                      <Input
+                        type="text"
+                        placeholder="Custom Repair"
+                        value={repair.description}
+                        onChange={(e) => {
+                          const newRepairs = [...customContractorRepairs];
+                          newRepairs[index].description = e.target.value;
+                          setCustomContractorRepairs(newRepairs);
+                        }}
+                        className="text-sm flex-1"
+                      />
+                      <button
+                        onClick={() => {
+                          setCustomContractorRepairs(customContractorRepairs.filter((_, i) => i !== index));
+                        }}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        ✕
+                      </button>
                     </div>
-                  )}
-                </div>
+                    {repair.checked && (
+                      <div className="ml-6 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Label className="text-sm w-20">Total Cost:</Label>
+                          <span className="text-sm">$</span>
+                          <Input
+                            type="text"
+                            placeholder="Enter total cost"
+                            value={repair.amount}
+                            onChange={(e) => {
+                              const newRepairs = [...customContractorRepairs];
+                              newRepairs[index].amount = e.target.value;
+                              setCustomContractorRepairs(newRepairs);
+                            }}
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </CollapsibleContent>
             </Collapsible>
           </CardContent>
