@@ -586,7 +586,7 @@ const Index = () => {
                             }}
                             className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1 ml-auto"
                           >
-                            + Add Endorsement
+                            + Add
                           </button>
                         </CollapsibleTrigger>
                         <CollapsibleContent className="pl-4 space-y-3 mt-3 border-l-2 border-border">
