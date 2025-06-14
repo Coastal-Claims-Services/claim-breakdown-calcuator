@@ -303,11 +303,11 @@ const Index = () => {
     const paymentDeductions = calculateTotalDeductions();
     const priorPayments = calculatePriorPayments();
     const paymentsWithoutFees = calculatePaymentsWithoutFees();
-    const priorPAFees = calculatePriorPAFees();
     const effectiveDeductible = Math.max(0, (parseFloat(deductible) || 0) - calculateOverageAppliedToDeductible());
     
-    // Balance = Total Coverage - All Deductions - Prior Payments - Payments Without Fees - Prior PA Fees - Effective Deductible
-    const balance = totalCoverage - paymentDeductions - priorPayments - paymentsWithoutFees - priorPAFees - effectiveDeductible;
+    // Balance = Total Coverage - All Deductions - Prior Payments - Payments Without Fees - Effective Deductible
+    // Note: Prior PA fees are included in the priorPayments total, not subtracted separately
+    const balance = totalCoverage - paymentDeductions - priorPayments - paymentsWithoutFees - effectiveDeductible;
     
     return Math.max(0, balance);
   };
