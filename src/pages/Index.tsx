@@ -107,7 +107,12 @@ const Index = () => {
     coverageA: false,
     coverageB: false,
     coverageC: false,
-    coverageD: false
+    coverageD: false,
+    screenEnclosureSubLimit: false,
+    moldSubLimit: false,
+    waterMitigationSubLimit: false,
+    matchingSubLimit: false,
+    ordinanceLawSubLimit: false
   });
 
   const [openSections, setOpenSections] = useState({
@@ -179,7 +184,19 @@ const Index = () => {
     const b = parseFloat(coverageB) || 0;
     const c = parseFloat(coverageC) || 0;
     const d = parseFloat(coverageD) || 0;
-    return a + b + c + d;
+    
+    const limitA = parseFloat(policyLimitA) || 0;
+    const limitB = parseFloat(policyLimitB) || 0;
+    const limitC = parseFloat(policyLimitC) || 0;
+    const limitD = parseFloat(policyLimitD) || 0;
+    
+    // Use min(claim amount, policy limit) for each coverage
+    const cappedA = limitA > 0 ? Math.min(a, limitA) : a;
+    const cappedB = limitB > 0 ? Math.min(b, limitB) : b;
+    const cappedC = limitC > 0 ? Math.min(c, limitC) : c;
+    const cappedD = limitD > 0 ? Math.min(d, limitD) : d;
+    
+    return cappedA + cappedB + cappedC + cappedD;
   };
 
   const calculateTotalDeductions = () => {
@@ -223,6 +240,23 @@ const Index = () => {
     }
     if (overageAppliedToDeductible.coverageD) {
       totalOverageApplied += calculateOverage(coverageD, policyLimitD);
+    }
+    
+    // Add sub-limit overages
+    if (overageAppliedToDeductible.screenEnclosureSubLimit) {
+      totalOverageApplied += calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy);
+    }
+    if (overageAppliedToDeductible.moldSubLimit) {
+      totalOverageApplied += calculateOverage(moldSubLimit, moldSubLimitPolicy);
+    }
+    if (overageAppliedToDeductible.waterMitigationSubLimit) {
+      totalOverageApplied += calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy);
+    }
+    if (overageAppliedToDeductible.matchingSubLimit) {
+      totalOverageApplied += calculateOverage(matchingSubLimit, matchingSubLimitPolicy);
+    }
+    if (overageAppliedToDeductible.ordinanceLawSubLimit) {
+      totalOverageApplied += calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy);
     }
     
     return totalOverageApplied;
@@ -552,8 +586,27 @@ const Index = () => {
                                   />
                                 </div>
                                 {calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy).toFixed(2)}
+                                  <div className="ml-20 flex items-center gap-2">
+                                    <span className="text-red-600 text-sm font-medium">
+                                      Over Limit: ${calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy).toFixed(2)}
+                                    </span>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setOverageAppliedToDeductible(prev => ({
+                                        ...prev,
+                                        screenEnclosureSubLimit: !prev.screenEnclosureSubLimit
+                                      }))}
+                                      className={cn(
+                                        "h-6 w-6 p-0",
+                                        overageAppliedToDeductible.screenEnclosureSubLimit && "bg-green-100 border-green-500"
+                                      )}
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                    {overageAppliedToDeductible.screenEnclosureSubLimit && (
+                                      <span className="text-green-600 text-xs">Applied to deductible</span>
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -600,8 +653,27 @@ const Index = () => {
                                   />
                                 </div>
                                 {calculateOverage(moldSubLimit, moldSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(moldSubLimit, moldSubLimitPolicy).toFixed(2)}
+                                  <div className="ml-20 flex items-center gap-2">
+                                    <span className="text-red-600 text-sm font-medium">
+                                      Over Limit: ${calculateOverage(moldSubLimit, moldSubLimitPolicy).toFixed(2)}
+                                    </span>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setOverageAppliedToDeductible(prev => ({
+                                        ...prev,
+                                        moldSubLimit: !prev.moldSubLimit
+                                      }))}
+                                      className={cn(
+                                        "h-6 w-6 p-0",
+                                        overageAppliedToDeductible.moldSubLimit && "bg-green-100 border-green-500"
+                                      )}
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                    {overageAppliedToDeductible.moldSubLimit && (
+                                      <span className="text-green-600 text-xs">Applied to deductible</span>
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -648,8 +720,27 @@ const Index = () => {
                                   />
                                 </div>
                                 {calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy).toFixed(2)}
+                                  <div className="ml-20 flex items-center gap-2">
+                                    <span className="text-red-600 text-sm font-medium">
+                                      Over Limit: ${calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy).toFixed(2)}
+                                    </span>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setOverageAppliedToDeductible(prev => ({
+                                        ...prev,
+                                        waterMitigationSubLimit: !prev.waterMitigationSubLimit
+                                      }))}
+                                      className={cn(
+                                        "h-6 w-6 p-0",
+                                        overageAppliedToDeductible.waterMitigationSubLimit && "bg-green-100 border-green-500"
+                                      )}
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                    {overageAppliedToDeductible.waterMitigationSubLimit && (
+                                      <span className="text-green-600 text-xs">Applied to deductible</span>
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -696,8 +787,27 @@ const Index = () => {
                                   />
                                 </div>
                                 {calculateOverage(matchingSubLimit, matchingSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(matchingSubLimit, matchingSubLimitPolicy).toFixed(2)}
+                                  <div className="ml-20 flex items-center gap-2">
+                                    <span className="text-red-600 text-sm font-medium">
+                                      Over Limit: ${calculateOverage(matchingSubLimit, matchingSubLimitPolicy).toFixed(2)}
+                                    </span>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setOverageAppliedToDeductible(prev => ({
+                                        ...prev,
+                                        matchingSubLimit: !prev.matchingSubLimit
+                                      }))}
+                                      className={cn(
+                                        "h-6 w-6 p-0",
+                                        overageAppliedToDeductible.matchingSubLimit && "bg-green-100 border-green-500"
+                                      )}
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                    {overageAppliedToDeductible.matchingSubLimit && (
+                                      <span className="text-green-600 text-xs">Applied to deductible</span>
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -744,8 +854,27 @@ const Index = () => {
                                   />
                                 </div>
                                 {calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 text-red-600 text-sm font-medium">
-                                    Over Limit: ${calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy).toFixed(2)}
+                                  <div className="ml-20 flex items-center gap-2">
+                                    <span className="text-red-600 text-sm font-medium">
+                                      Over Limit: ${calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy).toFixed(2)}
+                                    </span>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setOverageAppliedToDeductible(prev => ({
+                                        ...prev,
+                                        ordinanceLawSubLimit: !prev.ordinanceLawSubLimit
+                                      }))}
+                                      className={cn(
+                                        "h-6 w-6 p-0",
+                                        overageAppliedToDeductible.ordinanceLawSubLimit && "bg-green-100 border-green-500"
+                                      )}
+                                    >
+                                      <Plus className="h-3 w-3" />
+                                    </Button>
+                                    {overageAppliedToDeductible.ordinanceLawSubLimit && (
+                                      <span className="text-green-600 text-xs">Applied to deductible</span>
+                                    )}
                                   </div>
                                 )}
                               </div>
