@@ -665,14 +665,14 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Coverages A through D - restructured with two columns and policy limits */}
+            {/* Coverage - restructured with two columns and policy limits */}
             <Collapsible 
               open={openSections.coverages} 
               onOpenChange={() => toggleSection('coverages')}
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.coverages && "rotate-180")} />
-                <span className="font-medium">Coverages A through D</span>
+                <span className="font-medium">Coverage</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
