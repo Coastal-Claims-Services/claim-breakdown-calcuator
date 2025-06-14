@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, Moon, Sun, Plus } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
@@ -24,24 +25,6 @@ const Index = () => {
   const [policyLimitC, setPolicyLimitC] = useState('');
   const [policyLimitD, setPolicyLimitD] = useState('');
 
-  // Sub-limits for Coverage A
-  const [screenEnclosureSubLimit, setScreenEnclosureSubLimit] = useState('');
-  const [moldSubLimit, setMoldSubLimit] = useState('');
-  const [waterMitigationSubLimit, setWaterMitigationSubLimit] = useState('');
-  const [matchingSubLimit, setMatchingSubLimit] = useState('');
-  const [ordinanceLawSubLimit, setOrdinanceLawSubLimit] = useState('');
-  const [screenEnclosureSubLimitDescription, setScreenEnclosureSubLimitDescription] = useState('Screen Enclosure');
-  const [moldSubLimitDescription, setMoldSubLimitDescription] = useState('Mold');
-  const [waterMitigationSubLimitDescription, setWaterMitigationSubLimitDescription] = useState('Water Mitigation');
-  const [matchingSubLimitDescription, setMatchingSubLimitDescription] = useState('Matching');
-  const [ordinanceLawSubLimitDescription, setOrdinanceLawSubLimitDescription] = useState('Ordinance & Law');
-
-  // Policy limits for Coverage A sub-limits
-  const [screenEnclosureSubLimitPolicy, setScreenEnclosureSubLimitPolicy] = useState('');
-  const [moldSubLimitPolicy, setMoldSubLimitPolicy] = useState('');
-  const [waterMitigationSubLimitPolicy, setWaterMitigationSubLimitPolicy] = useState('');
-  const [matchingSubLimitPolicy, setMatchingSubLimitPolicy] = useState('');
-  const [ordinanceLawSubLimitPolicy, setOrdinanceLawSubLimitPolicy] = useState('');
 
   // Optional deduction amounts
   const [recoverableDepreciationAmount, setRecoverableDepreciationAmount] = useState('');
@@ -96,6 +79,15 @@ const Index = () => {
     checked: boolean;
   }>>([]);
 
+  // Dynamic sub-limits for Coverage A
+  const [customSubLimits, setCustomSubLimits] = useState<Array<{
+    id: number;
+    type: string;
+    amount: string;
+    policyLimit: string;
+    checked: boolean;
+  }>>([]);
+
   // Repairs by Contractor amounts and quantities
   const [roofSquares, setRoofSquares] = useState('');
   const [roofTotalCost, setRoofTotalCost] = useState('');
@@ -126,16 +118,11 @@ const Index = () => {
   const [priorCCSFeePercent, setPriorCCSFeePercent] = useState('10');
 
   // Overage applied to deductible tracking
-  const [overageAppliedToDeductible, setOverageAppliedToDeductible] = useState({
+  const [overageAppliedToDeductible, setOverageAppliedToDeductible] = useState<{[key: string]: boolean}>({
     coverageA: false,
     coverageB: false,
     coverageC: false,
-    coverageD: false,
-    screenEnclosureSubLimit: false,
-    moldSubLimit: false,
-    waterMitigationSubLimit: false,
-    matchingSubLimit: false,
-    ordinanceLawSubLimit: false
+    coverageD: false
   });
 
   const [openSections, setOpenSections] = useState({
@@ -150,12 +137,6 @@ const Index = () => {
   });
 
   const [checkedItems, setCheckedItems] = useState({
-    // Coverage A sub-limits
-    screenEnclosureSubLimit: false,
-    moldSubLimit: false,
-    waterMitigationSubLimit: false,
-    matchingSubLimit: false,
-    ordinanceLawSubLimit: false,
     // Existing checkboxes (removed coverage fee checkboxes)
     recoverableDepreciation: false,
     nonRecoverableDepreciation: false,
@@ -263,22 +244,12 @@ const Index = () => {
       totalOverageApplied += calculateOverage(coverageD, policyLimitD);
     }
     
-    // Add sub-limit overages
-    if (overageAppliedToDeductible.screenEnclosureSubLimit) {
-      totalOverageApplied += calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy);
-    }
-    if (overageAppliedToDeductible.moldSubLimit) {
-      totalOverageApplied += calculateOverage(moldSubLimit, moldSubLimitPolicy);
-    }
-    if (overageAppliedToDeductible.waterMitigationSubLimit) {
-      totalOverageApplied += calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy);
-    }
-    if (overageAppliedToDeductible.matchingSubLimit) {
-      totalOverageApplied += calculateOverage(matchingSubLimit, matchingSubLimitPolicy);
-    }
-    if (overageAppliedToDeductible.ordinanceLawSubLimit) {
-      totalOverageApplied += calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy);
-    }
+    // Add dynamic sub-limit overages
+    customSubLimits.forEach(subLimit => {
+      if (overageAppliedToDeductible[`customSubLimit${subLimit.id}`] && subLimit.checked) {
+        totalOverageApplied += calculateOverage(subLimit.amount, subLimit.policyLimit);
+      }
+    });
     
     return totalOverageApplied;
   };
@@ -573,342 +544,131 @@ const Index = () => {
                         <CollapsibleTrigger className="flex items-center gap-2 w-full p-2 bg-muted/50 rounded-lg hover:bg-muted transition-colors border-l-2 border-border">
                           <ChevronDown className={cn("h-3 w-3 transition-transform", openSections.coverageASubLimits && "rotate-180")} />
                           <span className="text-sm font-medium text-muted-foreground">Coverage A Sub-limits</span>
+                          <button
+                            onClick={() => {
+                              const newId = Date.now();
+                              setCustomSubLimits([...customSubLimits, {
+                                id: newId,
+                                type: 'Screen Enclosure',
+                                amount: '',
+                                policyLimit: '',
+                                checked: false
+                              }]);
+                            }}
+                            className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1 ml-auto"
+                          >
+                            + Add Sub Limit
+                          </button>
                         </CollapsibleTrigger>
                         <CollapsibleContent className="pl-4 space-y-3 mt-3 border-l-2 border-border">
-                          {/* Screen Enclosure Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="screen-enclosure-sub-limit"
-                                checked={checkedItems.screenEnclosureSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('screenEnclosureSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={screenEnclosureSubLimitDescription}
-                                onChange={(e) => setScreenEnclosureSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.screenEnclosureSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={screenEnclosureSubLimit}
-                                    onChange={(e) => setScreenEnclosureSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
+                          {/* Dynamic Custom Sub-limits */}
+                          {customSubLimits.map((subLimit, index) => (
+                            <div key={subLimit.id} className="space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id={`custom-sub-limit-${subLimit.id}`}
+                                  checked={subLimit.checked}
+                                  onCheckedChange={(checked) => {
+                                    const newSubLimits = [...customSubLimits];
+                                    newSubLimits[index].checked = checked as boolean;
+                                    setCustomSubLimits(newSubLimits);
+                                  }}
+                                />
+                                <Select
+                                  value={subLimit.type}
+                                  onValueChange={(value) => {
+                                    const newSubLimits = [...customSubLimits];
+                                    newSubLimits[index].type = value;
+                                    setCustomSubLimits(newSubLimits);
+                                  }}
+                                >
+                                  <SelectTrigger className="flex-1">
+                                    <SelectValue placeholder="Select sub-limit type" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Screen Enclosure">Screen Enclosure</SelectItem>
+                                    <SelectItem value="Mold">Mold</SelectItem>
+                                    <SelectItem value="Water Mitigation">Water Mitigation</SelectItem>
+                                    <SelectItem value="Matching Ordinance and Law">Matching Ordinance and Law</SelectItem>
+                                    <SelectItem value="Tree Debris Removal">Tree Debris Removal</SelectItem>
+                                    <SelectItem value="Debris Removal">Debris Removal</SelectItem>
+                                    <SelectItem value="Ordinance & Law">Ordinance & Law</SelectItem>
+                                    <SelectItem value="Personal Property">Personal Property</SelectItem>
+                                    <SelectItem value="Additional Living Expenses">Additional Living Expenses</SelectItem>
+                                    <SelectItem value="Other">Other</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <button
+                                  onClick={() => {
+                                    setCustomSubLimits(customSubLimits.filter((_, i) => i !== index));
+                                  }}
+                                  className="text-red-500 hover:text-red-700 text-sm"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+                              {subLimit.checked && (
+                                <div className="ml-6 space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm">$</span>
+                                    <Input
+                                      type="text"
+                                      placeholder="Enter sub-limit amount"
+                                      value={subLimit.amount}
+                                      onChange={(e) => {
+                                        const newSubLimits = [...customSubLimits];
+                                        newSubLimits[index].amount = e.target.value;
+                                        setCustomSubLimits(newSubLimits);
+                                      }}
+                                      className="flex-1"
+                                    />
+                                  </div>
                                   <div className="flex items-center gap-2">
                                     <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
                                     <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={screenEnclosureSubLimitPolicy}
-                                    onChange={(e) => setScreenEnclosureSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 flex items-center gap-2">
-                                    <span className="text-red-600 text-sm font-medium">
-                                      Over Limit: ${calculateOverage(screenEnclosureSubLimit, screenEnclosureSubLimitPolicy).toFixed(2)}
-                                    </span>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setOverageAppliedToDeductible(prev => ({
-                                        ...prev,
-                                        screenEnclosureSubLimit: !prev.screenEnclosureSubLimit
-                                      }))}
-                                      className={cn(
-                                        "h-6 w-6 p-0",
-                                        overageAppliedToDeductible.screenEnclosureSubLimit && "bg-green-100 border-green-500"
-                                      )}
-                                    >
-                                      <Plus className="h-3 w-3" />
-                                    </Button>
-                                    {overageAppliedToDeductible.screenEnclosureSubLimit && (
-                                      <span className="text-green-600 text-xs">Applied to deductible</span>
-                                    )}
+                                    <Input
+                                      type="text"
+                                      placeholder="0.00"
+                                      value={subLimit.policyLimit}
+                                      onChange={(e) => {
+                                        const newSubLimits = [...customSubLimits];
+                                        newSubLimits[index].policyLimit = e.target.value;
+                                        setCustomSubLimits(newSubLimits);
+                                      }}
+                                      className="flex-1"
+                                    />
                                   </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Mold Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="mold-sub-limit"
-                                checked={checkedItems.moldSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('moldSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={moldSubLimitDescription}
-                                onChange={(e) => setMoldSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
+                                  {(() => {
+                                    const overage = calculateOverage(subLimit.amount, subLimit.policyLimit);
+                                    return overage > 0 && (
+                                      <div className="ml-20 flex items-center gap-2">
+                                        <span className="text-red-600 text-sm font-medium">
+                                          Over Limit: ${overage.toFixed(2)}
+                                        </span>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => setOverageAppliedToDeductible(prev => ({
+                                            ...prev,
+                                            [`customSubLimit${subLimit.id}`]: !prev[`customSubLimit${subLimit.id}`]
+                                          }))}
+                                          className={cn(
+                                            "h-6 w-6 p-0",
+                                            overageAppliedToDeductible[`customSubLimit${subLimit.id}`] && "bg-green-100 border-green-500"
+                                          )}
+                                        >
+                                          <Plus className="h-3 w-3" />
+                                        </Button>
+                                        {overageAppliedToDeductible[`customSubLimit${subLimit.id}`] && (
+                                          <span className="text-green-600 text-xs">Applied to deductible</span>
+                                        )}
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
+                              )}
                             </div>
-                            {checkedItems.moldSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={moldSubLimit}
-                                    onChange={(e) => setMoldSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={moldSubLimitPolicy}
-                                    onChange={(e) => setMoldSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(moldSubLimit, moldSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 flex items-center gap-2">
-                                    <span className="text-red-600 text-sm font-medium">
-                                      Over Limit: ${calculateOverage(moldSubLimit, moldSubLimitPolicy).toFixed(2)}
-                                    </span>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setOverageAppliedToDeductible(prev => ({
-                                        ...prev,
-                                        moldSubLimit: !prev.moldSubLimit
-                                      }))}
-                                      className={cn(
-                                        "h-6 w-6 p-0",
-                                        overageAppliedToDeductible.moldSubLimit && "bg-green-100 border-green-500"
-                                      )}
-                                    >
-                                      <Plus className="h-3 w-3" />
-                                    </Button>
-                                    {overageAppliedToDeductible.moldSubLimit && (
-                                      <span className="text-green-600 text-xs">Applied to deductible</span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Water Mitigation Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="water-mitigation-sub-limit"
-                                checked={checkedItems.waterMitigationSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('waterMitigationSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={waterMitigationSubLimitDescription}
-                                onChange={(e) => setWaterMitigationSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.waterMitigationSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={waterMitigationSubLimit}
-                                    onChange={(e) => setWaterMitigationSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={waterMitigationSubLimitPolicy}
-                                    onChange={(e) => setWaterMitigationSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 flex items-center gap-2">
-                                    <span className="text-red-600 text-sm font-medium">
-                                      Over Limit: ${calculateOverage(waterMitigationSubLimit, waterMitigationSubLimitPolicy).toFixed(2)}
-                                    </span>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setOverageAppliedToDeductible(prev => ({
-                                        ...prev,
-                                        waterMitigationSubLimit: !prev.waterMitigationSubLimit
-                                      }))}
-                                      className={cn(
-                                        "h-6 w-6 p-0",
-                                        overageAppliedToDeductible.waterMitigationSubLimit && "bg-green-100 border-green-500"
-                                      )}
-                                    >
-                                      <Plus className="h-3 w-3" />
-                                    </Button>
-                                    {overageAppliedToDeductible.waterMitigationSubLimit && (
-                                      <span className="text-green-600 text-xs">Applied to deductible</span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Matching Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="matching-sub-limit"
-                                checked={checkedItems.matchingSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('matchingSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={matchingSubLimitDescription}
-                                onChange={(e) => setMatchingSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.matchingSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={matchingSubLimit}
-                                    onChange={(e) => setMatchingSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={matchingSubLimitPolicy}
-                                    onChange={(e) => setMatchingSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(matchingSubLimit, matchingSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 flex items-center gap-2">
-                                    <span className="text-red-600 text-sm font-medium">
-                                      Over Limit: ${calculateOverage(matchingSubLimit, matchingSubLimitPolicy).toFixed(2)}
-                                    </span>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setOverageAppliedToDeductible(prev => ({
-                                        ...prev,
-                                        matchingSubLimit: !prev.matchingSubLimit
-                                      }))}
-                                      className={cn(
-                                        "h-6 w-6 p-0",
-                                        overageAppliedToDeductible.matchingSubLimit && "bg-green-100 border-green-500"
-                                      )}
-                                    >
-                                      <Plus className="h-3 w-3" />
-                                    </Button>
-                                    {overageAppliedToDeductible.matchingSubLimit && (
-                                      <span className="text-green-600 text-xs">Applied to deductible</span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Ordinance & Law Sub-limit */}
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="ordinance-law-sub-limit"
-                                checked={checkedItems.ordinanceLawSubLimit}
-                                onCheckedChange={(checked) => handleCheckboxChange('ordinanceLawSubLimit', checked as boolean)}
-                              />
-                              <Input
-                                type="text"
-                                value={ordinanceLawSubLimitDescription}
-                                onChange={(e) => setOrdinanceLawSubLimitDescription(e.target.value)}
-                                className="text-sm flex-1"
-                                placeholder="Sub-limit name"
-                              />
-                            </div>
-                            {checkedItems.ordinanceLawSubLimit && (
-                              <div className="ml-6 space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="Enter sub-limit amount"
-                                    value={ordinanceLawSubLimit}
-                                    onChange={(e) => setOrdinanceLawSubLimit(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
-                                  <Input
-                                    type="text"
-                                    placeholder="0.00"
-                                    value={ordinanceLawSubLimitPolicy}
-                                    onChange={(e) => setOrdinanceLawSubLimitPolicy(e.target.value)}
-                                    className="flex-1"
-                                  />
-                                </div>
-                                {calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy) > 0 && (
-                                  <div className="ml-20 flex items-center gap-2">
-                                    <span className="text-red-600 text-sm font-medium">
-                                      Over Limit: ${calculateOverage(ordinanceLawSubLimit, ordinanceLawSubLimitPolicy).toFixed(2)}
-                                    </span>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => setOverageAppliedToDeductible(prev => ({
-                                        ...prev,
-                                        ordinanceLawSubLimit: !prev.ordinanceLawSubLimit
-                                      }))}
-                                      className={cn(
-                                        "h-6 w-6 p-0",
-                                        overageAppliedToDeductible.ordinanceLawSubLimit && "bg-green-100 border-green-500"
-                                      )}
-                                    >
-                                      <Plus className="h-3 w-3" />
-                                    </Button>
-                                    {overageAppliedToDeductible.ordinanceLawSubLimit && (
-                                      <span className="text-green-600 text-xs">Applied to deductible</span>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
+                          ))}
                         </CollapsibleContent>
                       </Collapsible>
                     </div>
