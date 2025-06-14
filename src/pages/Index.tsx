@@ -825,7 +825,12 @@ const Index = () => {
             >
               <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.optionalDeductions && "rotate-180")} />
-                <span className="font-medium">Optional Deductions</span>
+                <div className="flex items-center justify-between w-full">
+                  <span className="font-medium">Payment Deductions</span>
+                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1">
+                    + Add Payment Deduction
+                  </button>
+                </div>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4">
                 {/* 2x2 Grid Layout for Optional Deductions */}
