@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { PrintPreview } from '@/components/PrintPreview';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Moon, Sun, Plus } from 'lucide-react';
+import { ChevronDown, Moon, Sun, Plus, Printer } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
@@ -87,6 +88,9 @@ const Index = () => {
     policyLimit: string;
     checked: boolean;
   }>>([]);
+
+  // Print preview state
+  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
   // Repairs by Contractor amounts and quantities
   const [roofSquares, setRoofSquares] = useState('');
@@ -438,16 +442,26 @@ const Index = () => {
                   Claim Breakdown Calculator
                 </CardTitle>
               </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                className="ml-auto"
-              >
-                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPrintPreview(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Printer className="h-4 w-4" />
+                  Print Preview
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                >
+                  <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -2023,6 +2037,28 @@ const Index = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Print Preview Modal */}
+        <PrintPreview
+          isOpen={showPrintPreview}
+          onClose={() => setShowPrintPreview(false)}
+          data={{
+            claimAmount,
+            deductible,
+            coverageA,
+            coverageB,
+            coverageC,
+            coverageD,
+            totalCoverage,
+            customSubLimits,
+            priorPayments,
+            paymentsWithoutFees,
+            customPaymentDeductions,
+            customInsuredRepairs,
+            customContractorRepairs,
+            finalBalance: finalBalanceAfterRepairs
+          }}
+        />
       </div>
     </div>
   );
