@@ -379,7 +379,7 @@ const Index = () => {
               open={openSections.coverages} 
               onOpenChange={() => toggleSection('coverages')}
             >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.coverages && "rotate-180")} />
                 <span className="font-medium">Coverages A through D</span>
               </CollapsibleTrigger>
@@ -405,7 +405,7 @@ const Index = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-gray-600">
+                        <Label className="text-sm font-medium w-20 text-muted-foreground">
                           Policy Limit
                         </Label>
                         <div className="flex items-center gap-1 flex-1">
@@ -432,11 +432,11 @@ const Index = () => {
                         open={openSections.coverageASubLimits} 
                         onOpenChange={() => toggleSection('coverageASubLimits')}
                       >
-                        <CollapsibleTrigger className="flex items-center gap-2 w-full p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border-l-2 border-gray-200">
+                        <CollapsibleTrigger className="flex items-center gap-2 w-full p-2 bg-muted/50 rounded-lg hover:bg-muted transition-colors border-l-2 border-border">
                           <ChevronDown className={cn("h-3 w-3 transition-transform", openSections.coverageASubLimits && "rotate-180")} />
-                          <span className="text-sm font-medium text-gray-600">Coverage A Sub-limits</span>
+                          <span className="text-sm font-medium text-muted-foreground">Coverage A Sub-limits</span>
                         </CollapsibleTrigger>
-                        <CollapsibleContent className="pl-4 space-y-3 mt-3 border-l-2 border-gray-200">
+                        <CollapsibleContent className="pl-4 space-y-3 mt-3 border-l-2 border-border">
                           {/* Screen Enclosure Sub-limit */}
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2">
@@ -465,9 +465,9 @@ const Index = () => {
                                     className="flex-1"
                                   />
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
-                                  <span className="text-sm">$</span>
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
+                                    <span className="text-sm">$</span>
                                   <Input
                                     type="text"
                                     placeholder="0.00"
@@ -514,7 +514,7 @@ const Index = () => {
                                   />
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
+                                  <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
                                   <span className="text-sm">$</span>
                                   <Input
                                     type="text"
@@ -562,7 +562,7 @@ const Index = () => {
                                   />
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
+                                  <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
                                   <span className="text-sm">$</span>
                                   <Input
                                     type="text"
@@ -610,7 +610,7 @@ const Index = () => {
                                   />
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
+                                  <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
                                   <span className="text-sm">$</span>
                                   <Input
                                     type="text"
@@ -658,7 +658,7 @@ const Index = () => {
                                   />
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Label className="text-sm text-gray-600 w-20">Policy Limit</Label>
+                                  <Label className="text-sm text-muted-foreground w-20">Policy Limit</Label>
                                   <span className="text-sm">$</span>
                                   <Input
                                     type="text"
@@ -701,7 +701,7 @@ const Index = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-gray-600">
+                        <Label className="text-sm font-medium w-20 text-muted-foreground">
                           Policy Limit
                         </Label>
                         <div className="flex items-center gap-1 flex-1">
@@ -740,7 +740,7 @@ const Index = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-gray-600">
+                        <Label className="text-sm font-medium w-20 text-muted-foreground">
                           Policy Limit
                         </Label>
                         <div className="flex items-center gap-1 flex-1">
@@ -779,7 +779,7 @@ const Index = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Label className="text-sm font-medium w-20 text-gray-600">
+                        <Label className="text-sm font-medium w-20 text-muted-foreground">
                           Policy Limit
                         </Label>
                         <div className="flex items-center gap-1 flex-1">
@@ -809,7 +809,7 @@ const Index = () => {
               open={openSections.optionalDeductions} 
               onOpenChange={() => toggleSection('optionalDeductions')}
             >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.optionalDeductions && "rotate-180")} />
                 <span className="font-medium">Optional Deductions</span>
               </CollapsibleTrigger>
@@ -921,7 +921,7 @@ const Index = () => {
               open={openSections.priorPayments} 
               onOpenChange={() => toggleSection('priorPayments')}
             >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.priorPayments && "rotate-180")} />
                 <span className="font-medium">Prior Payments</span>
               </CollapsibleTrigger>
@@ -991,7 +991,7 @@ const Index = () => {
               open={openSections.paymentsWithoutFees} 
               onOpenChange={() => toggleSection('paymentsWithoutFees')}
             >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.paymentsWithoutFees && "rotate-180")} />
                 <span className="font-medium">Payments to CCS without Fees</span>
               </CollapsibleTrigger>
@@ -1103,7 +1103,7 @@ const Index = () => {
             </Collapsible>
 
             {/* Deductible */}
-            <div className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg">
+            <div className="flex items-center gap-4 bg-muted/50 p-3 rounded-lg">
               <Label htmlFor="deductible" className="text-sm font-medium w-20">
                 Deductible
               </Label>
@@ -1131,7 +1131,7 @@ const Index = () => {
               open={openSections.ccsFees} 
               onOpenChange={() => toggleSection('ccsFees')}
             >
-              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
                 <div className="flex items-center gap-2">
                   <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.ccsFees && "rotate-180")} />
                   <span className="font-medium">CCS Fees</span>
@@ -1209,7 +1209,7 @@ const Index = () => {
               open={openSections.repairsByInsured} 
               onOpenChange={() => toggleSection('repairsByInsured')}
             >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.repairsByInsured && "rotate-180")} />
                 <span className="font-medium">Repairs by the Insured</span>
               </CollapsibleTrigger>
@@ -1350,7 +1350,7 @@ const Index = () => {
               open={openSections.repairsByContractor} 
               onOpenChange={() => toggleSection('repairsByContractor')}
             >
-              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
                 <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.repairsByContractor && "rotate-180")} />
                 <span className="font-medium">Repairs by Contractor</span>
               </CollapsibleTrigger>
@@ -1397,7 +1397,7 @@ const Index = () => {
                           type="text"
                           value={calculateCostPerSquare(roofTotalCost, roofSquares)}
                           readOnly
-                          className="flex-1 bg-gray-100"
+                          className="flex-1 bg-muted/50"
                         />
                       </div>
                     </div>
@@ -1446,7 +1446,7 @@ const Index = () => {
                           type="text"
                           value={calculateCostPerSquare(additionalRoofTotalCost, additionalRoofSquares)}
                           readOnly
-                          className="flex-1 bg-gray-100"
+                          className="flex-1 bg-muted/50"
                         />
                       </div>
                     </div>
@@ -1495,7 +1495,7 @@ const Index = () => {
                           type="text"
                           value={calculateCostPerLinearFoot(guttersTotalCost, guttersLinearFeet)}
                           readOnly
-                          className="flex-1 bg-gray-100"
+                          className="flex-1 bg-muted/50"
                         />
                       </div>
                     </div>
@@ -1544,7 +1544,7 @@ const Index = () => {
                           type="text"
                           value={calculateCostPerPanel(solarTotalCost, solarPanels)}
                           readOnly
-                          className="flex-1 bg-gray-100"
+                          className="flex-1 bg-muted/50"
                         />
                       </div>
                     </div>
@@ -1593,7 +1593,7 @@ const Index = () => {
                           type="text"
                           value={calculateCostPerLinearFoot(soffitTotalCost, soffitLinearFeet)}
                           readOnly
-                          className="flex-1 bg-gray-100"
+                          className="flex-1 bg-muted/50"
                         />
                       </div>
                     </div>
@@ -1642,7 +1642,7 @@ const Index = () => {
                           type="text"
                           value={calculateCostPerLinearFoot(fasciaTotalCost, fasciaLinearFeet)}
                           readOnly
-                          className="flex-1 bg-gray-100"
+                          className="flex-1 bg-muted/50"
                         />
                       </div>
                     </div>
