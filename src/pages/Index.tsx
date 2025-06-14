@@ -334,11 +334,13 @@ const Index = () => {
       <div className="max-w-4xl mx-auto">
         <Card className="mb-6">
           <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-              <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
-                <span className="text-white text-xs">📋</span>
-              </div>
-              CCS Claim Breakdown Tool
+            <CardTitle className="flex items-center justify-center gap-4 text-2xl font-semibold">
+              <img 
+                src="/lovable-uploads/a822d896-9826-4f13-944c-6177d3786d1a.png" 
+                alt="Coastal Claims Services Logo" 
+                className="h-10 w-auto"
+              />
+              <span className="text-primary">CCS Claim Breakdown Calculator</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
