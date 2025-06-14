@@ -1451,18 +1451,32 @@ const Index = () => {
                             setPaymentsWithoutFees(newPayments);
                           }}
                         />
-                        <Label htmlFor={`payment-${payment.id}`} className="text-sm">
-                          {payment.typeName}
-                        </Label>
-                        {paymentsWithoutFees.length > 2 && (
-                          <button
-                            onClick={() => {
-                              setPaymentsWithoutFees(paymentsWithoutFees.filter((_, i) => i !== index));
-                            }}
-                            className="text-red-500 hover:text-red-700 text-sm ml-auto"
-                          >
-                            ✕
-                          </button>
+                        {payment.type === 'custom' ? (
+                          <div className="flex items-center gap-2 flex-1">
+                            <Input
+                              type="text"
+                              placeholder="Custom Payment"
+                              value={payment.typeName}
+                              onChange={(e) => {
+                                const newPayments = [...paymentsWithoutFees];
+                                newPayments[index].typeName = e.target.value;
+                                setPaymentsWithoutFees(newPayments);
+                              }}
+                              className="text-sm border-none p-0 h-auto bg-transparent"
+                            />
+                            <button
+                              onClick={() => {
+                                setPaymentsWithoutFees(paymentsWithoutFees.filter((_, i) => i !== index));
+                              }}
+                              className="text-red-500 hover:text-red-700 text-sm"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <Label htmlFor={`payment-${payment.id}`} className="text-sm">
+                            {payment.typeName}
+                          </Label>
                         )}
                       </div>
                       {payment.checked && (
