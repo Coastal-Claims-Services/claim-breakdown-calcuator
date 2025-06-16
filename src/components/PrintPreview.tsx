@@ -62,9 +62,6 @@ interface PrintPreviewProps {
       checked: boolean;
     }>;
     finalBalance: number;
-    insuredName: string;
-    insuredAddress: string;
-    insuredClaimNumber: string;
   };
 }
 
@@ -181,35 +178,6 @@ export const PrintPreview: React.FC<PrintPreviewProps> = ({ isOpen, onClose, dat
               Claim Breakdown Calculator
             </h1>
           </div>
-
-          {/* Insured Information */}
-          {(data.insuredName || data.insuredAddress || data.insuredClaimNumber) && (
-            <Card className="mb-4">
-              <CardHeader>
-                <CardTitle>Insured Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {data.insuredName && (
-                  <div>
-                    <Label className="text-sm font-medium">Insured's Name</Label>
-                    <div className="text-lg">{data.insuredName}</div>
-                  </div>
-                )}
-                {data.insuredAddress && (
-                  <div>
-                    <Label className="text-sm font-medium">Insured's Address</Label>
-                    <div className="whitespace-pre-line">{data.insuredAddress}</div>
-                  </div>
-                )}
-                {data.insuredClaimNumber && (
-                  <div>
-                    <Label className="text-sm font-medium">Claim Number</Label>
-                    <div className="text-lg font-mono">{data.insuredClaimNumber}</div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
 
           {/* Basic Claim Info */}
           <Card className="mb-4">
