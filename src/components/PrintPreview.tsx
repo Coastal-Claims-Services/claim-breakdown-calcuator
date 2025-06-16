@@ -200,25 +200,25 @@ export const PrintPreview: React.FC<PrintPreviewProps> = ({ isOpen, onClose, dat
             </Card>
           )}
 
-          {/* Insurance and Claim Information */}
+          {/* Insured and Claim Information */}
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle>Insurance & Claim Information</CardTitle>
+              <CardTitle>Insured & Claim Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm font-medium text-gray-600">Insurance Company</Label>
+                  <Label className="text-sm font-medium text-gray-600">Insured's Name</Label>
                   <div className="text-lg font-semibold">{data.insuranceName}</div>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-600">Claim Number</Label>
+                  <Label className="text-sm font-medium text-gray-600">Insured's Claim Number</Label>
                   <div className="text-lg font-semibold">{data.claimNumber}</div>
                 </div>
               </div>
               {data.insuranceAddress && (
                 <div>
-                  <Label className="text-sm font-medium text-gray-600">Insurance Address</Label>
+                  <Label className="text-sm font-medium text-gray-600">Insured Property Address</Label>
                   <div className="text-base">{data.insuranceAddress}</div>
                 </div>
               )}

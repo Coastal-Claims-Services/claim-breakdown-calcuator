@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -79,9 +80,9 @@ export const ClaimInfoPage: React.FC<ClaimInfoPageProps> = ({
               </div>
             )}
 
-            {/* Insurance Company Name */}
+            {/* Insured's Name */}
             <div className="space-y-2">
-              <Label htmlFor="insurance-name">Insureds Name *</Label>
+              <Label htmlFor="insurance-name">Insured's Name *</Label>
               <Input
                 id="insurance-name"
                 value={claimInfo.insuranceName}
@@ -90,20 +91,20 @@ export const ClaimInfoPage: React.FC<ClaimInfoPageProps> = ({
               />
             </div>
 
-            {/* Insurance Company Address */}
+            {/* Insured Property Address */}
             <div className="space-y-2">
-              <Label htmlFor="insurance-address">Insurance Company Address</Label>
+              <Label htmlFor="insurance-address">Insured Property Address</Label>
               <Input
                 id="insurance-address"
                 value={claimInfo.insuranceAddress}
                 onChange={(e) => onUpdateClaimInfo('insuranceAddress', e.target.value)}
-                placeholder="Enter insurance company address"
+                placeholder="Enter property address"
               />
             </div>
 
-            {/* Claim Number */}
+            {/* Insured's Claim Number */}
             <div className="space-y-2">
-              <Label htmlFor="claim-number">Insurance Claim Number *</Label>
+              <Label htmlFor="claim-number">Insured's Claim Number *</Label>
               <Input
                 id="claim-number"
                 value={claimInfo.claimNumber}
