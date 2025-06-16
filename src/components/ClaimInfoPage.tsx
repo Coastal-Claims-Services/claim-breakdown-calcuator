@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface ClaimInfoPageProps {
   claimInfo: {
@@ -30,7 +31,15 @@ export const ClaimInfoPage: React.FC<ClaimInfoPageProps> = ({
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-2xl mx-auto pt-8">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative">
+          <div className="absolute top-0 right-0">
+            <Link to="/admin">
+              <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Admin
+              </Button>
+            </Link>
+          </div>
           <img 
             src="/lovable-uploads/d8102e62-174d-41ec-8e54-53ba66b1e02d.png" 
             alt="Coastal Claims Services Logo" 
