@@ -31,15 +31,7 @@ export const ClaimInfoPage: React.FC<ClaimInfoPageProps> = ({
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-2xl mx-auto pt-8">
         {/* Header */}
-        <div className="text-center mb-8 relative">
-          <div className="absolute top-0 right-0">
-            <Link to="/admin">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Admin
-              </Button>
-            </Link>
-          </div>
+        <div className="text-center mb-8">
           <img 
             src="/lovable-uploads/d8102e62-174d-41ec-8e54-53ba66b1e02d.png" 
             alt="Coastal Claims Services Logo" 
@@ -51,6 +43,16 @@ export const ClaimInfoPage: React.FC<ClaimInfoPageProps> = ({
           <p className="text-gray-600">
             Let's start by gathering some basic information about your claim
           </p>
+        </div>
+
+        {/* Admin Button */}
+        <div className="flex justify-end mb-4">
+          <Link to="/admin">
+            <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Admin
+            </Button>
+          </Link>
         </div>
 
         <Card>
