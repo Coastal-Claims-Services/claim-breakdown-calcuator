@@ -60,6 +60,11 @@ export const ClaimInfoPage: React.FC<ClaimInfoPageProps> = ({
                   <SelectValue placeholder="Select a release type" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="proposed">Proposed Release</SelectItem>
+                  <SelectItem value="litigated">Litigated Release</SelectItem>
+                  <SelectItem value="mediation">Mediation Release</SelectItem>
+                  <SelectItem value="appraisal">Appraisal Release</SelectItem>
+                  <SelectItem value="standard">Standard Release</SelectItem>
                   <SelectItem value="partial">Partial Release</SelectItem>
                   <SelectItem value="full">Full and Final Release</SelectItem>
                   <SelectItem value="custom">Custom Release Type</SelectItem>
