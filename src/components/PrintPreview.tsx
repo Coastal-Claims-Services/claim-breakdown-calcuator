@@ -13,9 +13,6 @@ interface PrintPreviewProps {
   data: {
     releaseType: string;
     customReleaseTypeName: string;
-    insuranceName: string;
-    insuranceAddress: string;
-    claimNumber: string;
     openingStatement: string;
     claimAmount: string;
     deductible: string;
@@ -85,13 +82,6 @@ export const PrintPreview: React.FC<PrintPreviewProps> = ({ isOpen, onClose, dat
 
   const updatePrintOption = (key: keyof typeof printOptions, value: boolean) => {
     setPrintOptions(prev => ({ ...prev, [key]: value }));
-  };
-
-  const getReleaseTypeName = () => {
-    if (data.releaseType === 'custom') {
-      return data.customReleaseTypeName || 'Custom Release Type';
-    }
-    return data.releaseType === 'partial' ? 'Partial Release' : 'Full and Final Release';
   };
 
   return (
@@ -185,54 +175,14 @@ export const PrintPreview: React.FC<PrintPreviewProps> = ({ isOpen, onClose, dat
               className="h-12 w-auto"
             />
             <h1 className="text-2xl font-semibold" style={{ color: '#1e3a8a' }}>
-              Claim Breakdown Calculator - {getReleaseTypeName()}
+              Claim Breakdown Calculator
             </h1>
           </div>
-
-          {/* Opening Statement */}
-          {data.openingStatement && (
-            <Card className="mb-4">
-              <CardContent className="p-4">
-                <div className="text-center text-lg italic text-gray-700">
-                  "{data.openingStatement}"
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Insured and Claim Information */}
-          <Card className="mb-4">
-            <CardHeader>
-              <CardTitle>Insured & Claim Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium text-gray-600">Insured's Name</Label>
-                  <div className="text-lg font-semibold">{data.insuranceName}</div>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-600">Insured's Claim Number</Label>
-                  <div className="text-lg font-semibold">{data.claimNumber}</div>
-                </div>
-              </div>
-              {data.insuranceAddress && (
-                <div>
-                  <Label className="text-sm font-medium text-gray-600">Insured Property Address</Label>
-                  <div className="text-base">{data.insuranceAddress}</div>
-                </div>
-              )}
-              <div>
-                <Label className="text-sm font-medium text-gray-600">Release Type</Label>
-                <div className="text-base">{getReleaseTypeName()}</div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Basic Claim Info */}
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle>Coverage Information</CardTitle>
+              <CardTitle>Claim Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
