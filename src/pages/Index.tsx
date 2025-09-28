@@ -321,10 +321,22 @@ const Index = () => {
     return Math.max(0, balance);
   };
 
-  // Calculate current PA fees based on balance (10% of balance)
+  // Calculate current PA fees based on individual coverage percentages
   const calculateCurrentPAFees = () => {
-    const balance = calculateBalanceBeforePAFees();
-    return balance * 0.10; // 10% of balance
+    // Get each coverage amount capped at policy limit
+    const coverageA_amount = Math.min(parseFloat(coverageA.replace(/,/g, '')) || 0, parseFloat(policyLimitA.replace(/,/g, '')) || Infinity);
+    const coverageB_amount = Math.min(parseFloat(coverageB.replace(/,/g, '')) || 0, parseFloat(policyLimitB.replace(/,/g, '')) || Infinity);
+    const coverageC_amount = Math.min(parseFloat(coverageC.replace(/,/g, '')) || 0, parseFloat(policyLimitC.replace(/,/g, '')) || Infinity);
+    const coverageD_amount = Math.min(parseFloat(coverageD.replace(/,/g, '')) || 0, parseFloat(policyLimitD.replace(/,/g, '')) || Infinity);
+
+    // Apply each coverage's fee percentage
+    const feeA = coverageA_amount * (parseFloat(coverageAFeePercent) || 0) / 100;
+    const feeB = coverageB_amount * (parseFloat(coverageBFeePercent) || 0) / 100;
+    const feeC = coverageC_amount * (parseFloat(coverageCFeePercent) || 0) / 100;
+    const feeD = coverageD_amount * (parseFloat(coverageDFeePercent) || 0) / 100;
+
+    // Sum all fees
+    return feeA + feeB + feeC + feeD;
   };
 
   // Calculate total PA fees (current + prior)
