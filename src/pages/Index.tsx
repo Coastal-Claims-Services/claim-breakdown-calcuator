@@ -323,17 +323,25 @@ const Index = () => {
 
   // Calculate current PA fees based on individual coverage percentages
   const calculateCurrentPAFees = () => {
+    // Get the balance which already has deductible and prior payments removed
+    const balance = calculateBalanceBeforePAFees();
+
     // Get each coverage amount capped at policy limit
     const coverageA_amount = Math.min(parseFloat(coverageA.replace(/,/g, '')) || 0, parseFloat(policyLimitA.replace(/,/g, '')) || Infinity);
     const coverageB_amount = Math.min(parseFloat(coverageB.replace(/,/g, '')) || 0, parseFloat(policyLimitB.replace(/,/g, '')) || Infinity);
     const coverageC_amount = Math.min(parseFloat(coverageC.replace(/,/g, '')) || 0, parseFloat(policyLimitC.replace(/,/g, '')) || Infinity);
     const coverageD_amount = Math.min(parseFloat(coverageD.replace(/,/g, '')) || 0, parseFloat(policyLimitD.replace(/,/g, '')) || Infinity);
 
-    // Apply each coverage's fee percentage
-    const feeA = coverageA_amount * (parseFloat(coverageAFeePercent) || 0) / 100;
-    const feeB = coverageB_amount * (parseFloat(coverageBFeePercent) || 0) / 100;
-    const feeC = coverageC_amount * (parseFloat(coverageCFeePercent) || 0) / 100;
-    const feeD = coverageD_amount * (parseFloat(coverageDFeePercent) || 0) / 100;
+    const totalCoverages = coverageA_amount + coverageB_amount + coverageC_amount + coverageD_amount;
+
+    // If no coverages, return 0
+    if (totalCoverages === 0) return 0;
+
+    // Proportionally allocate the balance to each coverage and apply its fee percentage
+    const feeA = (balance * coverageA_amount / totalCoverages) * (parseFloat(coverageAFeePercent) || 0) / 100;
+    const feeB = (balance * coverageB_amount / totalCoverages) * (parseFloat(coverageBFeePercent) || 0) / 100;
+    const feeC = (balance * coverageC_amount / totalCoverages) * (parseFloat(coverageCFeePercent) || 0) / 100;
+    const feeD = (balance * coverageD_amount / totalCoverages) * (parseFloat(coverageDFeePercent) || 0) / 100;
 
     // Sum all fees
     return feeA + feeB + feeC + feeD;
@@ -367,17 +375,17 @@ const Index = () => {
 
   // Calculate Total Possible Recovered (following the exact math flow from user)
   const calculateTotalPossibleRecovered = () => {
-    const balanceBeforePAFees = calculateBalanceBeforePAFees(); // $34,000
-    const newPAFees = balanceBeforePAFees * 0.1; // $3,400
-    const netAfterNewPAFees = balanceBeforePAFees - newPAFees; // $30,600
-    const priorPayments = calculatePriorPayments(); // $200
-    const priorPAFees = calculatePriorPAFees(); // $10
-    const addBackPriorPayments = netAfterNewPAFees + priorPayments; // $30,800
-    const subtractOldPAFees = addBackPriorPayments - priorPAFees; // $30,790
-    const effectiveDeductible = Math.max(0, (parseFloat(deductible) || 0) - calculateOverageAppliedToDeductible()); // $5,000
-    const totalDeductions = calculateTotalDeductions(); // $800
-    const totalPossibleRecovered = subtractOldPAFees + effectiveDeductible + totalDeductions; // $30,790 + $5,000 + $800 = $36,590
-    
+    const balanceBeforePAFees = calculateBalanceBeforePAFees();
+    const newPAFees = calculateCurrentPAFees(); // Use the proper calculation with individual percentages
+    const netAfterNewPAFees = balanceBeforePAFees - newPAFees;
+    const priorPayments = calculatePriorPayments();
+    const priorPAFees = calculatePriorPAFees();
+    const addBackPriorPayments = netAfterNewPAFees + priorPayments;
+    const subtractOldPAFees = addBackPriorPayments - priorPAFees;
+    const effectiveDeductible = Math.max(0, (parseFloat(deductible) || 0) - calculateOverageAppliedToDeductible());
+    const totalDeductions = calculateTotalDeductions();
+    const totalPossibleRecovered = subtractOldPAFees + effectiveDeductible + totalDeductions;
+
     return Math.max(0, totalPossibleRecovered);
   };
 
@@ -1569,7 +1577,7 @@ const Index = () => {
                   {/* Total PA Fees */}
                   <div className="mb-4">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm text-gray-600">Total PA Fees (10% of ${balanceBeforePAFees.toFixed(2)})</span>
+                      <span className="text-sm text-gray-600">Total PA Fees (Current + Prior)</span>
                       <span className="font-medium">$ {calculateTotalPAFees().toFixed(2)}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
