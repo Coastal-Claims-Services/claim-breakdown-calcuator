@@ -780,7 +780,8 @@ const Index = () => {
                           <ChevronDown className={cn("h-3 w-3 transition-transform", openSections.coverageASubLimits && "rotate-180")} />
                           <span className="text-sm font-medium text-muted-foreground">Limits and Endorsements</span>
                           <button
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               const newId = Date.now();
                               setCustomSubLimits([...customSubLimits, {
                                 id: newId,
