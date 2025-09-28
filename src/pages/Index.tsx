@@ -51,7 +51,8 @@ const Index = () => {
       description: '',
       paFeesChecked: false,
       paFeesPercent: '10',
-      paFeesAmount: '0.00'
+      paFeesAmount: '0.00',
+      paFeesPaid: false // Track if PA fees have been paid by client
     }
   ]);
 
@@ -347,19 +348,32 @@ const Index = () => {
     return feeA + feeB + feeC + feeD;
   };
 
-  // Calculate total PA fees (current + prior)
+  // Calculate total PA fees (current + all prior fees both paid and unpaid)
   const calculateTotalPAFees = () => {
     const currentPAFees = calculateCurrentPAFees();
-    const priorPAFees = calculatePriorPAFees();
-    return currentPAFees + priorPAFees;
+    const priorPAFeesPaid = calculatePriorPAFees();
+    const priorPAFeesOwed = calculatePriorPAFeesOwed();
+    return currentPAFees + priorPAFeesPaid + priorPAFeesOwed;
   };
 
-  // Calculate prior PA fees already paid
+  // Calculate prior PA fees already paid (only if marked as paid)
   const calculatePriorPAFees = () => {
     if (!checkedItems.priorPayments) return 0;
-    
+
     return priorPayments.reduce((total, payment) => {
-      if (payment.paFeesChecked) {
+      if (payment.paFeesChecked && payment.paFeesPaid) {
+        return total + (parseFloat(payment.paFeesAmount) || 0);
+      }
+      return total;
+    }, 0);
+  };
+
+  // Calculate prior PA fees owed (not yet paid)
+  const calculatePriorPAFeesOwed = () => {
+    if (!checkedItems.priorPayments) return 0;
+
+    return priorPayments.reduce((total, payment) => {
+      if (payment.paFeesChecked && !payment.paFeesPaid) {
         return total + (parseFloat(payment.paFeesAmount) || 0);
       }
       return total;
@@ -423,8 +437,8 @@ const Index = () => {
   // Calculate current PA fees due
   const currentPAFees = calculateCurrentPAFees();
   
-  // Final balance after current PA fees
-  const finalBalance = balanceBeforePAFees - currentPAFees;
+  // Final balance after all PA fees (current + prior owed)
+  const finalBalance = balanceBeforePAFees - currentPAFees - calculatePriorPAFeesOwed();
 
   // Balance plus deductible for repairs (using effective deductible)
   const balancePlusDeductible = finalBalance + effectiveDeductible;
@@ -490,14 +504,15 @@ const Index = () => {
   // Calculate total possible recovered
   const totalPossibleRecovered = calculateTotalPossibleRecovered();
 
-  // Auto-calculate PA Fees for each payment when amount or percentage changes
+  // Auto-calculate PA Fees for each payment based on the payment amount
   useEffect(() => {
-    setPriorPayments(prevPayments => 
+    setPriorPayments(prevPayments =>
       prevPayments.map(payment => {
         if (payment.paFeesChecked && payment.amount) {
-          const amount = parseFloat(payment.amount) || 0;
+          // PA fees are calculated on the payment amount itself
+          const paymentAmount = parseFloat(payment.amount) || 0;
           const percent = parseFloat(payment.paFeesPercent) || 0;
-          const calculatedFee = (amount * percent / 100).toFixed(2);
+          const calculatedFee = (paymentAmount * percent / 100).toFixed(2);
           return { ...payment, paFeesAmount: calculatedFee };
         }
         return { ...payment, paFeesAmount: '0.00' };
@@ -1289,7 +1304,8 @@ const Index = () => {
                         description: '',
                         paFeesChecked: false,
                         paFeesPercent: '10',
-                        paFeesAmount: '0.00'
+                        paFeesAmount: '0.00',
+                        paFeesPaid: false
                       }]);
                     }}
                     className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
@@ -1314,17 +1330,18 @@ const Index = () => {
                   {checkedItems.priorPayments && (
                     <div className="ml-6 space-y-2">
                       {/* Header Row */}
-                      <div className="grid grid-cols-5 gap-4 text-xs text-muted-foreground font-medium">
+                      <div className="grid grid-cols-6 gap-2 text-xs text-muted-foreground font-medium">
                         <div>Amount</div>
                         <div>Description</div>
                         <div>PA Fees</div>
                         <div>Fee Total</div>
+                        <div>Paid?</div>
                         <div></div>
                       </div>
                       
                       {/* Payment Rows */}
                       {priorPayments.map((payment, index) => (
-                        <div key={payment.id} className="grid grid-cols-5 gap-4 items-center">
+                        <div key={payment.id} className="grid grid-cols-6 gap-2 items-center">
                           {/* Amount */}
                           <div className="flex items-center gap-1">
                             <span className="text-sm">$</span>
@@ -1387,7 +1404,21 @@ const Index = () => {
                               readOnly
                             />
                           </div>
-                          
+
+                          {/* PA Fees Paid Checkbox */}
+                          <div className="flex items-center justify-center">
+                            <Checkbox
+                              checked={payment.paFeesPaid}
+                              disabled={!payment.paFeesChecked}
+                              onCheckedChange={(checked) => {
+                                const newPayments = [...priorPayments];
+                                newPayments[index].paFeesPaid = checked as boolean;
+                                setPriorPayments(newPayments);
+                              }}
+                              title={payment.paFeesChecked ? "Check if PA fees have been paid" : "Enable PA fees first"}
+                            />
+                          </div>
+
                           {/* Delete Button */}
                           <div>
                             {priorPayments.length > 1 && (
@@ -1567,7 +1598,7 @@ const Index = () => {
                   <ChevronDown className={cn("h-4 w-4 transition-transform", openSections.ccsFees && "rotate-180")} />
                   <span className="font-medium">CCS Fees</span>
                 </div>
-                <span className="text-lg font-semibold">$ {currentPAFees.toFixed(2)}</span>
+                <span className="text-lg font-semibold">$ {(currentPAFees + calculatePriorPAFeesOwed()).toFixed(2)}</span>
               </CollapsibleTrigger>
               <CollapsibleContent className="p-4 space-y-6">
                 {/* PA Fees Breakdown */}
@@ -1596,9 +1627,9 @@ const Index = () => {
                         <span className="font-medium text-red-600">- $ {calculatePriorPAFees().toFixed(2)}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div 
+                        <div
                           className="bg-red-500 h-3 rounded-full"
-                          style={{ 
+                          style={{
                             width: `${(calculatePriorPAFees() / calculateTotalPAFees()) * 100}%`
                           }}
                         ></div>
@@ -1606,10 +1637,28 @@ const Index = () => {
                     </div>
                   )}
 
-                  {/* Current PA Fees Due */}
+                  {/* Prior PA Fees Still Owed */}
+                  {calculatePriorPAFeesOwed() > 0 && (
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-600">Prior PA Fees Still Owed</span>
+                        <span className="font-medium text-orange-600">$ {calculatePriorPAFeesOwed().toFixed(2)}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div
+                          className="bg-orange-500 h-3 rounded-full"
+                          style={{
+                            width: `${(calculatePriorPAFeesOwed() / (calculateTotalPAFees() + calculatePriorPAFeesOwed())) * 100}%`
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Current Payment PA Fees */}
                   <div className="pt-3 border-t border-gray-300">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-800">Current PA Fees Due</span>
+                      <span className="text-sm font-medium text-gray-800">Current Payment PA Fees</span>
                       <span className="font-semibold text-green-600">$ {currentPAFees.toFixed(2)}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
