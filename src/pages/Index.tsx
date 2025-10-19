@@ -547,7 +547,7 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-4xl mx-auto">
         <Card className="mb-6">
           <CardHeader className="pb-4">
@@ -621,7 +621,7 @@ const Index = () => {
                      id="openingStatement"
                      value={openingStatement}
                      placeholder="Opening statement content (read-only)"
-                     className="w-full min-h-[120px] p-3 border border-border rounded-md resize-vertical bg-gray-100 cursor-not-allowed"
+                     className="w-full min-h-[120px] p-3 border border-border rounded-md resize-vertical bg-gray-100 dark:bg-gray-800 dark:text-gray-100 cursor-not-allowed"
                      readOnly
                    />
                    <div className="text-sm text-muted-foreground mt-1">
