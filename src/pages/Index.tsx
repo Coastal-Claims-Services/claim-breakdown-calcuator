@@ -510,14 +510,23 @@ const Index = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
 
+        console.log('🔍 Checking for token in URL...');
+        console.log('Full URL:', window.location.href);
+        console.log('Token found:', token ? 'Yes' : 'No');
+
         if (!token) {
           // No token provided - redirect to portal login
+          console.log('❌ No token found, redirecting to portal...');
           window.location.href = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5173/login';
           return;
         }
 
+        console.log('✅ Token found, validating with backend...');
+        const apiUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/calculator-access/validate-token`;
+        console.log('API URL:', apiUrl);
+
         // Validate token with backend
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/calculator-access/validate-token`, {
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -525,19 +534,22 @@ const Index = () => {
           body: JSON.stringify({ token }),
         });
 
+        console.log('Response status:', response.status);
         const data = await response.json();
+        console.log('Response data:', data);
 
         if (!data.valid) {
           // Token is invalid or expired - redirect to portal login
+          console.log('❌ Token validation failed:', data.error);
           alert('Your session has expired. Please log in again.');
           window.location.href = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5173/login';
           return;
         }
 
         // Token is valid - user can access calculator
-        console.log('Access granted for user:', data.user);
+        console.log('✅ Access granted for user:', data.user);
       } catch (error) {
-        console.error('Error validating access token:', error);
+        console.error('❌ Error validating access token:', error);
         alert('Failed to validate access. Please try again.');
         window.location.href = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5173/login';
       }
