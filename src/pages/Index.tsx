@@ -101,6 +101,7 @@ const Index = () => {
   const [releaseType, setReleaseType] = useState('');
   const [customReleaseTypeName, setCustomReleaseTypeName] = useState('');
   const [openingStatement, setOpeningStatement] = useState('');
+  const [availableReleaseTypes, setAvailableReleaseTypes] = useState<Array<{id: string; name: string}>>([]);
 
   // Print preview state
   const [showPrintPreview, setShowPrintPreview] = useState(false);
@@ -505,18 +506,63 @@ const Index = () => {
   // Note: This effect intentionally has no dependencies to avoid infinite loops
   // PA fees are calculated when the priorPayments array reference changes from user actions
 
-  // Load opening statement when release type changes
+  // Load available release types on mount
   useEffect(() => {
-    if (releaseType) {
+    const loadReleaseTypes = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/claim-breakdown-calculator-settings`);
+        if (response.ok) {
+          const settings = await response.json();
+          setAvailableReleaseTypes(settings.releaseTypes.map((rt: any) => ({ id: rt.id, name: rt.name })));
+          return;
+        }
+      } catch (error) {
+        console.error('Error fetching release types from API:', error);
+      }
+
+      // Fallback to localStorage if API fails
       const saved = localStorage.getItem('adminReleaseTypes');
       if (saved) {
         const releaseTypes = JSON.parse(saved);
-        const selectedRelease = releaseTypes.find(type => type.id === releaseType);
-        if (selectedRelease) {
-          setOpeningStatement(selectedRelease.openingStatement);
+        setAvailableReleaseTypes(releaseTypes.map((rt: any) => ({ id: rt.id, name: rt.name })));
+      }
+    };
+
+    loadReleaseTypes();
+  }, []);
+
+  // Load opening statement when release type changes
+  useEffect(() => {
+    const loadOpeningStatement = async () => {
+      if (releaseType) {
+        try {
+          // Try to fetch from API first
+          const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/claim-breakdown-calculator-settings`);
+          if (response.ok) {
+            const settings = await response.json();
+            const selectedRelease = settings.releaseTypes.find((type: any) => type.id === releaseType);
+            if (selectedRelease) {
+              setOpeningStatement(selectedRelease.openingStatement);
+              return;
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching release types from API:', error);
+        }
+
+        // Fallback to localStorage if API fails
+        const saved = localStorage.getItem('adminReleaseTypes');
+        if (saved) {
+          const releaseTypes = JSON.parse(saved);
+          const selectedRelease = releaseTypes.find((type: any) => type.id === releaseType);
+          if (selectedRelease) {
+            setOpeningStatement(selectedRelease.openingStatement);
+          }
         }
       }
-    }
+    };
+
+    loadOpeningStatement();
   }, [releaseType]);
 
   const handlePinSubmit = () => {
@@ -605,26 +651,11 @@ const Index = () => {
                       <SelectValue placeholder="Select release type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="proposed">Proposed Release</SelectItem>
-                      <SelectItem value="litigated">Litigated Release</SelectItem>
-                      <SelectItem value="mediation">Mediation Release</SelectItem>
-                      <SelectItem value="appraisal">Appraisal Release</SelectItem>
-                      <SelectItem value="standard">Standard Release</SelectItem>
-                      {/* Load custom release types from admin settings */}
-                      {(() => {
-                        const saved = localStorage.getItem('adminReleaseTypes');
-                        if (saved) {
-                          const releaseTypes = JSON.parse(saved);
-                          return releaseTypes
-                            .filter(type => type.id.startsWith('custom-'))
-                            .map(type => (
-                              <SelectItem key={type.id} value={type.id}>
-                                {type.name}
-                              </SelectItem>
-                            ));
-                        }
-                        return null;
-                      })()}
+                      {availableReleaseTypes.map(type => (
+                        <SelectItem key={type.id} value={type.id}>
+                          {type.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
