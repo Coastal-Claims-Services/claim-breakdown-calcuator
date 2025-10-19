@@ -502,6 +502,50 @@ const Index = () => {
   // Note: This effect intentionally has no dependencies to avoid infinite loops
   // PA fees are calculated when the priorPayments array reference changes from user actions
 
+  // Validate access token on mount
+  useEffect(() => {
+    const validateAccess = async () => {
+      try {
+        // Get token from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+          // No token provided - redirect to portal login
+          window.location.href = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5173/login';
+          return;
+        }
+
+        // Validate token with backend
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/calculator-access/validate-token`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await response.json();
+
+        if (!data.valid) {
+          // Token is invalid or expired - redirect to portal login
+          alert('Your session has expired. Please log in again.');
+          window.location.href = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5173/login';
+          return;
+        }
+
+        // Token is valid - user can access calculator
+        console.log('Access granted for user:', data.user);
+      } catch (error) {
+        console.error('Error validating access token:', error);
+        alert('Failed to validate access. Please try again.');
+        window.location.href = import.meta.env.VITE_PORTAL_URL || 'http://localhost:5173/login';
+      }
+    };
+
+    validateAccess();
+  }, []);
+
   // Load available release types on mount
   useEffect(() => {
     const loadReleaseTypes = async () => {
