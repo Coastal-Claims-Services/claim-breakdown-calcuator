@@ -13,7 +13,6 @@ interface PrintPreviewProps {
   onClose: () => void;
   data: {
     releaseType: string;
-    customReleaseTypeName: string;
     openingStatement: string;
     claimAmount: string;
     deductible: string;

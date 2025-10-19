@@ -14,9 +14,6 @@ import { useTheme } from 'next-themes';
 
 const Index = () => {
   const { theme, setTheme } = useTheme();
-  const [isAdminMode, setIsAdminMode] = useState(false);
-  const [showPinDialog, setShowPinDialog] = useState(false);
-  const [pinInput, setPinInput] = useState('');
   const [claimAmount, setClaimAmount] = useState('');
   const [deductible, setDeductible] = useState('');
   const [coverageA, setCoverageA] = useState('');
@@ -99,7 +96,6 @@ const Index = () => {
 
   // Release type state
   const [releaseType, setReleaseType] = useState('');
-  const [customReleaseTypeName, setCustomReleaseTypeName] = useState('');
   const [openingStatement, setOpeningStatement] = useState('');
   const [availableReleaseTypes, setAvailableReleaseTypes] = useState<Array<{id: string; name: string}>>([]);
 
@@ -514,17 +510,11 @@ const Index = () => {
         if (response.ok) {
           const settings = await response.json();
           setAvailableReleaseTypes(settings.releaseTypes.map((rt: any) => ({ id: rt.id, name: rt.name })));
-          return;
+        } else {
+          console.error('Failed to fetch release types from API:', response.status);
         }
       } catch (error) {
         console.error('Error fetching release types from API:', error);
-      }
-
-      // Fallback to localStorage if API fails
-      const saved = localStorage.getItem('adminReleaseTypes');
-      if (saved) {
-        const releaseTypes = JSON.parse(saved);
-        setAvailableReleaseTypes(releaseTypes.map((rt: any) => ({ id: rt.id, name: rt.name })));
       }
     };
 
@@ -536,28 +526,18 @@ const Index = () => {
     const loadOpeningStatement = async () => {
       if (releaseType) {
         try {
-          // Try to fetch from API first
           const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000/api'}/claim-breakdown-calculator-settings`);
           if (response.ok) {
             const settings = await response.json();
             const selectedRelease = settings.releaseTypes.find((type: any) => type.id === releaseType);
             if (selectedRelease) {
               setOpeningStatement(selectedRelease.openingStatement);
-              return;
             }
+          } else {
+            console.error('Failed to fetch opening statement from API:', response.status);
           }
         } catch (error) {
-          console.error('Error fetching release types from API:', error);
-        }
-
-        // Fallback to localStorage if API fails
-        const saved = localStorage.getItem('adminReleaseTypes');
-        if (saved) {
-          const releaseTypes = JSON.parse(saved);
-          const selectedRelease = releaseTypes.find((type: any) => type.id === releaseType);
-          if (selectedRelease) {
-            setOpeningStatement(selectedRelease.openingStatement);
-          }
+          console.error('Error fetching opening statement from API:', error);
         }
       }
     };
@@ -565,26 +545,6 @@ const Index = () => {
     loadOpeningStatement();
   }, [releaseType]);
 
-  const handlePinSubmit = () => {
-    if (pinInput === '1950') {
-      setIsAdminMode(true);
-      setShowPinDialog(false);
-      setPinInput('');
-      // Redirect to admin page
-      window.location.href = '/admin';
-    } else {
-      alert('Incorrect PIN');
-      setPinInput('');
-    }
-  };
-
-  const handleAdminToggle = () => {
-    if (isAdminMode) {
-      setIsAdminMode(false);
-    } else {
-      setShowPinDialog(true);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -603,17 +563,6 @@ const Index = () => {
                 </CardTitle>
               </div>
               <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAdminToggle}
-                  className={cn(
-                    "flex items-center gap-2",
-                    isAdminMode && "bg-blue-100 border-blue-500"
-                  )}
-                >
-                  {isAdminMode ? "Exit Admin" : "Admin Mode"}
-                </Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -661,27 +610,6 @@ const Index = () => {
                 </div>
               </div>
                 
-              {/* Custom Release Type Name */}
-              {releaseType === 'other' && (
-                <div>
-                  <Label htmlFor="customReleaseType">
-                    Custom Release Type Name
-                    {!isAdminMode && (
-                      <span className="text-sm text-muted-foreground ml-2">(Admin only)</span>
-                    )}
-                  </Label>
-                  <Input
-                    id="customReleaseType"
-                    type="text"
-                    value={customReleaseTypeName}
-                    onChange={isAdminMode ? (e) => setCustomReleaseTypeName(e.target.value) : undefined}
-                    placeholder={isAdminMode ? "Enter custom release type name" : "Custom release type (read-only)"}
-                    className={cn(!isAdminMode && "bg-gray-100 cursor-not-allowed")}
-                    readOnly={!isAdminMode}
-                  />
-                </div>
-              )}
-
               {/* Opening Statement */}
               {releaseType && (
                 <div>
@@ -2395,7 +2323,6 @@ const Index = () => {
           onClose={() => setShowPrintPreview(false)}
           data={{
             releaseType,
-            customReleaseTypeName,
             openingStatement,
             claimAmount,
             deductible,
@@ -2414,28 +2341,6 @@ const Index = () => {
           }}
         />
 
-        {/* PIN Dialog */}
-        <Dialog open={showPinDialog} onOpenChange={setShowPinDialog}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Admin Access</DialogTitle>
-              <DialogDescription>
-                Enter the admin PIN to access release type and opening statement editing.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex items-center space-x-2">
-              <Input
-                type="password"
-                placeholder="Enter PIN"
-                value={pinInput}
-                onChange={(e) => setPinInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handlePinSubmit()}
-                className="flex-1"
-              />
-              <Button onClick={handlePinSubmit}>Submit</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
