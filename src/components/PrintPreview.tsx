@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -84,20 +85,248 @@ export const PrintPreview: React.FC<PrintPreviewProps> = ({ isOpen, onClose, dat
     setPrintOptions(prev => ({ ...prev, [key]: value }));
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            Print Preview - Claim Breakdown Calculator
-            <Button variant="outline" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
-        </DialogHeader>
+  // Render the print content component
+  const renderPrintContent = () => (
+    <div className="print-only-content">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-6">
+        <img
+          src="/lovable-uploads/d8102e62-174d-41ec-8e54-53ba66b1e02d.png"
+          alt="Coastal Claims Services Logo"
+          className="h-12 w-auto"
+        />
+        <h1 className="text-2xl font-semibold" style={{ color: '#1e3a8a' }}>
+          Claim Breakdown Calculator
+        </h1>
+      </div>
 
-        {/* Print Options Controls */}
-        <div className="bg-muted/30 p-4 rounded-lg mb-4 print:hidden">
+      {/* Basic Claim Info */}
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>Claim Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {data.deductible && (
+            <div className="mb-4">
+              <Label className="text-sm font-medium">Deductible</Label>
+              <div className="text-lg font-semibold">${data.deductible}</div>
+            </div>
+          )}
+
+          <div className="bg-blue-900 text-white p-3 rounded-lg">
+            <div className="flex justify-between items-center">
+              <span className="font-medium">Total Coverage</span>
+              <span className="text-lg font-semibold">${data.totalCoverage.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <Label className="text-sm">Coverage A</Label>
+              <div>${data.coverageA || '0.00'}</div>
+            </div>
+            <div>
+              <Label className="text-sm">Coverage B</Label>
+              <div>${data.coverageB || '0.00'}</div>
+            </div>
+            <div>
+              <Label className="text-sm">Coverage C</Label>
+              <div>${data.coverageC || '0.00'}</div>
+            </div>
+            <div>
+              <Label className="text-sm">Coverage D</Label>
+              <div>${data.coverageD || '0.00'}</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Sub-limits */}
+      {printOptions.showSubLimits && data.customSubLimits.some(sl => sl.checked) && (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle>Coverage A Sub-limits</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {data.customSubLimits
+                .filter(subLimit => subLimit.checked)
+                .map(subLimit => (
+                  <div key={subLimit.id} className="flex justify-between items-center py-2 border-b">
+                    <span className="text-sm">{subLimit.type}</span>
+                    <div className="text-right">
+                      <div className="text-sm">${subLimit.amount || '0.00'}</div>
+                      {subLimit.policyLimit && (
+                        <div className="text-xs text-muted-foreground">
+                          Policy Limit: ${subLimit.policyLimit}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Prior Payments */}
+      {printOptions.showPriorPayments && (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle>Prior Payments</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {data.priorPayments.map(payment => (
+                <div key={payment.id} className="flex justify-between items-center py-2 border-b">
+                  <span className="text-sm">{payment.description || 'Prior Payment'}</span>
+                  <div className="text-right">
+                    <div className="text-sm">${payment.amount || '0.00'}</div>
+                    {printOptions.showPAFees && payment.paFeesChecked && (
+                      <div className="text-xs text-muted-foreground">
+                        PA Fees ({payment.paFeesPercent}%): ${payment.paFeesAmount}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Payments Without Fees */}
+      {(printOptions.showLegalFees || printOptions.showCustomPayments) && (
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle>Additional Payments</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {data.paymentsWithoutFees
+                .filter(payment => {
+                  if (payment.type === 'legalFees' && !printOptions.showLegalFees) return false;
+                  return payment.checked;
+                })
+                .map(payment => (
+                  <div key={payment.id} className="flex justify-between items-center py-2 border-b">
+                    <span className="text-sm">{payment.typeName}</span>
+                    <span className="text-sm">${payment.amount || '0.00'}</span>
+                  </div>
+                ))}
+
+              {printOptions.showCustomPayments && data.customPaymentDeductions
+                .filter(payment => payment.checked)
+                .map(payment => (
+                  <div key={payment.id} className="flex justify-between items-center py-2 border-b">
+                    <span className="text-sm">{payment.description}</span>
+                    <span className="text-sm">${payment.amount || '0.00'}</span>
+                  </div>
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Repairs */}
+      {printOptions.showRepairDetails && (
+        <>
+          {data.customInsuredRepairs.some(repair => repair.checked) && (
+            <Card className="mb-4">
+              <CardHeader>
+                <CardTitle>Repairs by the Insured</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {data.customInsuredRepairs
+                    .filter(repair => repair.checked)
+                    .map(repair => (
+                      <div key={repair.id} className="flex justify-between items-center py-2 border-b">
+                        <span className="text-sm">{repair.description}</span>
+                        <span className="text-sm">${repair.amount || '0.00'}</span>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {data.customContractorRepairs.some(repair => repair.checked) && (
+            <Card className="mb-4">
+              <CardHeader>
+                <CardTitle>Repairs by Contractor</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {data.customContractorRepairs
+                    .filter(repair => repair.checked)
+                    .map(repair => (
+                      <div key={repair.id} className="flex justify-between items-center py-2 border-b">
+                        <span className="text-sm">{repair.description}</span>
+                        <span className="text-sm">${repair.amount || '0.00'}</span>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
+
+      {/* Final Balance */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="bg-blue-900 text-white p-4 rounded-lg">
+            <div className="flex justify-between items-center">
+              <span className="text-lg font-semibold">
+                {data.finalBalance >= 0 ? 'Final Balance' : 'Total Out of Pocket Expense After Deductible by Insured'}
+              </span>
+              <span className={`text-xl font-bold ${data.finalBalance >= 0 ? 'text-white' : 'text-red-400'}`}>
+                ${data.finalBalance >= 0 ? data.finalBalance.toFixed(2) : Math.abs(data.finalBalance).toFixed(2)}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  // Render print content directly to body using portal
+  const printPortal = isOpen && ReactDOM.createPortal(
+    <div
+      className="print-only-wrapper"
+      style={{
+        position: 'absolute',
+        left: '-9999px',
+        top: 0,
+        width: '100%',
+        backgroundColor: 'white'
+      }}
+    >
+      <div style={{ padding: '20px' }}>
+        {renderPrintContent()}
+      </div>
+    </div>,
+    document.body
+  );
+
+  return (
+    <>
+      {printPortal}
+
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto print:hidden">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              Print Preview - Claim Breakdown Calculator
+              <Button variant="outline" size="icon" onClick={onClose}>
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Print Options Controls */}
+          <div className="bg-muted/30 p-4 rounded-lg mb-4">
           <h3 className="font-medium mb-3">Print Options (Choose what to include)</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="flex items-center space-x-2">
@@ -165,231 +394,49 @@ export const PrintPreview: React.FC<PrintPreviewProps> = ({ isOpen, onClose, dat
           </div>
         </div>
 
-        {/* Print Content */}
-        <div className="print-content">
-          {/* Header */}
-          <div className="flex items-center gap-4 mb-6">
-            <img 
-              src="/lovable-uploads/d8102e62-174d-41ec-8e54-53ba66b1e02d.png" 
-              alt="Coastal Claims Services Logo" 
-              className="h-12 w-auto"
-            />
-            <h1 className="text-2xl font-semibold" style={{ color: '#1e3a8a' }}>
-              Claim Breakdown Calculator
-            </h1>
-          </div>
+          {/* Preview Content - Same as print */}
+          {renderPrintContent()}
+        </DialogContent>
+      </Dialog>
 
-          {/* Basic Claim Info */}
-          <Card className="mb-4">
-            <CardHeader>
-              <CardTitle>Claim Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium">Claim Amount</Label>
-                  <div className="text-lg">${data.claimAmount || '0.00'}</div>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Deductible</Label>
-                  <div className="text-lg">${data.deductible || '0.00'}</div>
-                </div>
-              </div>
-              
-              <div className="bg-blue-900 text-white p-3 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Total Coverage</span>
-                  <span className="text-lg font-semibold">${data.totalCoverage.toFixed(2)}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <Label className="text-sm">Coverage A</Label>
-                  <div>${data.coverageA || '0.00'}</div>
-                </div>
-                <div>
-                  <Label className="text-sm">Coverage B</Label>
-                  <div>${data.coverageB || '0.00'}</div>
-                </div>
-                <div>
-                  <Label className="text-sm">Coverage C</Label>
-                  <div>${data.coverageC || '0.00'}</div>
-                </div>
-                <div>
-                  <Label className="text-sm">Coverage D</Label>
-                  <div>${data.coverageD || '0.00'}</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Sub-limits */}
-          {printOptions.showSubLimits && data.customSubLimits.some(sl => sl.checked) && (
-            <Card className="mb-4">
-              <CardHeader>
-                <CardTitle>Coverage A Sub-limits</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {data.customSubLimits
-                    .filter(subLimit => subLimit.checked)
-                    .map(subLimit => (
-                      <div key={subLimit.id} className="flex justify-between items-center py-2 border-b">
-                        <span className="text-sm">{subLimit.type}</span>
-                        <div className="text-right">
-                          <div className="text-sm">${subLimit.amount || '0.00'}</div>
-                          {subLimit.policyLimit && (
-                            <div className="text-xs text-muted-foreground">
-                              Policy Limit: ${subLimit.policyLimit}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Prior Payments */}
-          {printOptions.showPriorPayments && (
-            <Card className="mb-4">
-              <CardHeader>
-                <CardTitle>Prior Payments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {data.priorPayments.map(payment => (
-                    <div key={payment.id} className="flex justify-between items-center py-2 border-b">
-                      <span className="text-sm">{payment.description || 'Prior Payment'}</span>
-                      <div className="text-right">
-                        <div className="text-sm">${payment.amount || '0.00'}</div>
-                        {printOptions.showPAFees && payment.paFeesChecked && (
-                          <div className="text-xs text-muted-foreground">
-                            PA Fees ({payment.paFeesPercent}%): ${payment.paFeesAmount}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Payments Without Fees */}
-          {(printOptions.showLegalFees || printOptions.showCustomPayments) && (
-            <Card className="mb-4">
-              <CardHeader>
-                <CardTitle>Additional Payments</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {data.paymentsWithoutFees
-                    .filter(payment => {
-                      if (payment.type === 'legalFees' && !printOptions.showLegalFees) return false;
-                      return payment.checked;
-                    })
-                    .map(payment => (
-                      <div key={payment.id} className="flex justify-between items-center py-2 border-b">
-                        <span className="text-sm">{payment.typeName}</span>
-                        <span className="text-sm">${payment.amount || '0.00'}</span>
-                      </div>
-                    ))}
-                  
-                  {printOptions.showCustomPayments && data.customPaymentDeductions
-                    .filter(payment => payment.checked)
-                    .map(payment => (
-                      <div key={payment.id} className="flex justify-between items-center py-2 border-b">
-                        <span className="text-sm">{payment.description}</span>
-                        <span className="text-sm">${payment.amount || '0.00'}</span>
-                      </div>
-                    ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Repairs */}
-          {printOptions.showRepairDetails && (
-            <>
-              {data.customInsuredRepairs.some(repair => repair.checked) && (
-                <Card className="mb-4">
-                  <CardHeader>
-                    <CardTitle>Repairs by the Insured</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {data.customInsuredRepairs
-                        .filter(repair => repair.checked)
-                        .map(repair => (
-                          <div key={repair.id} className="flex justify-between items-center py-2 border-b">
-                            <span className="text-sm">{repair.description}</span>
-                            <span className="text-sm">${repair.amount || '0.00'}</span>
-                          </div>
-                        ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {data.customContractorRepairs.some(repair => repair.checked) && (
-                <Card className="mb-4">
-                  <CardHeader>
-                    <CardTitle>Repairs by Contractor</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {data.customContractorRepairs
-                        .filter(repair => repair.checked)
-                        .map(repair => (
-                          <div key={repair.id} className="flex justify-between items-center py-2 border-b">
-                            <span className="text-sm">{repair.description}</span>
-                            <span className="text-sm">${repair.amount || '0.00'}</span>
-                          </div>
-                        ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </>
-          )}
-
-          {/* Final Balance */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="bg-blue-900 text-white p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">
-                    {data.finalBalance >= 0 ? 'Final Balance' : 'Total Out of Pocket Expense After Deductible by Insured'}
-                  </span>
-                  <span className={`text-xl font-bold ${data.finalBalance >= 0 ? 'text-white' : 'text-red-400'}`}>
-                    ${data.finalBalance >= 0 ? data.finalBalance.toFixed(2) : Math.abs(data.finalBalance).toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <style>{`
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            .print-content, .print-content * {
-              visibility: visible;
-            }
-            .print-content {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-            }
+      {/* Print-specific CSS */}
+      <style>{`
+        @media print {
+          @page {
+            margin: 0.5in;
+            size: letter;
           }
-        `}</style>
-      </DialogContent>
-    </Dialog>
+
+          /* Hide everything except print wrapper */
+          body > * {
+            display: none !important;
+          }
+
+          /* Show only the print wrapper */
+          body > .print-only-wrapper,
+          .print-only-wrapper {
+            display: block !important;
+            position: static !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            visibility: visible !important;
+          }
+
+          /* Ensure all content inside is visible */
+          .print-only-wrapper,
+          .print-only-wrapper * {
+            visibility: visible !important;
+            display: revert !important;
+          }
+
+          /* Prevent page breaks inside elements */
+          .print-only-wrapper > div > div {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+        }
+      `}</style>
+    </>
   );
 };

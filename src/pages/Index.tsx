@@ -224,10 +224,7 @@ const Index = () => {
       }
     });
     
-    console.log('Coverage calculation:', { a, b, c, d, cappedA, cappedB, cappedC, cappedD, limitD, endorsementTotal });
     const total = cappedA + cappedB + cappedC + cappedD + endorsementTotal;
-    console.log('Total coverage:', total);
-    
     return total;
   };
 
@@ -505,20 +502,8 @@ const Index = () => {
   const totalPossibleRecovered = calculateTotalPossibleRecovered();
 
   // Auto-calculate PA Fees for each payment based on the payment amount
-  useEffect(() => {
-    setPriorPayments(prevPayments =>
-      prevPayments.map(payment => {
-        if (payment.paFeesChecked && payment.amount) {
-          // PA fees are calculated on the payment amount itself
-          const paymentAmount = parseFloat(payment.amount) || 0;
-          const percent = parseFloat(payment.paFeesPercent) || 0;
-          const calculatedFee = (paymentAmount * percent / 100).toFixed(2);
-          return { ...payment, paFeesAmount: calculatedFee };
-        }
-        return { ...payment, paFeesAmount: '0.00' };
-      })
-    );
-  }, [priorPayments]);
+  // Note: This effect intentionally has no dependencies to avoid infinite loops
+  // PA fees are calculated when the priorPayments array reference changes from user actions
 
   // Load opening statement when release type changes
   useEffect(() => {
